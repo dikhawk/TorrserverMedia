@@ -17,3 +17,7 @@ dependencyResolutionManagement {
         maven("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
     }
 }
+
+include(
+    ":core:torrserverapi:api"
+)
