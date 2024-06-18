@@ -9,29 +9,27 @@ kotlin {
     jvm() // Create a JVM target with the default name 'jvm'
 
     sourceSets {
-        commonMain {
-            dependencies {
-                implementation(projects.core.moduleinjector)
-                implementation(projects.features.torrentlist.api)
-                implementation(projects.core.torrserverapi.api)
-                implementation(projects.core.common)
+        commonMain.dependencies {
+            implementation(projects.core.moduleinjector)
+            implementation(projects.features.torrentlist.api)
+            implementation(projects.core.torrserverapi.api)
+            implementation(projects.core.common)
 
-                implementation(libs.decompose.core)
-                implementation(libs.decompose.compose.ext)
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material3)
-                implementation(compose.components.resources)
-                implementation(compose.components.uiToolingPreview)
-                implementation(libs.coil)
-                implementation(libs.coil.network.ktor)
-                implementation(libs.kotlinx.coroutines.core)
-                implementation(libs.ktor.core)
-                implementation(libs.kotlinx.serialization.json)
-                implementation(libs.multiplatformSettings)
-                implementation(libs.koin.core)
-                implementation(libs.kstore)
-            }
+            implementation(libs.decompose.core)
+            implementation(libs.decompose.compose.ext)
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
+            implementation(libs.coil)
+            implementation(libs.coil.network.ktor)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.ktor.core)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.multiplatformSettings)
+            implementation(libs.koin.core)
+            implementation(libs.kstore)
         }
     }
 }
