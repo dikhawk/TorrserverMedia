@@ -16,7 +16,6 @@ abstract class TorrentListComponent : TorrentListFeatureApi {
 
             val torrentListModule = module {
                 single { dependecies.torrServerApi() }
-//                factory<MainTorrentListComponent> { DefaultMainTorrentListComponent(get())}
             }
 
             return object : TorrentListComponent() {
