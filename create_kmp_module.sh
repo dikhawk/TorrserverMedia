@@ -105,10 +105,8 @@ done
 cat >>"$module_directory/build.gradle.kts" <<EOF
 
     sourceSets {
-        commonMain {
-            dependencies {
+        commonMain.dependencies {
 
-            }
         }
     }
 }
