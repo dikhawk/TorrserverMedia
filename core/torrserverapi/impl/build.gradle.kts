@@ -1,7 +1,5 @@
-
 plugins {
     alias(libs.plugins.multiplatform)
-    alias(libs.plugins.kotlinx.serialization)
 }
 
 kotlin {
@@ -12,6 +10,9 @@ kotlin {
             dependencies {
                 implementation(projects.core.moduleinjector)
                 implementation(projects.core.common)
+                implementation(projects.core.torrserverapi.api)
+                implementation(libs.koin.core)
+                implementation(libs.kotlinx.coroutines.core)
             }
         }
     }

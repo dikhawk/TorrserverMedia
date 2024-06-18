@@ -1,5 +1,4 @@
-rootProject.name = "TorrServerMedia"
-include(":composeApp")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
@@ -18,6 +17,16 @@ dependencyResolutionManagement {
     }
 }
 
+rootProject.name = "TorrServerMedia"
+
 include(
-    ":core:torrserverapi:api"
+    ":composeApp",
+    ":core:moduleinjector",
+    ":core:torrserverapi:api",
+    ":core:torrserverapi:impl",
+    ":core:common",
+    ":core:uikit",
+
+    ":features:torrentlist:api",
+    ":features:torrentlist:impl",
 )

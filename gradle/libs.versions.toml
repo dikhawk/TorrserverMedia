@@ -12,6 +12,7 @@ kotlinx-serialization = "1.7.0-RC"
 multiplatformSettings = "1.1.1"
 koin = "3.6.0-wasm-alpha2"
 kstore = "0.8.0"
+decompose = "3.0.0"
 
 [libraries]
 
@@ -34,6 +35,8 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 multiplatformSettings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 kstore = { module = "io.github.xxfast:kstore", version.ref = "kstore" }
+decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
+decompose-compose-ext = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
 
 [plugins]
 

@@ -20,7 +20,7 @@ kotlin {
             compileTaskProvider {
                 compilerOptions {
                     jvmTarget.set(JvmTarget.JVM_17)
-                    freeCompilerArgs.add("-Xjdk-release=${JavaVersion.VERSION_1_8}")
+                    freeCompilerArgs.add("-Xjdk-release=${JavaVersion.VERSION_17}")
                 }
             }
         }
@@ -56,6 +56,13 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.moduleinjector)
+            implementation(projects.core.common)
+            implementation(projects.features.torrentlist.api)
+            implementation(projects.features.torrentlist.impl)
+            implementation(projects.core.torrserverapi.api)
+            implementation(projects.core.torrserverapi.impl)
+
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -69,6 +76,8 @@ kotlin {
             implementation(libs.multiplatformSettings)
             implementation(libs.koin.core)
             implementation(libs.kstore)
+            implementation(libs.decompose.core)
+            implementation(libs.decompose.compose.ext)
         }
 
         commonTest.dependencies {
@@ -83,12 +92,15 @@ kotlin {
             implementation(libs.androidx.activityCompose)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.decompose.core)
         }
 
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.decompose.core)
+            implementation(libs.decompose.compose.ext)
         }
 
         iosMain.dependencies {
@@ -128,8 +140,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         //enables a Compose tooling support in the AndroidStudio
