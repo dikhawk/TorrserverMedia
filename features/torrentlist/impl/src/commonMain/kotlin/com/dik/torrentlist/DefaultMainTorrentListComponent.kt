@@ -10,11 +10,18 @@ import com.arkivanov.decompose.value.Value
 import com.dik.torrentlist.MainTorrentListComponent.Child
 import com.dik.torrentlist.MainTorrentListComponent.Child.TorrentList
 import com.dik.torrentlist.details.DefaultDetailsComponent
+import com.dik.torrentlist.di.KoinModules
 import com.dik.torrentlist.list.DefaultTorrentListComponent
 import com.dik.torrentlist.list.TorrentListComponent
+import com.dik.torrserverapi.di.TorrserverApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
-class DefaultMainTorrentListComponent(componentContext: ComponentContext) :
-    ComponentContext by componentContext, MainTorrentListComponent {
+class DefaultMainTorrentListComponent(
+    componentContext: ComponentContext,
+    private val torrserverApi: TorrserverApi = KoinModules.koin.get(),
+    private val coroutineScope: CoroutineScope
+) : ComponentContext by componentContext, MainTorrentListComponent {
 
     private val navigation = StackNavigation<ChildConfig>()
 
@@ -25,6 +32,12 @@ class DefaultMainTorrentListComponent(componentContext: ComponentContext) :
         handleBackButton = true,
         childFactory = ::childFactory
     )
+
+    init {
+        coroutineScope.launch {
+            torrserverApi.torrserverStuffApi().checkUpdates()
+        }
+    }
 
     override fun torrentListComponent(): TorrentListComponent =
         //TODO Replace "Torrrent URL"

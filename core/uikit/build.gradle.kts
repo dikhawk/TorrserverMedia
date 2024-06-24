@@ -5,9 +5,8 @@ plugins {
 kotlin {
     jvm() // Create a JVM target with the default name 'jvm'
 
-    linuxX64() {
-        /* Specify additional settings for the 'linux' target here */
-    }
+    linuxArm64()
+    linuxX64()
 
     sourceSets {
         commonMain {

@@ -1,17 +1,18 @@
 package com.dik.torrserverapi.di
 
 import com.dik.common.AppDispatchers
-import com.dik.torrserverapi.data.MagnetApi
-import com.dik.torrserverapi.data.TorrentApi
-import com.dik.torrserverapi.data.TorrserverStuffApi
+import com.dik.torrserverapi.server.MagnetApi
+import com.dik.torrserverapi.server.TorrentApi
+import com.dik.torrserverapi.server.TorrserverStuffApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.koin.core.context.startKoin
 import org.koin.mp.KoinPlatform
 
 abstract class TorrserverComponent : TorrserverApi {
 
-/*    companion object {
+    companion object {
         private var torrserverComponent: TorrserverComponent? = null
         private val mutex = Mutex()
 
@@ -22,13 +23,12 @@ abstract class TorrserverComponent : TorrserverApi {
                         if (torrserverComponent == null) {
                             torrserverComponent = object : TorrserverComponent() {
                                 init {
-                                    ModuleKoin.init(appDispatchers)
+                                    KoinModules.init(appDispatchers)
                                 }
 
-                                override fun magnetApi(): MagnetApi = KoinPlatform.getKoin().get()
-                                override fun torrentApi(): TorrentApi = KoinPlatform.getKoin().get()
-                                override fun torrserverStuffApi(): TorrserverStuffApi =
-                                    KoinPlatform.getKoin().get()
+                                override fun magnetApi(): MagnetApi = inject()
+                                override fun torrentApi(): TorrentApi = inject()
+                                override fun torrserverStuffApi(): TorrserverStuffApi = inject()
 
                             }
                         }
@@ -37,24 +37,6 @@ abstract class TorrserverComponent : TorrserverApi {
             }
 
             return torrserverComponent!!
-        }
-    }*/
-
-    companion object {
-        private val torrserverComponent: TorrserverComponent by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
-            object : TorrserverComponent() {
-                override fun magnetApi(): MagnetApi = KoinPlatform.getKoin().get()
-                override fun torrentApi(): TorrentApi = KoinPlatform.getKoin().get()
-                override fun torrserverStuffApi(): TorrserverStuffApi =
-                    KoinPlatform.getKoin().get()
-
-            }
-        }
-
-        fun get(appDispatchers: AppDispatchers): TorrserverComponent {
-            ModuleKoin.init(appDispatchers)
-
-            return torrserverComponent
         }
     }
 }

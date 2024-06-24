@@ -1,7 +1,8 @@
-package com.dik.torrserverapi
+package com.dik.torrserverapi.server
 
 import com.dik.common.Result
-import com.dik.torrserverapi.data.TorrentApi
+import com.dik.torrserverapi.Torrent
+import com.dik.torrserverapi.TorrserverError
 
 class TorrentApiImpl: TorrentApi {
     override suspend fun getTorrentsList(): Result<List<Torrent>, TorrserverError> {

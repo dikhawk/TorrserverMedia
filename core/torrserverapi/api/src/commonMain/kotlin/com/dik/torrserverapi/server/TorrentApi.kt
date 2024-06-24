@@ -1,4 +1,4 @@
-package com.dik.torrserverapi.data
+package com.dik.torrserverapi.server
 
 import com.dik.common.Result
 import com.dik.torrserverapi.Torrent

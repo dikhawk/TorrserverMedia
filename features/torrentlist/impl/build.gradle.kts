@@ -6,7 +6,9 @@ plugins {
 }
 
 kotlin {
-    jvm() // Create a JVM target with the default name 'jvm'
+    jvm()
+    linuxArm64()
+    linuxX64()// Create a JVM target with the default name 'jvm'
 
     sourceSets {
         commonMain.dependencies {
@@ -15,8 +17,7 @@ kotlin {
             implementation(projects.core.torrserverapi.api)
             implementation(projects.core.common)
 
-            implementation(libs.decompose.core)
-            implementation(libs.decompose.compose.ext)
+            implementation(libs.bundles.decompose)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
