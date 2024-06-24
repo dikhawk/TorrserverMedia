@@ -12,7 +12,6 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.plus
 import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback.predictiveBackAnimation
 import com.arkivanov.decompose.extensions.compose.stack.animation.scale
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
-import com.dik.torrentlist.MainTorrentListUi
 import com.dik.torrservermedia.nanigation.RootComponent
 import com.dik.torrservermedia.nanigation.RootComponent.Child.TorrentList
 

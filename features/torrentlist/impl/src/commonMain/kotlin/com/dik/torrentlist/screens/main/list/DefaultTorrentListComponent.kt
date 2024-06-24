@@ -1,4 +1,4 @@
-package com.dik.torrentlist.list
+package com.dik.torrentlist.screens.main.list
 
 import com.arkivanov.decompose.ComponentContext
 import kotlinx.coroutines.flow.StateFlow
@@ -6,8 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 internal class DefaultTorrentListComponent(
     context: ComponentContext,
     private val onTorrentClick: (Torrent) -> Unit
-) : ComponentContext by context,
-    TorrentListComponent {
+) : ComponentContext by context, TorrentListComponent {
     override val torrenListState: StateFlow<TorrentListState>
         get() = TODO("Not yet implemented")
 

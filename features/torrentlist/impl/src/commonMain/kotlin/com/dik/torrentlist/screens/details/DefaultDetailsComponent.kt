@@ -1,4 +1,4 @@
-package com.dik.torrentlist.details
+package com.dik.torrentlist.screens.details
 
 import com.arkivanov.decompose.ComponentContext
 

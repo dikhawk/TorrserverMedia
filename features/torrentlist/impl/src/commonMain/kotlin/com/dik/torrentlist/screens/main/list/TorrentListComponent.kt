@@ -1,4 +1,4 @@
-package com.dik.torrentlist.list
+package com.dik.torrentlist.screens.main.list
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
