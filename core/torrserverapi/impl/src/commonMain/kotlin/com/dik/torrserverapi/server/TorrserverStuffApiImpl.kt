@@ -1,6 +1,7 @@
 package com.dik.torrserverapi.server
 
 import com.dik.common.Result
+import com.dik.torrserverapi.LOCAL_TORRENT_SERVER
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.cmd.ServerCommands
 import com.dik.torrserverapi.model.Release
@@ -11,8 +12,6 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.http.HttpStatusCode
-
-const val LOCAL_TORRENT_SERVER = "http://127.0.0.1:8090"
 
 class TorrserverStuffApiImpl(
     private val serverCommands: ServerCommands, private val client: HttpClient

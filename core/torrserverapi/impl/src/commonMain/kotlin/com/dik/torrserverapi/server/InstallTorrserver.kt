@@ -3,6 +3,7 @@ package com.dik.torrserverapi.server
 import com.dik.common.AppDispatchers
 import com.dik.common.Platform
 import com.dik.common.Result
+import com.dik.common.ResultProgress
 import com.dik.common.utils.cpuArch
 import com.dik.common.utils.platformName
 import com.dik.torrserverapi.TorrserverError
@@ -19,11 +20,11 @@ internal class InstallTorrserver(
     private val dispatchers: AppDispatchers
 ) {
 
-    fun start(outputFilePath: String) = flow<Result<TorrserverFile, TorrserverError>> {
+    fun start(outputFilePath: String) = flow<ResultProgress<TorrserverFile, TorrserverError>> {
         val latestRelease = torrserverStuffApi.checkLatestRelease()
 
         if (latestRelease is Result.Error) {
-            emit(Result.Error(latestRelease.error))
+            emit(ResultProgress.Error(latestRelease.error))
             return@flow
         }
 
@@ -33,7 +34,7 @@ internal class InstallTorrserver(
             latestRelease.data.findSupportedAsset(cpuArh, platform) else null
 
         if (asset == null) {
-            emit(Result.Error(TorrserverError.Service.NotSupported("Not os: ${platform.osname} or arch $cpuArh")))
+            emit(ResultProgress.Error(TorrserverError.Service.NotSupported("Not os: ${platform.osname} or arch $cpuArh")))
             return@flow
         }
 
@@ -44,7 +45,7 @@ internal class InstallTorrserver(
             emit(result)
         }
     }.catch { e ->
-        emit(Result.Error(TorrserverError.Common.Unknown(e.toString())))
+        emit(ResultProgress.Error(TorrserverError.Common.Unknown(e.toString())))
     }.flowOn(dispatchers.defaultDispatcher())
 
     //TODO requred testing for other platforms

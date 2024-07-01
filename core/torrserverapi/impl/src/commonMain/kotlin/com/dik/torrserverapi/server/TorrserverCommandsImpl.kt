@@ -1,6 +1,7 @@
 package com.dik.torrserverapi.server
 
 import com.dik.common.Result
+import com.dik.common.ResultProgress
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.cmd.ServerCommands
 import com.dik.torrserverapi.model.TorrserverFile
@@ -13,12 +14,8 @@ internal class TorrserverCommandsImpl(
     private val installTorrserver: InstallTorrserver
 ) : TorrserverCommands {
 
-    override suspend fun installServer(): Flow<Result<TorrserverFile, TorrserverError>> =
+    override suspend fun installServer(): Flow<ResultProgress<TorrserverFile, TorrserverError>> =
         installTorrserver.start("/home/dik/TorrServer/TorrServer")
-
-    override suspend fun updateServer(): Flow<Result<TorrserverFile, TorrserverError>> {
-        TODO("Not yet implemented")
-    }
 
     override suspend fun startServer(): Result<Unit, TorrserverError> {
         try {

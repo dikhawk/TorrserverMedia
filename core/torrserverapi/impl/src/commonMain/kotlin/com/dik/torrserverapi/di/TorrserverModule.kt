@@ -26,7 +26,7 @@ import org.koin.dsl.module
 internal val torrserverModule = module {
     factory<CmdRunner> { KmpCmdRunner }
     single<MagnetApi> { MagnetApiImpl() }
-    single<TorrentApi> { TorrentApiImpl() }
+    single<TorrentApi> { TorrentApiImpl(get()) }
     single<TorrserverStuffApi> { TorrserverStuffApiImpl(get(), get()) }
     single<ServerCommands> { KmpServerCommands }
     single<TorrserverCommands> {

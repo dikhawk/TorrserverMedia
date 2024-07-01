@@ -4,6 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
+import com.dik.common.ResultProgress
 import com.dik.torrentlist.di.inject
 import com.dik.torrserverapi.server.TorrserverCommands
 import com.dik.torrserverapi.server.TorrserverStuffApi
@@ -41,15 +42,15 @@ class DefaultTorrserverBarComponent(
         componentScope.launch(dispatcher.defaultDispatcher()) {
             torrserverCommands.installServer().collect { restult ->
                 when (val res = restult) {
-                    is Result.Loading -> _uiState.update {
+                    is ResultProgress.Loading -> _uiState.update {
                         it.copy(isShowProgress = true, progressUpdate = res.progress.progress)
                     }
 
-                    is Result.Error -> _uiState.update {
+                    is ResultProgress.Error -> _uiState.update {
                         it.copy(isShowProgress = false, error = res.error.toString())
                     }
 
-                    is Result.Success -> _uiState.update {
+                    is ResultProgress.Success -> _uiState.update {
                         it.copy(isShowProgress = false, serverStatus = "!!!!!INSTALLED!!!!")
                     }
                 }
@@ -75,7 +76,6 @@ class DefaultTorrserverBarComponent(
                 val result = torrserverStuffApi.echo()
                 when(val res = result) {
                     is Result.Error -> _uiState.update { it.copy(serverStatus = res.error.toString()) }
-                    is Result.Loading -> TODO()
                     is Result.Success -> _uiState.update { it.copy(serverStatus = res.data) }
                 }
                 delay(1000)

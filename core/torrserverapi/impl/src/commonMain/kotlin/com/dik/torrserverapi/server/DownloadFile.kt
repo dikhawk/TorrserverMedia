@@ -2,7 +2,7 @@ package com.dik.torrserverapi.server
 
 import com.dik.common.AppDispatchers
 import com.dik.common.Progress
-import com.dik.common.Result
+import com.dik.common.ResultProgress
 import com.dik.common.utils.round
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.TorrserverFile
@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.flowOn
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.buffer
-import java.io.File
 
 internal class DownloadFile(
     private val dispatchers: AppDispatchers,
@@ -27,8 +26,8 @@ internal class DownloadFile(
 ) {
 
     fun start(fileUrl: String, outputFilePath: String) =
-        flow<Result<TorrserverFile, TorrserverError>> {
-            emit(Result.Loading(Progress(progress = 0.0)))
+        flow<ResultProgress<TorrserverFile, TorrserverError>> {
+            emit(ResultProgress.Loading(Progress(progress = 0.0)))
 
             val pathFile = outputFilePath.toPath()
             FileSystem.SYSTEM.createDirectories(pathFile.parent!!)
@@ -47,7 +46,7 @@ internal class DownloadFile(
 
                         if (totalBytes > 0L)
                             emit(
-                                Result.Loading(
+                                ResultProgress.Loading(
                                     Progress(
                                         progress = calculateProgress(fileSize!!, totalBytes),
                                         currentBytes = fileSize,
@@ -60,9 +59,9 @@ internal class DownloadFile(
             }
 
 
-            emit(Result.Success(TorrserverFile(filePath = outputFilePath)))
+            emit(ResultProgress.Success(TorrserverFile(filePath = outputFilePath)))
         }.catch { e ->
-            emit(Result.Error(TorrserverError.Common.Unknown(e.toString())))
+            emit(ResultProgress.Error(TorrserverError.Common.Unknown(e.toString())))
         }.flowOn(dispatchers.defaultDispatcher())
 
 
