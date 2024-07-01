@@ -10,8 +10,15 @@ interface TorrserverBarComponent {
     fun onClickInstallServer()
 
     fun onClickRestartServer()
+
+    fun onStopServer()
 }
 
 
 @Stable
-data class TorrserverBarState(val serverStatus: String = "")
+data class TorrserverBarState(
+    val serverStatus: String = "Not initialized",
+    val isShowProgress: Boolean = false,
+    val progressUpdate: Double = 0.0,
+    val error: String? = null,
+)
