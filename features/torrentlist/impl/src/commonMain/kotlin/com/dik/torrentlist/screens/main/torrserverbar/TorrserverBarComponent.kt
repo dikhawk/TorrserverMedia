@@ -5,13 +5,13 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface TorrserverBarComponent {
 
-    val uiState: StateFlow<TorrserverBar>
+    val uiState: StateFlow<TorrserverBarState>
 
-    fun onClickInstall()
+    fun onClickInstallServer()
 
     fun onClickRestartServer()
 }
 
 
 @Stable
-data class TorrserverBar(val serverStatus: String)
+data class TorrserverBarState(val serverStatus: String = "")

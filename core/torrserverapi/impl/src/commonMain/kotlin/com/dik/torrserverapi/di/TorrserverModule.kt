@@ -5,10 +5,14 @@ import com.dik.torrserverapi.cmd.KmpCmdRunner
 import com.dik.torrserverapi.cmd.KmpServerCommands
 import com.dik.torrserverapi.cmd.ServerCommands
 import com.dik.torrserverapi.http.createHttpClient
+import com.dik.torrserverapi.server.DownloadFile
+import com.dik.torrserverapi.server.InstallTorrserver
 import com.dik.torrserverapi.server.MagnetApi
 import com.dik.torrserverapi.server.MagnetApiImpl
 import com.dik.torrserverapi.server.TorrentApi
 import com.dik.torrserverapi.server.TorrentApiImpl
+import com.dik.torrserverapi.server.TorrserverCommands
+import com.dik.torrserverapi.server.TorrserverCommandsImpl
 import com.dik.torrserverapi.server.TorrserverStuffApi
 import com.dik.torrserverapi.server.TorrserverStuffApiImpl
 import io.ktor.client.HttpClient
@@ -25,6 +29,11 @@ internal val torrserverModule = module {
     single<TorrentApi> { TorrentApiImpl() }
     single<TorrserverStuffApi> { TorrserverStuffApiImpl(get(), get()) }
     single<ServerCommands> { KmpServerCommands }
+    single<TorrserverCommands> {
+        TorrserverCommandsImpl(get(), get(), get())
+    }
+    factory<DownloadFile> { DownloadFile(get(), get()) }
+    factory<InstallTorrserver> { InstallTorrserver(get(), get(), get()) }
 }
 
 internal val httpModule = module {

@@ -7,8 +7,6 @@ plugins {
 
 kotlin {
     jvm()
-    linuxArm64()
-    linuxX64()// Create a JVM target with the default name 'jvm'
 
     sourceSets {
         commonMain.dependencies {
@@ -18,6 +16,7 @@ kotlin {
             implementation(projects.core.common)
 
             implementation(libs.bundles.decompose)
+//            implementation(libs.essenty.lifecycle.coroutines)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

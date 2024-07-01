@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.multiplatform)
+    alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.android.library)
 }
 
@@ -27,19 +28,19 @@ kotlin {
             }
         }
     }
-//    linuxArm64()
-//    linuxX64()
 
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.moduleinjector)
             implementation(projects.core.common)
             implementation(projects.core.torrserverapi.api)
-            implementation(libs.koin.core)
+
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.koin.core)
             implementation(libs.ktor.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.okio)
         }
 
         androidMain.dependencies {

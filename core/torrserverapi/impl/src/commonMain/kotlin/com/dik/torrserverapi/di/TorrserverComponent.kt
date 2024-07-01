@@ -2,13 +2,12 @@ package com.dik.torrserverapi.di
 
 import com.dik.common.AppDispatchers
 import com.dik.torrserverapi.server.MagnetApi
+import com.dik.torrserverapi.server.TorrserverCommands
 import com.dik.torrserverapi.server.TorrentApi
 import com.dik.torrserverapi.server.TorrserverStuffApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.koin.core.context.startKoin
-import org.koin.mp.KoinPlatform
 
 abstract class TorrserverComponent : TorrserverApi {
 
@@ -29,7 +28,7 @@ abstract class TorrserverComponent : TorrserverApi {
                                 override fun magnetApi(): MagnetApi = inject()
                                 override fun torrentApi(): TorrentApi = inject()
                                 override fun torrserverStuffApi(): TorrserverStuffApi = inject()
-
+                                override fun torrserverCommands(): TorrserverCommands = inject()
                             }
                         }
                     }

@@ -9,8 +9,6 @@ import com.dik.torrentlist.screens.navigation.RootUi
 class TorrentListEntryImpl() : TorrentListEntry() {
 
     override fun composableMain(componentContex: ComponentContext): @Composable () -> Unit = {
-        val scope = rememberCoroutineScope()
-
         RootUi(DefaultRootComponent(componentContex))
     }
 }

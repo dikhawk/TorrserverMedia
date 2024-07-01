@@ -2,6 +2,7 @@ package com.dik.torrserverapi.server
 
 import com.dik.common.Result
 import com.dik.torrserverapi.TorrserverError
+import com.dik.torrserverapi.model.Release
 
 interface TorrserverStuffApi {
 
@@ -11,11 +12,9 @@ interface TorrserverStuffApi {
      */
     suspend fun echo(): Result<String, TorrserverError>
 
-    suspend fun startServer(): Result<String, TorrserverError>
-
     suspend fun stopServer(): Result<Unit, TorrserverError>
 
-    suspend fun checkUpdates(): Result<String, TorrserverError>
+    suspend fun checkLatestRelease(): Result<Release, TorrserverError>
 
-    suspend fun downloadServer(): Result<String, TorrserverError>
+    suspend fun downloadServer(url: String): Result<String, TorrserverError>
 }

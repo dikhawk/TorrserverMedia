@@ -1,6 +1,11 @@
 package com.dik.torrentlist.di
 
+import com.dik.common.AppDispatchers
 import com.dik.torrserverapi.di.TorrserverApi
+import com.dik.torrserverapi.server.MagnetApi
+import com.dik.torrserverapi.server.TorrentApi
+import com.dik.torrserverapi.server.TorrserverCommands
+import com.dik.torrserverapi.server.TorrserverStuffApi
 import org.koin.core.Koin
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
@@ -16,6 +21,11 @@ object KoinModules {
     fun init(dependecies: TorrentListDependecies): Koin {
         koin.loadModules(listOf(module {
             single<TorrserverApi> { dependecies.torrServerApi() }
+            single<TorrserverStuffApi> { dependecies.torrServerApi().torrserverStuffApi() }
+            single<TorrentApi> { dependecies.torrServerApi().torrentApi() }
+            single<MagnetApi> { dependecies.torrServerApi().magnetApi() }
+            single<TorrserverCommands> { dependecies.torrServerApi().torrserverCommands() }
+            single<AppDispatchers> { dependecies.dispatchers() }
         }))
 
         return koin

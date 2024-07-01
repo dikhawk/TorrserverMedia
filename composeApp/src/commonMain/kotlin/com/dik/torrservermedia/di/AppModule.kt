@@ -13,10 +13,7 @@ import org.koin.dsl.module
 val appModule = module {
     single<AppDispatchers> {
         object : AppDispatchers {
-            override fun ioDispatcher(): CoroutineDispatcher {
-                TODO("Not yet implemented")
-            }
-
+            override fun ioDispatcher() = Dispatchers.Default
             override fun defaultDispatcher() = Dispatchers.Default
             override fun mainDispatcher() = Dispatchers.Main
 

@@ -3,46 +3,70 @@ package com.dik.torrserverapi.server
 import com.dik.common.Result
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.cmd.ServerCommands
+import com.dik.torrserverapi.model.Release
+import com.dik.torrserverapi.server.mappers.mapRelease
+import com.dik.torrserverapi.server.response.ReleaseResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
-import io.ktor.client.statement.request
-import org.koin.mp.KoinPlatformTools
+import io.ktor.http.HttpStatusCode
+
+const val LOCAL_TORRENT_SERVER = "http://127.0.0.1:8090"
 
 class TorrserverStuffApiImpl(
-    private val serverCommands: ServerCommands,
-    private val client: HttpClient
+    private val serverCommands: ServerCommands, private val client: HttpClient
 ) : TorrserverStuffApi {
+
     override suspend fun echo(): Result<String, TorrserverError> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun startServer(): Result<String, TorrserverError> {
         try {
-            serverCommands.startServer("TorrServer-linux-amd64", "/home/dik/TorrServer")
+            val request = client.get("$LOCAL_TORRENT_SERVER/echo")
 
-            return Result.Success("Server message not init")
+            val result = request.body<String>()
+
+            if (result.isNullOrEmpty()) return Result.Error(TorrserverError.Common.ResponseReturnNull)
+
+            return Result.Success(result)
         } catch (e: Exception) {
-            return Result.Error(TorrserverError.Common.Unknown(e.message ?: ""))
+            return Result.Error(TorrserverError.Common.Unknown(e.message ?: e.toString()))
         }
     }
 
     override suspend fun stopServer(): Result<Unit, TorrserverError> {
-        TODO("Not yet implemented")
-    }
+        try {
+            val request = client.get("$LOCAL_TORRENT_SERVER/shutdown")
 
-    override suspend fun checkUpdates(): Result<String, TorrserverError> {
-        val request = client.get("https://api.github.com/repos/YouROK/TorrServer/releases") {
-            parameter("per_page", 1)
+            if (request.status != HttpStatusCode.OK) {
+                return Result.Error(
+                    TorrserverError.Common.Unknown("Result return code: ${request.status.value}")
+                )
+            }
+
+            return Result.Success(Unit)
+        } catch (e: Exception) {
+            return Result.Error(TorrserverError.Common.Unknown(e.message ?: e.toString()))
         }
-
-        val response = request.body<String>()
-
-        return Result.Success(response)
     }
 
-    override suspend fun downloadServer(): Result<String, TorrserverError> {
+    override suspend fun checkLatestRelease(): Result<Release, TorrserverError> {
+        try {
+            val request = client.get("https://api.github.com/repos/YouROK/TorrServer/releases") {
+                parameter("per_page", 1)
+            }
+
+            val result = request.body<List<ReleaseResponse>>()
+
+            if (result.isNullOrEmpty()) return Result.Error(TorrserverError.Common.ResponseReturnNull)
+
+            return Result.Success(result.first().mapRelease())
+        } catch (e: Exception) {
+            return Result.Error(TorrserverError.Common.Unknown(e.message ?: e.toString()))
+        }
+    }
+
+    override suspend fun downloadServer(url: String): Result<String, TorrserverError> {
         TODO("Not yet implemented")
     }
 }
+
+

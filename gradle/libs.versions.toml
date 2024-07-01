@@ -7,7 +7,7 @@ kotlin = "2.0.0"
 compose = "1.6.10"
 agp = "8.2.2"
 androidx-activityCompose = "1.9.0"
-androidx-uiTest = "1.6.7"
+androidx-uiTest = "1.6.8"
 coil = "3.0.0-alpha06"
 kotlinx-coroutines = "1.9.0-RC"
 ktor = "3.0.0-wasm2"
@@ -17,6 +17,9 @@ koin = "3.6.0-wasm-alpha2"
 kstore = "0.8.0"
 decompose = "3.0.0"
 datetime = "0.6.0"
+essenty = "2.1.0"
+okio = "3.9.0"
+kotlinx-io-core = "0.4.0"
 
 [libraries]
 
@@ -30,6 +33,7 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
+kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io-core" }
 ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
@@ -47,6 +51,8 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 kstore = { module = "io.github.xxfast:kstore", version.ref = "kstore" }
 decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 decompose-compose-ext = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
+essenty-lifecycle-coroutines = { module = "com.arkivanov.essenty:lifecycle-coroutines", version.ref = "essenty" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 
 [plugins]
 
@@ -61,5 +67,5 @@ kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", vers
 [bundles]
 decompose = [
     "decompose-core",
-    "decompose-compose-ext"
+    "decompose-compose-ext",
 ]
