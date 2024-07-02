@@ -38,7 +38,7 @@ internal class DownloadFile(
 
                 while (!channel.isClosedForRead) {
                     val packet = channel.readRemaining(DEFAULT_BUFFER_SIZE.toLong())
-                    
+
                     while (!packet.isEmpty) {
                         val bytes = packet.readBytes()
                         val totalBytes = response.contentLength() ?: 0L
