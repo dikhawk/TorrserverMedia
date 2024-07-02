@@ -2,6 +2,7 @@ package com.dik.torrservermedia.di
 
 import org.koin.core.Koin
 import org.koin.core.context.startKoin
+import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.koinApplication
 
 object KoinModules {
@@ -16,8 +17,10 @@ object KoinModules {
         }.koin
     }
 
-    fun init(): Koin {
-        startKoin { }
+    fun init(config: KoinAppDeclaration? = null): Koin {
+        startKoin {
+            config?.invoke(this)
+        }
 
         return koin
     }

@@ -21,19 +21,20 @@ import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 internal val torrserverModule = module {
     factory<CmdRunner> { KmpCmdRunner }
-    single<MagnetApi> { MagnetApiImpl() }
-    single<TorrentApi> { TorrentApiImpl(get()) }
-    single<TorrserverStuffApi> { TorrserverStuffApiImpl(get(), get()) }
+    singleOf(::MagnetApiImpl).bind<MagnetApi>()
+    singleOf(::TorrentApiImpl).bind<TorrentApi>()
+    singleOf(::TorrserverStuffApiImpl).bind<TorrserverStuffApi>()
     single<ServerCommands> { KmpServerCommands }
-    single<TorrserverCommands> {
-        TorrserverCommandsImpl(get(), get(), get())
-    }
-    factory<DownloadFile> { DownloadFile(get(), get()) }
-    factory<InstallTorrserver> { InstallTorrserver(get(), get(), get()) }
+    singleOf(::TorrserverCommandsImpl).bind<TorrserverCommands>()
+    factoryOf(::DownloadFile).bind<DownloadFile>()
+    factoryOf(::InstallTorrserver).bind<InstallTorrserver>()
 }
 
 internal val httpModule = module {
