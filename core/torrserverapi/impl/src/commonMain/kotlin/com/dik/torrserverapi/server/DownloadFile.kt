@@ -35,8 +35,10 @@ internal class DownloadFile(
             val sink = FileSystem.SYSTEM.sink(pathFile).buffer()
             ktor.prepareGet(fileUrl).execute { response ->
                 val channel: ByteReadChannel = response.bodyAsChannel()
+
                 while (!channel.isClosedForRead) {
                     val packet = channel.readRemaining(DEFAULT_BUFFER_SIZE.toLong())
+                    
                     while (!packet.isEmpty) {
                         val bytes = packet.readBytes()
                         val totalBytes = response.contentLength() ?: 0L
