@@ -40,6 +40,7 @@ kotlin {
             implementation(projects.core.common)
             implementation(projects.core.uikit)
 
+            implementation(compose.components.resources)
             implementation(libs.bundles.decompose)
             implementation(libs.coil.network.ktor)
             implementation(libs.kotlinx.coroutines.core)
