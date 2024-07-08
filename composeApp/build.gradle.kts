@@ -37,9 +37,6 @@ kotlin {
 
     jvm()
 
-    linuxArm64()
-    linuxX64()
-
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
@@ -155,7 +152,7 @@ compose.desktop {
         mainClass = "MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Exe, TargetFormat.AppImage)
             packageName = "com.dik.torrservermedia.desktopApp"
             packageVersion = "1.0.0"
         }
