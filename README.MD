@@ -17,6 +17,8 @@ Run android simulator UI tests: `./gradlew :composeApp:pixel5Check`
 ### Desktop
 Run the desktop application: `./gradlew :composeApp:run`
 Run desktop UI tests: `./gradlew :composeApp:jvmTest`
+Compile Jar: `./gradlew packageUberJarForCurrentOS`
+Compile AppImage: `./gradlew packageAppImage`
 
 ### iOS
 To run the application on iPhone device/simulator:
@@ -26,5 +28,5 @@ Run iOS simulator UI tests: `./gradlew :composeApp:iosSimulatorArm64Test`
 
 ### Wasm Browser (Alpha)
 Run the browser application: `./gradlew :composeApp:wasmJsBrowserDevelopmentRun --continue`
-Run browser UI tests: `./gradlew :composeApp:wasmJsBrowserTest`
+Run browser UI tests: ```./gradlew :composeApp:wasmJsBrowserTest```
 
