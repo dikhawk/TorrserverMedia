@@ -1,12 +1,9 @@
 package com.dik.torrentlist.screens.main.list
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -23,11 +20,12 @@ internal fun TorrentListUi(component: TorrentListComponent, modifier: Modifier =
     val uiState = component.uiState.collectAsState()
 
     LazyVerticalGrid(
+        modifier = modifier,
         columns = GridCells.Adaptive(minSize = 180.dp)
     ) {
         items(uiState.value.torrents, key = { it.hash }) { torrent ->
 
-            Column(modifier = Modifier.padding(4.dp)) {
+            Column(modifier = Modifier.clickable { component.onClickItem(torrent) }.padding(4.dp)) {
                 ImageAsync(
                     modifier = Modifier.fillMaxSize(),
                     url = torrent.poster,

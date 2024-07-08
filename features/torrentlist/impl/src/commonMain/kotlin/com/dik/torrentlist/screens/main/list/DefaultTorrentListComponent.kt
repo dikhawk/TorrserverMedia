@@ -4,8 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
-import com.dik.common.ResultProgress
-import com.dik.torrserverapi.Torrent
+import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.TorrentApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -40,7 +39,7 @@ internal class DefaultTorrentListComponent(
     private fun torrntsList() {
         componentScope.launch {
             while (true) {
-                val torrentsListResult = torrentApi.getTorrentsList()
+                val torrentsListResult = torrentApi.getTorrents()
 
                 when(val result = torrentsListResult) {
                     is Result.Error -> _uiState.update { it.copy(error = result.error.toString()) }
@@ -49,7 +48,7 @@ internal class DefaultTorrentListComponent(
                         _uiState.value.torrents.addAll(result.data)
                     }
                 }
-                delay(2000)
+                delay(3000)
             }
         }
     }

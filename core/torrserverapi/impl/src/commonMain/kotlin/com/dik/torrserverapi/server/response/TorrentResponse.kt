@@ -9,7 +9,24 @@ data class TorrentResponse(
     @SerialName("title") val title: String? = "",
     @SerialName("poster") val poster: String? = "",
     @SerialName("name") val name: String? = "",
-    @SerialName("file_stats") val fileStats: List<ContentFileResponse> = emptyList()
+    @SerialName("data") val files: String? = "",
+    @SerialName("stat_string") val torrentStatus: String? = "",
+    @SerialName("loaded_size") val loadedSize: Long? = 0L,
+    @SerialName("torrent_size") val torrentSize: Long? = 0L,
+    @SerialName("preloaded_bytes") val preloadedBytes: Long? = 0L,
+    @SerialName("download_speed") val downloadSpeed: Double? = 0.0,
+    @SerialName("upload_speed") val uploadSpeed: Double? = 0.0,
+    @SerialName("total_peers") val totalPeers: Int? = 0,
+    @SerialName("active_peers") val activePeers: Int? = 0,
+    @SerialName("half_open_peers") val halfOpenPeers: Int? = 0,
+    @SerialName("bytes_written") val bytesWritten: Long? = 0L,
+    @SerialName("bytes_read") val bytesRead: Long? = 0L,
+    @SerialName("bytes_read_data") val bytesReadData: Long? = 0L,
+    @SerialName("bytes_read_useful_data") val bytesReadUsefulData: Long? = 0L,
+    @SerialName("chunks_read") val chunksRead: Int? = 0,
+    @SerialName("chunks_read_useful") val chunksReadUseful: Int? = 0,
+    @SerialName("chunks_read_wasted") val chunksReadWasted: Int? = 0,
+    @SerialName("pieces_dirtied_good") val piecesDirtiedGood: Int? = 0
 )
 
 @Serializable
@@ -18,4 +35,5 @@ data class ContentFileResponse(
     @SerialName("path") val path: String? = "",
     @SerialName("length") val length: Long? = 0
 )
+
 

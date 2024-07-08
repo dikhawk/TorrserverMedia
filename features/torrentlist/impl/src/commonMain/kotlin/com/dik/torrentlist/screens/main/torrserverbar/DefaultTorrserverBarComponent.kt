@@ -9,7 +9,6 @@ import com.dik.torrentlist.di.inject
 import com.dik.torrserverapi.server.TorrserverCommands
 import com.dik.torrserverapi.server.TorrserverStuffApi
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -18,16 +17,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class DefaultTorrserverBarComponent(
     context: ComponentContext,
     private val torrserverStuffApi: TorrserverStuffApi = inject(),
     private val torrserverCommands: TorrserverCommands = inject(),
-    private val dispatcher: AppDispatchers = inject()
+    private val dispatchers: AppDispatchers = inject()
 ) : TorrserverBarComponent, ComponentContext by context {
 
-    private val componentScope = CoroutineScope(dispatcher.mainDispatcher() + SupervisorJob())
+    private val componentScope = CoroutineScope(dispatchers.mainDispatcher() + SupervisorJob())
     private val _uiState = MutableStateFlow(TorrserverBarState())
     override val uiState: StateFlow<TorrserverBarState> = _uiState.asStateFlow()
 
@@ -39,7 +37,7 @@ class DefaultTorrserverBarComponent(
     }
 
     override fun onClickInstallServer() {
-        componentScope.launch(dispatcher.defaultDispatcher()) {
+        componentScope.launch(dispatchers.defaultDispatcher()) {
             torrserverCommands.installServer().collect { restult ->
                 when (val res = restult) {
                     is ResultProgress.Loading -> _uiState.update {
@@ -59,19 +57,19 @@ class DefaultTorrserverBarComponent(
     }
 
     override fun onClickRestartServer() {
-        componentScope.launch(dispatcher.defaultDispatcher()) {
+        componentScope.launch(dispatchers.defaultDispatcher()) {
             torrserverCommands.startServer()
         }
     }
 
     override fun onStopServer() {
-       componentScope.launch(dispatcher.defaultDispatcher()) {
+       componentScope.launch(dispatchers.defaultDispatcher()) {
            torrserverCommands.stopServer()
        }
     }
 
     private fun serverStatus() {
-        componentScope.launch(dispatcher.defaultDispatcher()) {
+        componentScope.launch(dispatchers.defaultDispatcher()) {
             while (true) {
                 val result = torrserverStuffApi.echo()
                 when(val res = result) {

@@ -2,7 +2,7 @@ package com.dik.torrentlist.screens.main.list
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
-import com.dik.torrserverapi.Torrent
+import com.dik.torrserverapi.model.Torrent
 import kotlinx.coroutines.flow.StateFlow
 
 interface TorrentListComponent {

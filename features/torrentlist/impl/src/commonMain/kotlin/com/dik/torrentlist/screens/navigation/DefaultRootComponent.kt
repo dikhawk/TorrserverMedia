@@ -12,7 +12,7 @@ import com.dik.torrentlist.screens.details.DetailsComponent
 import com.dik.torrentlist.screens.main.DefaultMainComponent
 import com.dik.torrentlist.screens.main.MainComponent
 
-class DefaultRootComponent(componentContext: ComponentContext) : RootComponent,
+internal class DefaultRootComponent(componentContext: ComponentContext) : RootComponent,
     ComponentContext by componentContext {
 
     private val navigation = StackNavigation<ChildConfig>()

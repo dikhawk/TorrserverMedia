@@ -2,8 +2,9 @@ package com.dik.torrserverapi.server
 
 import com.dik.common.Result
 import com.dik.torrserverapi.LOCAL_TORRENT_SERVER
-import com.dik.torrserverapi.Torrent
+import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.TorrserverError
+import com.dik.torrserverapi.server.mappers.mapToTorrent
 import com.dik.torrserverapi.server.mappers.mapToTorrentList
 import com.dik.torrserverapi.server.response.TorrentResponse
 import io.ktor.client.HttpClient
@@ -17,9 +18,10 @@ import kotlinx.serialization.json.Json
 class TorrentApiImpl(
     private val client: HttpClient
 ) : TorrentApi {
-    override suspend fun getTorrentsList(): Result<List<Torrent>, TorrserverError> {
+
+    override suspend fun getTorrents(): Result<List<Torrent>, TorrserverError> {
         try {
-            val body = Body(action = "list")
+            val body = Body(action = TorrentsAction.LIST.asString)
             val request = client.post("$LOCAL_TORRENT_SERVER/torrents") {
                 setBody(Json.encodeToString(Body.serializer(), body))
                 contentType(ContentType.Application.Json)
@@ -29,6 +31,22 @@ class TorrentApiImpl(
 
             return Result.Success(resoponse.mapToTorrentList())
         } catch (e: Exception) {
+            return Result.Error(TorrserverError.Common.Unknown(e.toString()))
+        }
+    }
+
+    override suspend fun getTorrent(hash: String): Result<Torrent, TorrserverError> {
+        try {
+            val body  = Body(action  = TorrentsAction.GET.asString, hash = hash)
+            val request = client.post("$LOCAL_TORRENT_SERVER/torrents") {
+                setBody(Json.encodeToString(Body.serializer(), body))
+                contentType(ContentType.Application.Json)
+            }
+
+            val response  = request.body<TorrentResponse>()
+
+            return Result.Success(response.mapToTorrent())
+        } catch  (e: Exception)  {
             return Result.Error(TorrserverError.Common.Unknown(e.toString()))
         }
     }

@@ -7,7 +7,7 @@ import com.dik.torrentlist.screens.details.DetailsUi
 import com.dik.torrentlist.screens.main.MainUi
 
 @Composable
-fun RootUi(component: RootComponent, modifier: Modifier = Modifier) {
+internal fun RootUi(component: RootComponent, modifier: Modifier = Modifier) {
     Children(
         stack = component.childStack,
         modifier = modifier

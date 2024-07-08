@@ -1,7 +1,7 @@
 package com.dik.torrserverapi.di
 
-import com.dik.torrserverapi.cmd.CmdRunner
-import com.dik.torrserverapi.cmd.KmpCmdRunner
+import com.dik.common.cmd.CmdRunner
+import com.dik.common.cmd.KmpCmdRunner
 import com.dik.torrserverapi.cmd.KmpServerCommands
 import com.dik.torrserverapi.cmd.ServerCommands
 import com.dik.torrserverapi.http.createHttpClient

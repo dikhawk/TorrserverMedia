@@ -11,7 +11,7 @@ import androidx.compose.ui.window.rememberWindowState
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.dik.common.utils.platformName
-import com.dik.torrserverapi.cmd.KmpCmdRunner
+import com.dik.common.cmd.KmpCmdRunner
 import java.awt.Dimension
 import com.dik.torrservermedia.RootUi
 import com.dik.torrservermedia.di.KoinModules

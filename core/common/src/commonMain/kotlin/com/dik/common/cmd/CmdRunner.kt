@@ -1,4 +1,4 @@
-package com.dik.torrserverapi.cmd
+package com.dik.common.cmd
 
 interface CmdRunner {
     fun runCmdCommand(command: String)

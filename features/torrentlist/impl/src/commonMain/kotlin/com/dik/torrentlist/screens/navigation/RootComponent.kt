@@ -5,7 +5,7 @@ import com.arkivanov.decompose.value.Value
 import com.dik.torrentlist.screens.details.DetailsComponent
 import com.dik.torrentlist.screens.main.MainComponent
 
-interface RootComponent {
+internal interface RootComponent {
 
     val childStack: Value<ChildStack<*, Child>>
 

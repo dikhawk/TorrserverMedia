@@ -1,4 +1,4 @@
-package com.dik.torrserverapi.cmd
+package com.dik.common.cmd
 
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -17,12 +17,9 @@ actual object KmpCmdRunner : CmdRunner {
             line = reader.readLine()
         }
         runnedProcesses.add(process)
-
-//        process.waitFor()
     }
 
     override fun stopRunnedProcesses() {
         runnedProcesses.forEach {it.destroy() }
     }
-
 }
