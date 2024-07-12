@@ -19,7 +19,6 @@ fun TorrserverBarUi(component: TorrserverBarComponent, modifier: Modifier = Modi
     val uiState = component.uiState.collectAsState()
 
     Column {
-        Text("TorrserverBar")
         Row(verticalAlignment = Alignment.CenterVertically) {
             Button(
                 onClick = { component.onClickInstallServer() },

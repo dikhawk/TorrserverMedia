@@ -10,5 +10,7 @@ interface TorrentApi {
 
     suspend fun getTorrent(hash: String): Result<Torrent, TorrserverError>
 
-    suspend fun addTorrent(torrent: Torrent): Result<Unit, TorrserverError>
+    suspend fun addTorrent(filePath: String): Result<Torrent, TorrserverError>
+
+    suspend fun upateTorrent(hash: String): Result<Torrent, TorrserverError>
 }

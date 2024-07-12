@@ -7,6 +7,7 @@ data class Torrent(
     val title: String,
     val poster: String,
     val name: String,
+    val size: Long,
     val files: List<ContentFile>,
     val statistics: PlayStatistics? = null,
 )

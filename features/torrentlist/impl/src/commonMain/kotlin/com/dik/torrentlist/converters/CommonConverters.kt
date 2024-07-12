@@ -8,9 +8,9 @@ fun Double.bytesToBits(): String {
     val gigabits = megabits / 1024.0
 
     return when {
-        gigabits >= 1.0 -> "${gigabits.round(2)} Gb"
-        megabits >= 1.0 -> "${megabits.round(2)} Mb"
-        else -> "${kilobits.round(2)} Kb"
+        gigabits >= 1.0 -> "${gigabits.round(2)} Gb/s"
+        megabits >= 1.0 -> "${megabits.round(2)} Mb/s"
+        else -> "${kilobits.round(2)} Kb/s"
     }
 }
 

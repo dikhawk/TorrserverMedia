@@ -21,6 +21,7 @@ essenty = "2.1.0"
 okio = "3.9.0"
 kotlinx-io-core = "0.4.0"
 androidx-compose-windowSizeClass = "1.2.1"
+filekit = "0.6.2"
 
 [libraries]
 
@@ -48,6 +49,7 @@ ktor-client-json = { module = "io.ktor:ktor-client-json", version.ref = "ktor" }
 ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 multiplatformSettings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
@@ -56,6 +58,8 @@ decompose-core = { module = "com.arkivanov.decompose:decompose", version.ref = "
 decompose-compose-ext = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
 essenty-lifecycle-coroutines = { module = "com.arkivanov.essenty:lifecycle-coroutines", version.ref = "essenty" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit" }
+filekit-compose = { module = "io.github.vinceglb:filekit-compose", version.ref = "filekit" }
 
 [plugins]
 

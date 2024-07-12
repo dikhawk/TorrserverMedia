@@ -4,6 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
+import com.dik.common.cmd.CmdRunner
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.TorrentApi
 import kotlinx.coroutines.CoroutineScope

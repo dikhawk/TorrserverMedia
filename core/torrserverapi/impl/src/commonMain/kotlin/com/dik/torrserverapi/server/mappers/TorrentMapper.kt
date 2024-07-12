@@ -16,6 +16,7 @@ fun TorrentResponse.mapToTorrent(): Torrent = Torrent(
     poster = this.poster ?: "",
     name = this.name ?: "",
     files = this.files.toContentFileList(this.hash ?: ""),
+    size = this.torrentSize ?: 0L,
     statistics = createPlayStatistics(this),
 )
 
@@ -60,7 +61,6 @@ private fun createPlayStatistics(torrent: TorrentResponse): PlayStatistics? {
     return PlayStatistics(
         torrentStatus = torrent.torrentStatus,
         loadedSize = torrent.loadedSize ?: 0L,
-        torrentSize = torrent.torrentSize ?: 0L,
         preloadedBytes = torrent.preloadedBytes ?: 0L,
         downloadSpeed = torrent.downloadSpeed ?: 0.0,
         uploadSpeed = torrent.uploadSpeed ?: 0.0,

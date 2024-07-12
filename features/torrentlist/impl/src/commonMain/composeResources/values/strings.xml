@@ -1,0 +1,9 @@
+<resources>
+    <string name="main_app_bar_title">Выберите торрент</string>
+    <string name="main_detiaisl_torrent_size">Размер:</string>
+    <string name="main_statistics_torrent_status">Статус:</string>
+    <string name="main_statistics_download_speed">Загрузка:</string>
+    <string name="main_statistics_active_peers">Активные пиры:</string>
+    <string name="main_content_files_files_list">Список файлов:</string>
+    <string name="main_torrent_list_filese_count">Файлы:</string>
+</resources>

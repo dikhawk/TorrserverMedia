@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.arkivanov.decompose.defaultComponentContext
 import com.dik.torrservermedia.di.KoinModules
+import com.dik.torrservermedia.di.inject
 import com.dik.torrservermedia.nanigation.DefaultRootComponent
 import org.koin.mp.KoinPlatform
 
@@ -31,20 +32,10 @@ class AppActivity : ComponentActivity() {
 
         val root = DefaultRootComponent(
             componentContext = defaultComponentContext(),
-            featureTorrentList = KoinPlatform.getKoin().get()
+            featureTorrentList = inject()
         )
 
         enableEdgeToEdge()
-        setContent { App() }
+        setContent { RootUi(component = root) }
     }
-}
-
-internal actual fun openUrl(url: String?) {
-    val uri = url?.let { Uri.parse(it) } ?: return
-    val intent = Intent().apply {
-        action = Intent.ACTION_VIEW
-        data = uri
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    }
-    AndroidApp.INSTANCE.startActivity(intent)
 }

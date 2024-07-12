@@ -1,6 +1,7 @@
 package com.dik.torrentlist.screens.details.torrentstatistics
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
 import com.dik.torrentlist.converters.bytesToBits
@@ -8,9 +9,11 @@ import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.TorrentApi
+import io.ktor.util.date.GMTDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,6 +31,13 @@ class DefaultTorrentStatisticsComponent(
     override val uiState: StateFlow<TorrentStatisticsState> = _uiState.asStateFlow()
     private val componentScope = CoroutineScope(dispatchers.mainDispatcher() + SupervisorJob())
     private var showStatisticsJob: Job? = null
+
+    init {
+        lifecycle.doOnDestroy {
+            showStatisticsJob?.cancel()
+            componentScope.cancel()
+        }
+    }
 
     override fun showStatistics(hash: String) {
         showStatisticsJob?.cancel()
@@ -48,13 +58,13 @@ class DefaultTorrentStatisticsComponent(
     private fun upddateUiState(torrent: Torrent) {
         val statistics = torrent.statistics
 
-        if  (statistics == null) return
+        if (statistics == null) return
 
         _uiState.update {
             it.copy(
                 torrentStatus = statistics.torrentStatus,
                 loadedSize = statistics.loadedSize.toReadableSize(),
-                torrentSize = statistics.torrentSize.toReadableSize(),
+                torrentSize = torrent.size.toReadableSize(),
                 preloadedBytes = statistics.preloadedBytes.toReadableSize(),
                 downloadSpeed = statistics.downloadSpeed.bytesToBits(),
                 uploadSpeed = statistics.uploadSpeed.bytesToBits(),
