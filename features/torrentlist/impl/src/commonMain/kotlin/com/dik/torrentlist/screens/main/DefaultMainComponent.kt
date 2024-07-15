@@ -13,6 +13,7 @@ import com.dik.torrentlist.screens.main.list.DefaultTorrentListComponent
 import com.dik.torrentlist.screens.main.list.TorrentListComponent
 import com.dik.torrentlist.screens.main.torrserverbar.DefaultTorrserverBarComponent
 import com.dik.torrentlist.screens.main.torrserverbar.TorrserverBarComponent
+import com.dik.torrserverapi.server.MagnetApi
 import com.dik.torrserverapi.server.TorrentApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
 internal class DefaultMainComponent(
     componentContext: ComponentContext,
     private val torrentApi: TorrentApi = inject(),
+    private val magnetApi: MagnetApi = inject(),
     private val dispatchers: AppDispatchers = inject(),
     private val cmdRunner: CmdRunner = inject(),
 ) : MainComponent, ComponentContext by componentContext {
@@ -35,7 +37,8 @@ internal class DefaultMainComponent(
     override val mainAppBarComponent: MainAppBarComponent = DefaultMainAppBarComponent(
         context = childContext("main_app_bar"),
         dispatchers = dispatchers,
-        torrentApi = torrentApi
+        torrentApi = torrentApi,
+        magnetApi = magnetApi
     )
 
     override val torrserverBarComponent: TorrserverBarComponent =

@@ -6,4 +6,8 @@
     <string name="main_statistics_active_peers">Активные пиры:</string>
     <string name="main_content_files_files_list">Список файлов:</string>
     <string name="main_torrent_list_filese_count">Файлы:</string>
+    <string name="main_add_dialog_button_cancel">Oтмена</string>
+    <string name="main_add_dialog_button_ok">Ок</string>
+    <string name="main_add_dialog_placeholder_past_link">Вставьте magnet ссылку</string>
+    <string name="main_add_dialog_error_invalid_magnet">Неккоректная magnet ссылка</string>
 </resources>
