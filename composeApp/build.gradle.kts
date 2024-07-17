@@ -62,6 +62,8 @@ kotlin {
             implementation(projects.features.torrentlist.impl)
             implementation(projects.core.torrserverapi.api)
             implementation(projects.core.torrserverapi.impl)
+            implementation(projects.features.settings.api)
+            implementation(projects.features.settings.impl)
             implementation(projects.core.uikit)
 
             implementation(compose.runtime)

@@ -1,8 +1,6 @@
 package com.dik.torrservermedia
 
 import android.app.Application
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,7 +9,6 @@ import com.arkivanov.decompose.defaultComponentContext
 import com.dik.torrservermedia.di.KoinModules
 import com.dik.torrservermedia.di.inject
 import com.dik.torrservermedia.nanigation.DefaultRootComponent
-import org.koin.mp.KoinPlatform
 
 class AndroidApp : Application() {
     companion object {
@@ -32,7 +29,7 @@ class AppActivity : ComponentActivity() {
 
         val root = DefaultRootComponent(
             componentContext = defaultComponentContext(),
-            featureTorrentList = inject()
+            featureTorrentListApi = inject()
         )
 
         enableEdgeToEdge()

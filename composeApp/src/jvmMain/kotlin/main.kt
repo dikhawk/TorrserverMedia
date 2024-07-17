@@ -16,6 +16,9 @@ import com.dik.torrservermedia.di.inject
 import com.dik.torrservermedia.nanigation.DefaultRootComponent
 import com.dik.torrservermedia.utils.runOnUiThread
 import com.dik.uikit.theme.AppTheme
+import org.jetbrains.compose.resources.stringResource
+import torrservermedia.composeapp.generated.resources.Res
+import torrservermedia.composeapp.generated.resources.app_name
 import java.awt.Dimension
 
 
@@ -25,13 +28,13 @@ fun main() {
     val root = runOnUiThread {
         DefaultRootComponent(
             componentContext = DefaultComponentContext(lifecycle = lifecycle),
-            featureTorrentList = inject()
+            featureTorrentListApi = inject()
         )
     }
 
     application {
         Window(
-            title = "TorrServerMedia",
+            title = stringResource(Res.string.app_name),
             state = rememberWindowState(width = 1000.dp, height = 600.dp),
             onCloseRequest = ::exitApplication,
         ) {

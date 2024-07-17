@@ -1,22 +1,27 @@
 package com.dik.torrservermedia.di
 
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import com.arkivanov.decompose.ComponentContext
 import com.dik.common.AppDispatchers
-import com.dik.torrentlist.TorrentListEntry
-import com.dik.torrentlist.di.TorrentListComponent
+import com.dik.settings.SettingsFeatureApi
+import com.dik.settings.di.SettingsComponentHolder
+import com.dik.settings.di.SettingsDependecies
+import com.dik.torrentlist.TorrentListFeatureApi
+import com.dik.torrentlist.di.TorrentListComponentHolder
 import com.dik.torrentlist.di.TorrentListDependecies
 import com.dik.torrserverapi.di.TorrserverApi
 import org.koin.dsl.module
 
 val featuresModule = module {
-    factory<TorrentListEntry> {
-        TorrentListComponent.initAndGet(
-            object : TorrentListDependecies {
-                override fun torrServerApi(): TorrserverApi = get()
-                override fun dispatchers(): AppDispatchers = get()
-            }
-        ).start()
+    factory<TorrentListFeatureApi> {
+        TorrentListComponentHolder.init(object : TorrentListDependecies {
+            override fun torrServerApi(): TorrserverApi = get()
+            override fun dispatchers(): AppDispatchers = get()
+            override fun settingsFeatureApi(): SettingsFeatureApi = get()
+        })
+        TorrentListComponentHolder.get()
+    }
+
+    factory<SettingsFeatureApi> {
+        SettingsComponentHolder.init(object : SettingsDependecies {})
+        SettingsComponentHolder.get()
     }
 }
