@@ -1,5 +1,7 @@
 package com.dik.torrentlist.screens.navigation
 
+import androidx.compose.runtime.Composable
+import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
 import com.dik.torrentlist.screens.details.DetailsComponent
@@ -16,5 +18,6 @@ internal interface RootComponent {
     sealed interface Child {
         class Main(val component: MainComponent) : Child
         class Details(val component: DetailsComponent) : Child
+        class Settings(val composable: @Composable () -> Unit) : Child
     }
 }

@@ -21,12 +21,13 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 internal class DefaultMainComponent(
-    componentContext: ComponentContext,
+    context: ComponentContext,
     private val torrentApi: TorrentApi = inject(),
     private val magnetApi: MagnetApi = inject(),
     private val dispatchers: AppDispatchers = inject(),
     private val cmdRunner: CmdRunner = inject(),
-) : MainComponent, ComponentContext by componentContext {
+    private val openSettingsScreen: () -> Unit = {},
+) : MainComponent, ComponentContext by context {
 
     private val componentScope = CoroutineScope(dispatchers.mainDispatcher() + SupervisorJob())
 
@@ -38,7 +39,8 @@ internal class DefaultMainComponent(
         context = childContext("main_app_bar"),
         dispatchers = dispatchers,
         torrentApi = torrentApi,
-        magnetApi = magnetApi
+        magnetApi = magnetApi,
+        openSettingsScreen = openSettingsScreen
     )
 
     override val torrserverBarComponent: TorrserverBarComponent =

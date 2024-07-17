@@ -3,6 +3,7 @@ package com.dik.torrentlist.di
 import com.dik.common.AppDispatchers
 import com.dik.common.cmd.CmdRunner
 import com.dik.common.cmd.KmpCmdRunner
+import com.dik.settings.SettingsFeatureApi
 import com.dik.torrserverapi.di.TorrserverApi
 import com.dik.torrserverapi.server.MagnetApi
 import com.dik.torrserverapi.server.TorrentApi
@@ -29,6 +30,7 @@ object KoinModules {
             single<TorrserverCommands> { dependecies.torrServerApi().torrserverCommands() }
             single<AppDispatchers> { dependecies.dispatchers() }
             factory<CmdRunner> { KmpCmdRunner }
+            factory<SettingsFeatureApi> { dependecies.settingsFeatureApi() }
         }))
 
         return koin

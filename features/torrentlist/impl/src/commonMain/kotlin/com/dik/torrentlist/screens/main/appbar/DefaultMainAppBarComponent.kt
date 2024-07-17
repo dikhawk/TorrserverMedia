@@ -26,7 +26,8 @@ internal class DefaultMainAppBarComponent(
     context: ComponentContext,
     private val dispatchers: AppDispatchers,
     private val torrentApi: TorrentApi,
-    private val magnetApi: MagnetApi
+    private val magnetApi: MagnetApi,
+    private val openSettingsScreen: () -> Unit,
 ) : MainAppBarComponent, ComponentContext by context {
 
     private val componentScope = CoroutineScope(dispatchers.mainDispatcher() + SupervisorJob())
@@ -81,6 +82,10 @@ internal class DefaultMainAppBarComponent(
 
     override fun clearLink() {
         _uiState.update { it.copy(link = "", errorLink = null) }
+    }
+
+    override fun openSettingsScreen() {
+        openSettingsScreen.invoke()
     }
 
     private fun isValidMagnetLink(magnetLink: String): Boolean {

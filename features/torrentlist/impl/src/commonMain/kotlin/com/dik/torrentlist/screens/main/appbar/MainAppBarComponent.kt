@@ -14,6 +14,7 @@ internal interface MainAppBarComponent {
     fun dismissDialog()
     fun onLinkChaged(value: String)
     fun clearLink()
+    fun openSettingsScreen()
 }
 
 @Stable

@@ -4,7 +4,7 @@ import com.dik.torrentlist.TorrentListEntry
 import com.dik.torrentlist.TorrentListEntryImpl
 import com.dik.torrentlist.TorrentListFeatureApi
 
-abstract class TorrentListComponent : TorrentListFeatureApi {
+internal abstract class TorrentListComponent : TorrentListFeatureApi {
     companion object {
         fun initAndGet(dependecies: TorrentListDependecies): TorrentListComponent {
 

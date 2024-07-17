@@ -10,4 +10,7 @@ sealed interface ChildConfig {
 
     @Serializable
     data class Details(val torrentUrl: String) : ChildConfig
+
+    @Serializable
+    object Settings : ChildConfig
 }

@@ -41,6 +41,7 @@ kotlin {
             implementation(projects.core.moduleinjector)
             implementation(projects.features.torrentlist.api)
             implementation(projects.core.torrserverapi.api)
+            implementation(projects.features.settings.api)
             implementation(projects.core.common)
             implementation(projects.core.uikit)
 

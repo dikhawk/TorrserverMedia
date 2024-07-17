@@ -10,6 +10,7 @@ import org.jetbrains.compose.resources.vectorResource
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.ic_add_24
 import torrservermedia.features.torrentlist.impl.generated.resources.ic_link_24
+import torrservermedia.features.torrentlist.impl.generated.resources.ic_settings_24
 
 @Composable
 internal fun MainAppBarUi(component: MainAppBarComponent, modifier: Modifier = Modifier) {
@@ -24,6 +25,11 @@ internal fun MainAppBarUi(component: MainAppBarComponent, modifier: Modifier = M
         AppActionButton(
             onClick = { component.openAddLinkDialog() },
             imageVector = vectorResource(Res.drawable.ic_link_24),
+        )
+
+        AppActionButton(
+            onClick = { component.openSettingsScreen() },
+            imageVector = vectorResource(Res.drawable.ic_settings_24),
         )
     })
 
