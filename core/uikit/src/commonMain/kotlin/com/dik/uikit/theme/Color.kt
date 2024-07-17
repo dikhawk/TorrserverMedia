@@ -2,6 +2,8 @@ package com.dik.uikit.theme
 
 import androidx.compose.ui.graphics.Color
 
+//https://material-foundation.github.io/material-theme-builder/
+
 internal val primaryLight = Color(0xFF8D495A)
 internal val onPrimaryLight = Color(0xFFFFFFFF)
 internal val primaryContainerLight = Color(0xFFFFD9DF)
