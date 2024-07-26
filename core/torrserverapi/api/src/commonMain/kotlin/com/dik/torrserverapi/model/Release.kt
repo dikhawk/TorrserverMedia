@@ -1,6 +1,6 @@
 package com.dik.torrserverapi.model
 
-class Release(
+data class Release(
     val url: String,
     val tagName: String,
     val publishedAt: String,

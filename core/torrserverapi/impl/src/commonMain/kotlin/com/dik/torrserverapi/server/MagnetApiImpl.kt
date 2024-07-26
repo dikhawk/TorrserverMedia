@@ -6,6 +6,7 @@ import com.dik.torrserverapi.LOCAL_TORRENT_SERVER
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.mappers.mapToTorrent
+import com.dik.torrserverapi.server.model.Body
 import com.dik.torrserverapi.server.response.TorrentResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body

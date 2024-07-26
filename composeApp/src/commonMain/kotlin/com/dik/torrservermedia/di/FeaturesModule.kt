@@ -1,5 +1,6 @@
 package com.dik.torrservermedia.di
 
+import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.settings.SettingsFeatureApi
 import com.dik.settings.di.SettingsComponentHolder
@@ -21,7 +22,11 @@ val featuresModule = module {
     }
 
     factory<SettingsFeatureApi> {
-        SettingsComponentHolder.init(object : SettingsDependecies {})
+        SettingsComponentHolder.init(object : SettingsDependecies {
+            override fun torrServerApi(): TorrserverApi = get()
+            override fun dispatchers(): AppDispatchers = get()
+            override fun appSettings(): AppSettings = get()
+        })
         SettingsComponentHolder.get()
     }
 }

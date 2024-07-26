@@ -1,7 +1,6 @@
 package com.dik.torrserverapi.di
 
 import com.dik.common.AppDispatchers
-import com.dik.torrserverapi.server.InstallTorrserver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.Koin

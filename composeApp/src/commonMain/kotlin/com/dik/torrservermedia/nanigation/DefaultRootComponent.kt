@@ -6,12 +6,15 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.value.Value
+import com.dik.settings.SettingsFeatureApi
 import com.dik.torrentlist.TorrentListFeatureApi
 import com.dik.torrservermedia.nanigation.RootComponent.Child
 import kotlinx.serialization.Serializable
 
 class DefaultRootComponent(
-    componentContext: ComponentContext, private val featureTorrentListApi: TorrentListFeatureApi
+    componentContext: ComponentContext,
+    private val featureTorrentListApi: TorrentListFeatureApi,
+    private val featureSettingsApi: SettingsFeatureApi
 ) : RootComponent, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<ChildConfig>()
@@ -31,8 +34,13 @@ class DefaultRootComponent(
     private fun childFactory(
         config: ChildConfig, componentContext: ComponentContext
     ): RootComponent.Child = when (config) {
-        is ChildConfig.TorrentList -> Child.TorrentList(
+        ChildConfig.TorrentList -> Child.TorrentList(
             composable = featureTorrentListApi.start().composableMain(componentContext)
+        )
+
+        ChildConfig.Settings -> Child.Settings(
+            composable = featureSettingsApi.start()
+                .composableMain(context = componentContext, onFinish = ::onBackClicked)
         )
     }
 }
@@ -41,4 +49,7 @@ class DefaultRootComponent(
 private sealed interface ChildConfig {
     @Serializable
     object TorrentList : ChildConfig
+
+    @Serializable
+    object Settings : ChildConfig
 }

@@ -9,6 +9,8 @@ import com.dik.torrserverapi.server.DownloadFile
 import com.dik.torrserverapi.server.InstallTorrserver
 import com.dik.torrserverapi.server.MagnetApi
 import com.dik.torrserverapi.server.MagnetApiImpl
+import com.dik.torrserverapi.server.ServerSettingsApi
+import com.dik.torrserverapi.server.ServerSettingsApiImpl
 import com.dik.torrserverapi.server.TorrentApi
 import com.dik.torrserverapi.server.TorrentApiImpl
 import com.dik.torrserverapi.server.TorrserverCommands
@@ -33,6 +35,7 @@ internal val torrserverModule = module {
     singleOf(::TorrserverStuffApiImpl).bind<TorrserverStuffApi>()
     single<ServerCommands> { KmpServerCommands }
     singleOf(::TorrserverCommandsImpl).bind<TorrserverCommands>()
+    singleOf(::ServerSettingsApiImpl).bind<ServerSettingsApi>()
     factoryOf(::DownloadFile).bind<DownloadFile>()
     factoryOf(::InstallTorrserver).bind<InstallTorrserver>()
 }

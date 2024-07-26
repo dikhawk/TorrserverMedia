@@ -7,6 +7,7 @@ import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.mappers.mapToTorrent
 import com.dik.torrserverapi.server.mappers.mapToTorrentList
+import com.dik.torrserverapi.server.model.Body
 import com.dik.torrserverapi.server.response.TorrentResponse
 import com.dik.torrserverapi.utils.fileToByteArray
 import io.ktor.client.HttpClient

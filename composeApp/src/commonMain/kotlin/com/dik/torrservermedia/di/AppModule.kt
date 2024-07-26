@@ -16,7 +16,6 @@ val appModule = module {
             override fun ioDispatcher() = Dispatchers.Default
             override fun defaultDispatcher() = Dispatchers.Default
             override fun mainDispatcher() = Dispatchers.Main
-
         }
     }
 }

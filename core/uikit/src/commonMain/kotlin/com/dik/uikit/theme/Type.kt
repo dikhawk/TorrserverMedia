@@ -8,18 +8,22 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.Font
-import torrservermedia.core.uikit.generated.resources.OpenSans_Bold
-import torrservermedia.core.uikit.generated.resources.OpenSans_BoldItalic
-import torrservermedia.core.uikit.generated.resources.OpenSans_Italic
-import torrservermedia.core.uikit.generated.resources.OpenSans_Regular
 import torrservermedia.core.uikit.generated.resources.Res
+import torrservermedia.core.uikit.generated.resources.opensans_bold
+import torrservermedia.core.uikit.generated.resources.opensans_bolditalic
+import torrservermedia.core.uikit.generated.resources.opensans_italic
+import torrservermedia.core.uikit.generated.resources.opensans_regular
 
 data class AppTypography(
     val toolbar: TextStyle,
     val normalText: TextStyle,
     val normalBoldText: TextStyle,
     val normalItalicText: TextStyle,
-    val normalBoldItalicText: TextStyle
+    val normalBoldItalicText: TextStyle,
+    val smallText: TextStyle,
+    val smallBoldText: TextStyle,
+    val smallItalicText: TextStyle,
+    val smallBoldItalicText: TextStyle
 )
 
 val LocalAppTypography =
@@ -27,10 +31,10 @@ val LocalAppTypography =
 
 @Composable
 private fun AppFontFamily() = FontFamily(
-    Font(Res.font.OpenSans_Regular, FontWeight.Normal, FontStyle.Normal),
-    Font(Res.font.OpenSans_Bold, FontWeight.Bold, FontStyle.Normal),
-    Font(Res.font.OpenSans_Italic, FontWeight.Normal, FontStyle.Italic),
-    Font(Res.font.OpenSans_BoldItalic, FontWeight.Bold, FontStyle.Italic),
+    Font(Res.font.opensans_regular, FontWeight.Normal, FontStyle.Normal),
+    Font(Res.font.opensans_bold, FontWeight.Bold, FontStyle.Normal),
+    Font(Res.font.opensans_italic, FontWeight.Normal, FontStyle.Italic),
+    Font(Res.font.opensans_bolditalic, FontWeight.Bold, FontStyle.Italic),
 )
 
 @Composable
@@ -69,6 +73,30 @@ private fun NormalBoldItalicTextLigth() =
 @Composable
 private fun NormalBoldItalicTextDark() = NormalBoldItalicTextLigth()
 
+@Composable
+private fun SmallTextLigth() = NormalTextLigth().copy(fontSize = 12.sp)
+
+@Composable
+private fun SmallTextDark() = SmallTextLigth()
+
+@Composable
+private fun SmallBoldTextLigth() = SmallTextLigth().copy(fontWeight = FontWeight.Bold)
+
+@Composable
+private fun SmallBoldTextDark() = SmallBoldTextLigth()
+
+@Composable
+private fun SmallItalicTextLigth() = SmallTextLigth().copy(fontStyle = FontStyle.Italic)
+
+@Composable
+private fun SmallItalicTextDark() = SmallItalicTextLigth()
+
+@Composable
+private fun SmallBoldItalicTextLigth() =
+    SmallTextLigth().copy(fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)
+
+@Composable
+private fun SmallBoldItalicTextDark() = SmallBoldItalicTextLigth()
 
 @Composable
 internal fun AppTypographyLight() = AppTypography(
@@ -76,7 +104,11 @@ internal fun AppTypographyLight() = AppTypography(
     normalText = NormalTextLigth(),
     normalBoldText = NormalBoldTextLigth(),
     normalItalicText = NormalItalicTextLigth(),
-    normalBoldItalicText = NormalBoldItalicTextLigth()
+    normalBoldItalicText = NormalBoldItalicTextLigth(),
+    smallText = SmallTextLigth(),
+    smallBoldText = SmallBoldTextLigth(),
+    smallItalicText = SmallItalicTextLigth(),
+    smallBoldItalicText = SmallBoldItalicTextLigth()
 )
 
 @Composable
@@ -85,5 +117,9 @@ internal fun AppTypographyDark() = AppTypography(
     normalText = NormalTextDark(),
     normalBoldText = NormalBoldTextDark(),
     normalItalicText = NormalItalicTextDark(),
-    normalBoldItalicText = NormalBoldItalicTextDark()
+    normalBoldItalicText = NormalBoldItalicTextDark(),
+    smallText = SmallTextDark(),
+    smallBoldText = SmallBoldTextDark(),
+    smallItalicText = SmallItalicTextDark(),
+    smallBoldItalicText = SmallBoldItalicTextDark()
 )

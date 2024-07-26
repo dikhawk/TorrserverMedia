@@ -37,13 +37,13 @@ kotlin {
 
     jvm()
 
-    @OptIn(ExperimentalWasmDsl::class)
+/*    @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
         binaries.executable()
-    }
+    }*/
 
-    listOf(
+/*    listOf(
         iosX64(),
         iosArm64(),
         iosSimulatorArm64()
@@ -52,7 +52,7 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
         }
-    }
+    }*/
 
     sourceSets {
         commonMain.dependencies {
@@ -64,6 +64,8 @@ kotlin {
             implementation(projects.core.torrserverapi.impl)
             implementation(projects.features.settings.api)
             implementation(projects.features.settings.impl)
+            implementation(projects.core.appsettings.api)
+            implementation(projects.core.appsettings.impl)
             implementation(projects.core.uikit)
 
             implementation(compose.runtime)
@@ -90,10 +92,12 @@ kotlin {
 
         androidMain.dependencies {
             implementation(compose.uiTooling)
+            implementation(compose.preview)
             implementation(libs.androidx.activityCompose)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.decompose.core)
+            implementation(libs.koin.android)
         }
 
         jvmMain.dependencies {

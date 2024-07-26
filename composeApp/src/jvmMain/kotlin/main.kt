@@ -28,7 +28,8 @@ fun main() {
     val root = runOnUiThread {
         DefaultRootComponent(
             componentContext = DefaultComponentContext(lifecycle = lifecycle),
-            featureTorrentListApi = inject()
+            featureTorrentListApi = inject(),
+            featureSettingsApi = inject(),
         )
     }
 
@@ -50,7 +51,7 @@ fun main() {
 
         DisposableEffect(Unit) {
             onDispose {
-                KmpCmdRunner.stopRunnedProcesses()
+//                KmpCmdRunner.stopRunnedProcesses()
             }
         }
     }

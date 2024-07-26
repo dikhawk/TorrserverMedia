@@ -37,7 +37,6 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-//                implementation(libs.kotlinx.coroutines)
                 implementation(compose.runtime)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.decompose.core)

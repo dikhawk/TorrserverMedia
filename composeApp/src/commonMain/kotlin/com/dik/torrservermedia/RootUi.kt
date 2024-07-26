@@ -30,6 +30,7 @@ fun RootUi(component: RootComponent, modifier: Modifier = Modifier) {
         Surface(modifier = Modifier.fillMaxSize(), color = Color.White ) {
             when(val rootChild = child.instance) {
                 is TorrentList -> rootChild.composable()
+                is RootComponent.Child.Settings -> rootChild.composable()
             }
         }
     }

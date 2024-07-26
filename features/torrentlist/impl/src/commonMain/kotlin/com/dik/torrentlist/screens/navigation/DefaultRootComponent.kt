@@ -5,10 +5,10 @@ import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.dik.settings.SettingsFeatureApi
-import com.dik.torrentlist.ChildConfig
 import com.dik.torrentlist.di.inject
 import com.dik.torrentlist.screens.details.DefaultDetailsComponent
 import com.dik.torrentlist.screens.details.DetailsComponent
@@ -47,7 +47,8 @@ internal class DefaultRootComponent(
         is ChildConfig.Details -> RootComponent.Child.Details(detailisComponent())
         ChildConfig.Main -> RootComponent.Child.Main(mainComponent())
         ChildConfig.Settings -> RootComponent.Child.Settings(
-            settingsFeatureApi.start().composableMain(componentContext)
+            settingsFeatureApi.start()
+                .composableMain(context = componentContext, onFinish = { navigation.pop() })
         )
     }
 }

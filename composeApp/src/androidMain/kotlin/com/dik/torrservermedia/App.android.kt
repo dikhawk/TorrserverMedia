@@ -9,6 +9,7 @@ import com.arkivanov.decompose.defaultComponentContext
 import com.dik.torrservermedia.di.KoinModules
 import com.dik.torrservermedia.di.inject
 import com.dik.torrservermedia.nanigation.DefaultRootComponent
+import org.koin.android.ext.koin.androidContext
 
 class AndroidApp : Application() {
     companion object {
@@ -18,6 +19,10 @@ class AndroidApp : Application() {
     override fun onCreate() {
         super.onCreate()
         INSTANCE = this
+
+        KoinModules.init {
+            androidContext(AndroidApp.INSTANCE)
+        }
     }
 }
 
@@ -25,11 +30,10 @@ class AppActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        KoinModules.init()
-
         val root = DefaultRootComponent(
             componentContext = defaultComponentContext(),
-            featureTorrentListApi = inject()
+            featureTorrentListApi = inject(),
+            featureSettingsApi = inject()
         )
 
         enableEdgeToEdge()

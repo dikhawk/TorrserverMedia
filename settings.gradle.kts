@@ -26,7 +26,14 @@ include(
     ":core:torrserverapi:impl",
     ":core:common",
     ":core:uikit",
+    ":core:appsettings:api",
+    ":core:appsettings:impl",
 
     ":features:torrentlist:api",
     ":features:torrentlist:impl",
+
+    ":features:settings:api",
+    ":features:settings:impl",
+
+
 )

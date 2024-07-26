@@ -8,4 +8,5 @@ enum class TorrentsAction(val asString: String) {
     REM("rem"),
     DROP("drop"),
     WIPE("wipe"),
+    DEFAULT("def"),
 }

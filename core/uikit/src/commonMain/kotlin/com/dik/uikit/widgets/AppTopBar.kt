@@ -11,7 +11,13 @@ import androidx.compose.ui.Modifier
 fun AppTopBar(
     modifier: Modifier = Modifier,
     title: String = "",
+    navigationIcon: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    TopAppBar(modifier = modifier, title = { AppTitleText(text = title) }, actions = actions)
+    TopAppBar(
+        modifier = modifier,
+        title = { AppTitleText(text = title) },
+        actions = actions,
+        navigationIcon = navigationIcon
+    )
 }

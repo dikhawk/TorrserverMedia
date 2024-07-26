@@ -2,6 +2,7 @@ package com.dik.torrserverapi.di
 
 import com.dik.common.AppDispatchers
 import com.dik.torrserverapi.server.MagnetApi
+import com.dik.torrserverapi.server.ServerSettingsApi
 import com.dik.torrserverapi.server.TorrserverCommands
 import com.dik.torrserverapi.server.TorrentApi
 import com.dik.torrserverapi.server.TorrserverStuffApi
@@ -29,6 +30,7 @@ abstract class TorrserverComponent : TorrserverApi {
                                 override fun torrentApi(): TorrentApi = inject()
                                 override fun torrserverStuffApi(): TorrserverStuffApi = inject()
                                 override fun torrserverCommands(): TorrserverCommands = inject()
+                                override fun serverSettingsApi(): ServerSettingsApi = inject()
                             }
                         }
                     }

@@ -11,6 +11,7 @@ object KoinModules {
         koinApplication {
             modules(
                 appModule,
+                appSettingsModule,
                 featuresModule,
                 torrserverModule,
             )
