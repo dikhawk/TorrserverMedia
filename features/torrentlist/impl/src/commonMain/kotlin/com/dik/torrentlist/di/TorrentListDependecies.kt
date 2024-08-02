@@ -1,9 +1,8 @@
 package com.dik.torrentlist.di
 
-import com.arkivanov.decompose.ComponentContext
+import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.moduleinjector.BaseDependencies
-import com.dik.settings.SettingsEntry
 import com.dik.settings.SettingsFeatureApi
 import com.dik.torrserverapi.di.TorrserverApi
 
@@ -14,4 +13,6 @@ interface TorrentListDependecies : BaseDependencies {
     fun dispatchers(): AppDispatchers
 
     fun settingsFeatureApi(): SettingsFeatureApi
+
+    fun appSettings(): AppSettings
 }

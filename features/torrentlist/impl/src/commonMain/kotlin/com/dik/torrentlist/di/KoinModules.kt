@@ -1,5 +1,6 @@
 package com.dik.torrentlist.di
 
+import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.cmd.CmdRunner
 import com.dik.common.cmd.KmpCmdRunner
@@ -31,6 +32,7 @@ object KoinModules {
             single<AppDispatchers> { dependecies.dispatchers() }
             factory<CmdRunner> { KmpCmdRunner }
             factory<SettingsFeatureApi> { dependecies.settingsFeatureApi() }
+            single<AppSettings> { dependecies.appSettings() }
         }))
 
         return koin

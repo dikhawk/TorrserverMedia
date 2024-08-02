@@ -2,6 +2,7 @@ package com.dik.torrentlist.screens.details
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.cmd.CmdRunner
 import com.dik.torrentlist.converters.toReadableSize
@@ -19,7 +20,8 @@ internal class DefaultDetailsComponent(
     componentContext: ComponentContext,
     private val dispatchers: AppDispatchers = inject(),
     private val cmdRunner: CmdRunner = inject(),
-    private val torrrentApi: TorrentApi = inject()
+    private val torrrentApi: TorrentApi = inject(),
+    private val appSettings: AppSettings = inject(),
 ) : ComponentContext by componentContext, DetailsComponent {
 
     private val _uiState = MutableStateFlow<DetailsState>(DetailsState())
@@ -29,7 +31,8 @@ internal class DefaultDetailsComponent(
     override val contentFilesComponent = DefaultContentFilesComponent(
         componentContext = childContext("content_files"),
         dispatchers = dispatchers,
-        cmdRunner = cmdRunner
+        cmdRunner = cmdRunner,
+        appSettings = appSettings
     )
     override val torrentStatisticsComponent = DefaultTorrentStatisticsComponent(
         componentContext = childContext("torrent_statistics"),

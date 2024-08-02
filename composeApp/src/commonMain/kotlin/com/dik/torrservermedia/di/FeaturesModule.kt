@@ -1,5 +1,6 @@
 package com.dik.torrservermedia.di
 
+import com.dik.appsettings.api.di.AppSettingsApi
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.settings.SettingsFeatureApi
@@ -17,6 +18,7 @@ val featuresModule = module {
             override fun torrServerApi(): TorrserverApi = get()
             override fun dispatchers(): AppDispatchers = get()
             override fun settingsFeatureApi(): SettingsFeatureApi = get()
+            override fun appSettings(): AppSettings = get()
         })
         TorrentListComponentHolder.get()
     }

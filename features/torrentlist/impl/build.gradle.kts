@@ -48,6 +48,7 @@ kotlin {
             implementation(projects.features.settings.api)
             implementation(projects.core.common)
             implementation(projects.core.uikit)
+            implementation(projects.core.appsettings.api)
 
             implementation(compose.components.resources)
             implementation(libs.bundles.decompose)
