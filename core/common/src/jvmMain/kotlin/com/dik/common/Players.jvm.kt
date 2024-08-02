@@ -2,6 +2,7 @@ package com.dik.common
 
 import com.dik.common.utils.platformName
 import com.dik.common.utils.playersForPlatform
+import com.dik.common.utils.readOutput
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.lang.Exception
@@ -98,15 +99,4 @@ private fun runCommand(vararg command: String): String? {
     }
 
     return output
-}
-
-private fun Process.readOutput(): String {
-    val output = StringBuilder()
-
-    BufferedReader(InputStreamReader(this.inputStream)).use { reader ->
-        reader.forEachLine { line -> output.appendLine(line) }
-        reader
-    }
-
-    return output.toString()
 }

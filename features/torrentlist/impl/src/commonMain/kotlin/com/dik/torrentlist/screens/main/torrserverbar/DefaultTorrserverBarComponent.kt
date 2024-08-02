@@ -38,7 +38,7 @@ class DefaultTorrserverBarComponent(
 
     override fun onClickInstallServer() {
         componentScope.launch(dispatchers.defaultDispatcher()) {
-            torrserverCommands.installServer().collect { restult ->
+            torrserverCommands.installServer("${serverDir()}/TorrServer").collect { restult ->
                 when (val res = restult) {
                     is ResultProgress.Loading -> _uiState.update {
                         it.copy(isShowProgress = true, progressUpdate = res.progress.progress)
@@ -58,9 +58,11 @@ class DefaultTorrserverBarComponent(
 
     override fun onClickRestartServer() {
         componentScope.launch(dispatchers.defaultDispatcher()) {
-            torrserverCommands.startServer()
+            torrserverCommands.startServer("${serverDir()}/TorrServer")
         }
     }
+
+    fun serverDir() = System.getProperty("user.dir")
 
     override fun onStopServer() {
        componentScope.launch(dispatchers.defaultDispatcher()) {

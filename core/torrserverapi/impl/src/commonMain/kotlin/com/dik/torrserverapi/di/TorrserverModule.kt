@@ -50,9 +50,9 @@ internal val httpModule = module {
             }
 
             install(HttpTimeout) {
-                requestTimeoutMillis = 15000
-                connectTimeoutMillis = 10000
-                socketTimeoutMillis = 15000
+                requestTimeoutMillis = 60000
+                connectTimeoutMillis = 30000
+                socketTimeoutMillis = 30000
             }
 
             install(HttpCache)

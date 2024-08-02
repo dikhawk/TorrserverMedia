@@ -13,9 +13,11 @@ import io.ktor.http.contentLength
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.core.isEmpty
 import io.ktor.utils.io.core.readBytes
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import okio.BufferedSink
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.buffer
@@ -25,14 +27,16 @@ internal class DownloadFile(
     private val ktor: HttpClient
 ) {
 
-    fun start(fileUrl: String, outputFilePath: String) =
-        flow<ResultProgress<TorrserverFile, TorrserverError>> {
+    fun start(fileUrl: String, outputFilePath: String): Flow<ResultProgress<TorrserverFile, TorrserverError>> {
+        var sink: BufferedSink? = null
+
+        return flow<ResultProgress<TorrserverFile, TorrserverError>> {
             emit(ResultProgress.Loading(Progress(progress = 0.0)))
 
             val pathFile = outputFilePath.toPath()
             FileSystem.SYSTEM.createDirectories(pathFile.parent!!)
             FileSystem.SYSTEM.delete(pathFile)
-            val sink = FileSystem.SYSTEM.sink(pathFile).buffer()
+            sink = FileSystem.SYSTEM.sink(pathFile).buffer()
             ktor.prepareGet(fileUrl).execute { response ->
                 val channel: ByteReadChannel = response.bodyAsChannel()
 
@@ -44,7 +48,7 @@ internal class DownloadFile(
                         val totalBytes = response.contentLength() ?: 0L
                         val fileSize = FileSystem.SYSTEM.metadata(pathFile).size
 
-                        sink.write(bytes)
+                        sink?.write(bytes)
 
                         if (totalBytes > 0L)
                             emit(
@@ -58,13 +62,18 @@ internal class DownloadFile(
                             )
                     }
                 }
-            }
 
+                sink?.flush()
+                sink?.close()
+            }
 
             emit(ResultProgress.Success(TorrserverFile(filePath = outputFilePath)))
         }.catch { e ->
             emit(ResultProgress.Error(TorrserverError.Common.Unknown(e.toString())))
+            sink?.flush()
+            sink?.close()
         }.flowOn(dispatchers.defaultDispatcher())
+    }
 
 
     private fun calculateProgress(downloadedBytes: Long, totalBytes: Long): Double {

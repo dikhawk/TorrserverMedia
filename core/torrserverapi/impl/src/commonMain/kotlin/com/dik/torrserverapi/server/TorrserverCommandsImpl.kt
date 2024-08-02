@@ -14,12 +14,12 @@ internal class TorrserverCommandsImpl(
     private val installTorrserver: InstallTorrserver
 ) : TorrserverCommands {
 
-    override suspend fun installServer(): Flow<ResultProgress<TorrserverFile, TorrserverError>> =
-        installTorrserver.start("/home/dik/TorrServer/TorrServer")
+    override suspend fun installServer(pathToFile: String): Flow<ResultProgress<TorrserverFile, TorrserverError>> =
+        installTorrserver.start(pathToFile)
 
-    override suspend fun startServer(): Result<Unit, TorrserverError> {
+    override suspend fun startServer(pathToServerFile: String): Result<Unit, TorrserverError> {
         try {
-            serverCommands.startServer("TorrServer", "/home/dik/TorrServer")
+            serverCommands.startServer(pathToServerFile)
 
             return Result.Success(Unit)
         } catch (e: Exception) {
