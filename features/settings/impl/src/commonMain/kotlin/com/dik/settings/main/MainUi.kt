@@ -20,7 +20,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -29,7 +28,6 @@ import com.dik.settings.widgets.ConfirmDialog
 import com.dik.settings.widgets.DropDownListItem
 import com.dik.settings.widgets.SwitchItem
 import com.dik.settings.widgets.TextFieldItem
-import com.dik.uikit.widgets.AppDropList
 import com.dik.uikit.widgets.AppIconButtonArrowBack
 import com.dik.uikit.widgets.AppNormalText
 import com.dik.uikit.widgets.AppTopBar
@@ -40,6 +38,7 @@ import torrservermedia.features.settings.impl.generated.resources.ic_save_24
 import torrservermedia.features.settings.impl.generated.resources.main_app_bar_title
 import torrservermedia.features.settings.impl.generated.resources.main_settings_cache_size_header
 import torrservermedia.features.settings.impl.generated.resources.main_settings_cache_size_hint
+import torrservermedia.features.settings.impl.generated.resources.main_settings_default_player_header
 import torrservermedia.features.settings.impl.generated.resources.main_settings_default_settings_header
 import torrservermedia.features.settings.impl.generated.resources.main_settings_dht_header
 import torrservermedia.features.settings.impl.generated.resources.main_settings_dht_hint
@@ -73,7 +72,6 @@ import torrservermedia.features.settings.impl.generated.resources.main_settings_
 import torrservermedia.features.settings.impl.generated.resources.main_settings_torrent_connections_header
 import torrservermedia.features.settings.impl.generated.resources.main_settings_torrent_connections_hint
 import torrservermedia.features.settings.impl.generated.resources.main_settings_upnp_header
-import torrservermedia.features.settings.impl.generated.resources.main_settings_default_player_header
 
 @Composable
 internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
@@ -234,8 +232,8 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
 
             SwitchItem(
                 header = stringResource(Res.string.main_settings_upnp_header),
-                checked = uiState.value.dht,
-                onCheckedChange = { component.onChangeDht(it) }
+                checked = uiState.value.upnp,
+                onCheckedChange = { component.onChangeUpnp(it) }
             )
 
             SwitchItem(

@@ -20,6 +20,7 @@ internal interface MainComponent {
     fun onChangeLimitSpeedDownload(value: String)
     fun onChangeIncomingConnection(value: String)
     fun onChangeDistribution(checked: Boolean)
+    fun onChangeUpnp(checked: Boolean)
     fun onChangeDlna(checked: Boolean)
     fun onChangeDlnaName(value: String)
     fun onChangeLimitSpeedDistribution(value: String)
@@ -54,6 +55,7 @@ internal data class MainState(
     val distribution: Boolean = false,
     val limitSpeedDistribution: String = "0",
     val incomingConnection: String = "0",
+    val upnp: Boolean = false,
     val dlna: Boolean = false,
     val dlnaName: String = "",
     val snackbar: String? = null,

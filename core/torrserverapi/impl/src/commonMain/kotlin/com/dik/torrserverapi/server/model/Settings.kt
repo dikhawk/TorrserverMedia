@@ -16,10 +16,11 @@ data class Settings(
     @SerialName("torrentDisconnectTimeout") val torrentDisconnectTimeout: Int = 0,
     @SerialName("connectionsLimit") val connectionsLimit: Int = 0,
     @SerialName("disableDHT") val disableDHT: Boolean = false,
+    @SerialName("DisableUPNP") val disableUpnp: Boolean = false,
     @SerialName("downloadRateLimit") val downloadRateLimit: Int = 0,
     @SerialName("disableUpload") val disableUpload: Boolean = false,
     @SerialName("uploadRateLimit") val uploadRateLimit: Int = 0,
     @SerialName("peersListenPort") val peersListenPort: Int = 0,
-    @SerialName("EnableDLNA") val EnableDLNA: Boolean = false,
+    @SerialName("EnableDLNA") val enableDLNA: Boolean = false,
     @SerialName("FriendlyName") val dlnaName: String = "",
 )

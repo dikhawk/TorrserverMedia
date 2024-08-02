@@ -16,6 +16,7 @@ data class ServerSettings(
     val distribution: Boolean = false,
     val limitSpeedDistribution: Int = 0,
     val incomingConnection: Int = 0,
+    val upnp: Boolean = false,
     val dlna: Boolean = false,
     val dlnaName: String = "",
 )

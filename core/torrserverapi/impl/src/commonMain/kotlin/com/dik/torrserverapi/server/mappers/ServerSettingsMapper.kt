@@ -16,10 +16,12 @@ fun SettingsResponse.mapToServerSettings() = ServerSettings(
     timeoutConnection = this.torrentDisconnectTimeout,
     torrentConnections = this.connectionsLimit,
     dht = !this.disableDHT,
+    upnp = !this.disableUPNP,
     limitSpeedDownload = this.downloadRateLimit,
     distribution = !this.disableUpload,
     limitSpeedDistribution = this.uploadRateLimit,
     incomingConnection = this.peersListenPort,
+    dlna = this.enableDLNA,
     dlnaName = this.friendlyName
 )
 
@@ -36,8 +38,11 @@ fun ServerSettings.mapToSettings() = Settings(
     torrentDisconnectTimeout = this.timeoutConnection,
     connectionsLimit = this.torrentConnections,
     disableDHT = !this.dht,
+    disableUpnp = !this.upnp,
     downloadRateLimit = this.limitSpeedDownload,
     disableUpload = !this.distribution,
     uploadRateLimit = this.limitSpeedDistribution,
     peersListenPort = this.incomingConnection,
+    enableDLNA = this.dlna,
+    dlnaName = this.dlnaName,
 )

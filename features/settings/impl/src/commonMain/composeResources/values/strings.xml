@@ -30,7 +30,7 @@
     <string name="main_settings_limit_speed_distribution_header">Ограничение скорости отдачи</string>
     <string name="main_settings_limit_speed_distribution_hint">Килобайты</string>
     <string name="main_settings_port_incoming_connection_header">Порт для входящих подключений</string>
-    <string name="main_settings_port_incoming_connection_hint">Килобайты, 1024 - 65535, 0 - авто</string>
+    <string name="main_settings_port_incoming_connection_hint">порт, 1024 - 65535, 0 - авто</string>
     <string name="main_settings_upnp_header">UPnP (Universal Plug and Play)</string>
     <string name="main_settings_upnp_hint">Автоматическая настройка порта на роутере</string>
     <string name="main_settings_dlna_header">DLNA-медиасервер</string>
@@ -39,6 +39,6 @@
     <string name="main_settings_default_settings_header">Настройки по умолчанию</string>
     <string name="main_settings_dialog_button_cancel">Отмена</string>
     <string name="main_settings_dialog_button_ok">Ок</string>
-    <string name="main_settings_dialog_default_settings_title">Установить настройки по умолчанию?</string>
-    <string name="main_settings_snackbar_default_settings">Настройки по умолчанию применены</string>
+    <string name="main_settings_dialog_default_settings_title">Установить настройки сервера по умолчанию?</string>
+    <string name="main_settings_snackbar_default_settings">Настройки сервера по умолчанию применены</string>
 </resources>

@@ -112,6 +112,10 @@ internal class DefaultMainComponent(
         _uiState.update { it.copy(distribution = checked) }
     }
 
+    override fun onChangeUpnp(checked: Boolean) {
+        _uiState.update { it.copy(upnp = checked) }
+    }
+
     override fun onChangeDlna(checked: Boolean) {
         _uiState.update { it.copy(dlna = checked) }
     }
@@ -139,7 +143,9 @@ internal class DefaultMainComponent(
     }
 
     private suspend fun saveAppSettings() {
-        appSettings.defaultPlayer = _uiState.value.deafaultPlayer
+        componentScope.launch {
+            appSettings.defaultPlayer = _uiState.value.deafaultPlayer
+        }
     }
 
     private fun getServerSettings(): ServerSettings {
@@ -164,6 +170,7 @@ internal class DefaultMainComponent(
             timeoutConnection = timeoutConnection,
             torrentConnections = torrentConnections,
             dht = _uiState.value.dht,
+            upnp = _uiState.value.upnp,
             limitSpeedDownload = limitSpeedDownload,
             incomingConnection = incomingConnection,
             distribution = _uiState.value.distribution,
@@ -238,6 +245,7 @@ internal class DefaultMainComponent(
                 timeoutConnection = settings.timeoutConnection.toString(),
                 torrentConnections = settings.torrentConnections.toString(),
                 dht = settings.dht,
+                upnp = settings.upnp,
                 limitSpeedDownload = settings.limitSpeedDownload.toString(),
                 incomingConnection = settings.incomingConnection.toString(),
                 distribution = settings.distribution,
