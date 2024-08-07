@@ -1,21 +1,19 @@
-package com.dik.common
+package com.dik.common.player
 
+import com.dik.common.Platform
 import com.dik.common.utils.platformName
 import com.dik.common.utils.playersForPlatform
 import com.dik.common.utils.readOutput
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.lang.Exception
 
-actual fun String.playContent(player: Players) {
+actual fun String.playContent(player: Player) {
     val playCommand = player.gePlayCommand().map { if (it == PATH_TO_FILE) this else it }
 
     val processBuilder = ProcessBuilder(playCommand)
     processBuilder.start()
 }
 
-private fun Players.gePlayCommand(): List<String> {
-    if (this == Players.SYSTEM_DEFULT_PLAYER) return defaultPlayCommand()
+private fun Player.gePlayCommand(): List<String> {
+    if (this == Player.DEFAULT_PLAYER) return defaultPlayCommand()
 
     val platform = platformName()
     val command = this.commands.find { it.platform == platform }
@@ -24,14 +22,14 @@ private fun Players.gePlayCommand(): List<String> {
         val text = playerCommandForLinux(command) ?: defaultPlayCommand()
         return playerCommandForLinux(command) ?: defaultPlayCommand()
     } else {
-        return command?.playFile?: defaultPlayCommand()
+        return command?.playFile ?: defaultPlayCommand()
     }
 }
 
 private fun playerCommandForLinux(command: Command): List<String>? {
     val playFileCommand = command.playFile.toMutableList()
     var playerNameCmd: String = playFileCommand.first()
-    playerNameCmd = whichLinux(playerNameCmd) ?: flatpackAplicationId(playerNameCmd) ?: ""
+    playerNameCmd = which(playerNameCmd) ?: flatpackAplicationId(playerNameCmd) ?: ""
 
     if (playerNameCmd.isNotEmpty()) {
         playFileCommand[0] = playerNameCmd
@@ -42,9 +40,9 @@ private fun playerCommandForLinux(command: Command): List<String>? {
     return null
 }
 
-private fun defaultPlayCommand(): List<String>{
+private fun defaultPlayCommand(): List<String> {
     val platform = platformName()
-    val defaultPlayerCommand = Players.SYSTEM_DEFULT_PLAYER.commands
+    val defaultPlayerCommand = Player.DEFAULT_PLAYER.commands
         .find { it.platform == platform }
 
     if (platform == Platform.LINUX) {
@@ -67,7 +65,7 @@ private fun defaultPlayCommandForLinux(): List<String> {
     return emptyList()
 }
 
-private fun whichLinux(playerName: String): String? {
+private fun which(playerName: String): String? {
     val process = ProcessBuilder(listOf("which", playerName)).start()
     val output = process.readOutput()
     process.waitFor()
@@ -94,7 +92,7 @@ private fun runCommand(vararg command: String): String? {
         val process = ProcessBuilder(*command).start()
         output = process.readOutput()
         process.waitFor()
-    } catch (e: Exception){
+    } catch (e: Exception) {
         println(e.toString())
     }
 

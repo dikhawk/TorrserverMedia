@@ -1,8 +1,8 @@
 package com.dik.common.utils
 
 import com.dik.common.Platform
-import com.dik.common.Players
+import com.dik.common.player.Player
 
-fun playersForPlatform(platform: Platform = platformName()): List<Players> {
-    return Players.values().filter { it.platforms.contains(platform) && it != Players.SYSTEM_DEFULT_PLAYER }
+fun playersForPlatform(platform: Platform = platformName()): List<Player> {
+    return Player.values().filter { it.platforms.contains(platform) && it != Player.DEFAULT_PLAYER }
 }

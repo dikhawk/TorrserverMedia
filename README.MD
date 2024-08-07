@@ -19,6 +19,7 @@ Run the desktop application: `./gradlew :composeApp:run`
 Run desktop UI tests: `./gradlew :composeApp:jvmTest`
 Compile Jar: `./gradlew packageUberJarForCurrentOS`
 Compile AppImage: `./gradlew packageAppImage`
+Compile EXE: `./gradlew packageExe`
 
 ### iOS
 To run the application on iPhone device/simulator:

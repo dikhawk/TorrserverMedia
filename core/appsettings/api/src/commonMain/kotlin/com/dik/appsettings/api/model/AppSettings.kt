@@ -1,7 +1,7 @@
 package com.dik.appsettings.api.model
 
-import com.dik.common.Players
+import com.dik.common.player.Player
 
 interface AppSettings {
-    var defaultPlayer: Players
+    var defaultPlayer: Player
 }

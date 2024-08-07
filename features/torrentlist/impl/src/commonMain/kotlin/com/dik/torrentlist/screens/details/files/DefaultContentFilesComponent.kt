@@ -4,14 +4,13 @@ import com.arkivanov.decompose.ComponentContext
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.cmd.CmdRunner
-import com.dik.common.playContent
+import com.dik.common.player.playContent
 import com.dik.torrserverapi.ContentFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class DefaultContentFilesComponent(

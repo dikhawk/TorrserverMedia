@@ -1,7 +1,9 @@
 package com.dik.common.cmd
 
 interface CmdRunner {
-    fun runCmdCommand(command: String)
+    fun run(command: String)
+
+    fun runAndWaitResult(command: String): String
 
     fun stopRunnedProcesses()
 }

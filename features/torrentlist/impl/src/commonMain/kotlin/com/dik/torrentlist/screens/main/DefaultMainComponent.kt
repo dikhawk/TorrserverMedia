@@ -52,7 +52,7 @@ internal class DefaultMainComponent(
             if (torrent.files.size == 1) {
                 val contentFile = torrent.files.first()
                 componentScope.launch(dispatchers.defaultDispatcher()) {
-                    cmdRunner.runCmdCommand("vlc '${contentFile.url}'")
+                    cmdRunner.run("vlc '${contentFile.url}'")
                 }
             }
             detailsComponent.showDetails(torrent)

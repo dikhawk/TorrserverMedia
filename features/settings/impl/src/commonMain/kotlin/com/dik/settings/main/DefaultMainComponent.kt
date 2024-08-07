@@ -4,7 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
-import com.dik.common.Players
+import com.dik.common.player.Player
 import com.dik.common.Result
 import com.dik.torrserverapi.model.ServerSettings
 import com.dik.torrserverapi.server.ServerSettingsApi
@@ -44,7 +44,7 @@ internal class DefaultMainComponent(
         onFinish.invoke()
     }
 
-    override fun onChangeDefaultPlayer(value: Players) {
+    override fun onChangeDefaultPlayer(value: Player) {
         _uiState.update { it.copy(deafaultPlayer = value) }
     }
 
@@ -256,8 +256,8 @@ internal class DefaultMainComponent(
         }
     }
 
-    private fun getPlayersLists(): List<Players> {
-        return Players.values().filter { it.platforms.contains(platformName()) }
+    private fun getPlayersLists(): List<Player> {
+        return Player.values().filter { it.platforms.contains(platformName()) }
     }
 
     private fun Long.calculatePercent(percent: Int): Long =

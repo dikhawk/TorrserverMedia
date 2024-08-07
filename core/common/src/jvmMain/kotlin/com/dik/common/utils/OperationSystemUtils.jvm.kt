@@ -9,7 +9,7 @@ actual fun platformName(): Platform {
     return System.getProperty("os.name").toPlatform()
 }
 
-actual fun Process.readOutput(): String {
+fun Process.readOutput(): String {
     val output = StringBuilder()
 
     BufferedReader(InputStreamReader(this.inputStream)).use { reader ->

@@ -4,9 +4,9 @@ import com.dik.common.Platform
 import com.dik.common.toPlatform
 
 actual fun platformName(): Platform {
-    return "Android".toPlatform()
+    return Platform.ANDROID
 }
 
-actual fun Process.readOutput(): String {
+fun Process.readOutput(): String {
     TODO("Not yet implemented")
 }

@@ -1,7 +1,7 @@
 package com.dik.settings.main
 
 import androidx.compose.runtime.Stable
-import com.dik.common.Players
+import com.dik.common.player.Player
 import kotlinx.coroutines.flow.StateFlow
 
 internal interface MainComponent {
@@ -32,14 +32,14 @@ internal interface MainComponent {
     fun onChangeCacheSize(value: String)
     fun onChangeReaderReadAHead(value: String)
     fun onChangePreloadCache(value: String)
-    fun onChangeDefaultPlayer(value: Players)
+    fun onChangeDefaultPlayer(value: Player)
 }
 
 @Stable
 internal data class MainState(
     val isShowProgressBar: Boolean = false,
-    val deafaultPlayer: Players = Players.SYSTEM_DEFULT_PLAYER,
-    val playersList: List<Players> = listOf(),
+    val deafaultPlayer: Player = Player.DEFAULT_PLAYER,
+    val playersList: List<Player> = listOf(),
     val cacheSize: String = "0",
     val readerReadAHead: String = "0",
     val preloadCache: String = "0",
