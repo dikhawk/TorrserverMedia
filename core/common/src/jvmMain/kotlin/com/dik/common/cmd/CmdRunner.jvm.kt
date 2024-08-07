@@ -32,7 +32,7 @@ actual object KmpCmdRunner : CmdRunner {
     private fun prepareCommand(command: String): List<String> {
         return when(platformName()) {
             Platform.LINUX -> listOf("sh", "-c", command)
-            Platform.WINDOWS -> listOf("cmd", "/c", command)
+            Platform.WINDOWS -> listOf("cmd", "/c", "\"$command\"")
             else -> throw UnsupportedOperationException("Unsupported platform")
         }
     }
