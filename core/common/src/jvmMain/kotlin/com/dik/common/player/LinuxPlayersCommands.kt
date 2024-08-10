@@ -2,27 +2,38 @@ package com.dik.common.player
 
 import com.dik.common.Platform
 import com.dik.common.cmd.KmpCmdRunner
+import kotlinx.coroutines.runBlocking
+
+fun main() {
+    runBlocking {
+        val commands = LinuxPlayersCommands()
+        val fileName = "Dark.Matter.S01E09.1080p.rus.LostFilm.TV.mkv"
+        val fileUrl =
+            "http://127.0.0.1:8090/stream/Dark.Matter.S01E09.1080p.rus.LostFilm.TV.mkv?link=9565f12b2c31f15691e7794928943f25db31f81a&index=1&play"
+        commands.playFile(fileName, fileUrl, Player.MPV)
+    }
+}
 
 class LinuxPlayersCommands : PlayersCommands {
 
-    override suspend fun playFileInDefaultPlayer(pathToFile: String) {
-        val defaultProgrammName = getDefaultProgrammName(pathToFile)
+    override suspend fun playFileInDefaultPlayer(fileName: String, fileUrl: String) {
+        val defaultProgrammName = getDefaultProgrammName(fileName)
 
         if (defaultProgrammName != null) {
-            playFile(pathToFile, defaultProgrammName)
+            playFile(fileUrl, defaultProgrammName)
             return
         }
 
-        playfileInExistPlayer(pathToFile)
+        playfileInExistPlayer(fileName, fileUrl)
     }
 
-    private suspend fun playfileInExistPlayer(pathToFile: String) {
+    private suspend fun playfileInExistPlayer(fileName: String, fileUrl: String) {
         val players = getPlayersForLinux()
 
         players.forEach { player ->
             val programmName = getProgrammName(player)
             if (programmName != null) {
-                playFile(pathToFile, player)
+                playFile(fileName = fileName, fileUrl = fileUrl, player = player)
                 return
             }
         }
@@ -30,22 +41,22 @@ class LinuxPlayersCommands : PlayersCommands {
         throw RuntimeException("There is no default program to open the file.")
     }
 
-    override suspend fun playFile(pathToFile: String, player: Player) {
+    override suspend fun playFile(fileName: String, fileUrl: String, player: Player) {
         val programmName = getProgrammName(player)
 
         if (programmName == null) {
-            playFileInDefaultPlayer(pathToFile)
+            playFileInDefaultPlayer(fileName, fileUrl)
             return
         }
 
-        playFile(pathToFile, programmName)
-        val command = "$programmName $pathToFile"
+        playFile(fileUrl, programmName)
+//        val command = "$programmName $pathToFile"
 
-        KmpCmdRunner.run(command)
+//        KmpCmdRunner.run(command)
     }
 
-    private suspend fun playFile(pathToFile: String, programmName: String) {
-        val command = "$programmName $pathToFile"
+    private suspend fun playFile(fileUrl: String, programmName: String) {
+        val command = "$programmName \'$fileUrl\'"
         KmpCmdRunner.run(command)
     }
 
@@ -78,8 +89,8 @@ class LinuxPlayersCommands : PlayersCommands {
             ?.trim()
     }
 
-    private suspend fun getDefaultProgrammName(pathToFile: String): String? {
-        val command = "xdg-mime query default \$(xdg-mime query filetype $pathToFile)"
+    private suspend fun getDefaultProgrammName(fileName: String): String? {
+        val command = "xdg-mime query default \$(mimetype -b $fileName)"
         var programmName = prepareProgrammName(KmpCmdRunner.runAndWaitResult(command))
 
         if (programmName.isEmpty()) return null
