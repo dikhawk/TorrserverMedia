@@ -5,16 +5,6 @@ import com.dik.common.cmd.KmpCmdRunner
 import kotlinx.coroutines.runBlocking
 import java.io.File
 
-fun main () {
-    val com = WindowsPlayersCommands()
-    val fileName = "Dark.Matter.S01E09.1080p.rus.LostFilm.TV.mkv"
-    val fileUrl = "http://127.0.0.1:8090/stream/Dark.Matter.S01E09.1080p.rus.LostFilm.TV.mkv?" +
-            "link=9565f12b2c31f15691e7794928943f25db31f81a&index=1&play"
-    runBlocking {
-        com.playFile(fileName, fileUrl, Player.VLC)
-    }
-}
-
 class WindowsPlayersCommands: PlayersCommands {
 
     override suspend fun playFileInDefaultPlayer(fileName: String, fileUrl: String) {
