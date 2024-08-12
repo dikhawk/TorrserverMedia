@@ -6,6 +6,10 @@ actual object KmpCmdRunner : CmdRunner {
         TODO("Not yet implemented")
     }
 
+    override fun runAndWaitResult(command: String): String {
+        TODO("Not yet implemented")
+    }
+
     override fun stopRunnedProcesses() {
         TODO("Not yet implemented")
     }
