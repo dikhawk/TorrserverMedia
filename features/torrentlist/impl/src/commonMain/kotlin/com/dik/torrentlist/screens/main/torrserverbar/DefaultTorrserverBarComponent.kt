@@ -38,7 +38,7 @@ class DefaultTorrserverBarComponent(
 
     override fun onClickInstallServer() {
         componentScope.launch(dispatchers.defaultDispatcher()) {
-            torrserverCommands.installServer("${serverDir()}/TorrServer").collect { restult ->
+            torrserverCommands.installServer().collect { restult ->
                 when (val res = restult) {
                     is ResultProgress.Loading -> _uiState.update {
                         it.copy(isShowProgress = true, progressUpdate = res.progress.progress)
@@ -49,7 +49,7 @@ class DefaultTorrserverBarComponent(
                     }
 
                     is ResultProgress.Success -> _uiState.update {
-                        it.copy(isShowProgress = false, serverStatus = "!!!!!INSTALLED!!!!")
+                        it.copy(isShowProgress = false, serverStatus = "!!!!INSTALLED!!!!")
                     }
                 }
             }
@@ -58,23 +58,21 @@ class DefaultTorrserverBarComponent(
 
     override fun onClickRestartServer() {
         componentScope.launch(dispatchers.defaultDispatcher()) {
-            torrserverCommands.startServer("${serverDir()}/TorrServer")
+            torrserverCommands.startServer()
         }
     }
 
-    fun serverDir() = System.getProperty("user.dir")
-
     override fun onStopServer() {
-       componentScope.launch(dispatchers.defaultDispatcher()) {
-           torrserverCommands.stopServer()
-       }
+        componentScope.launch(dispatchers.defaultDispatcher()) {
+            torrserverCommands.stopServer()
+        }
     }
 
     private fun serverStatus() {
         componentScope.launch(dispatchers.defaultDispatcher()) {
             while (true) {
                 val result = torrserverStuffApi.echo()
-                when(val res = result) {
+                when (val res = result) {
                     is Result.Error -> _uiState.update { it.copy(serverStatus = res.error.toString()) }
                     is Result.Success -> _uiState.update { it.copy(serverStatus = res.data) }
                 }
