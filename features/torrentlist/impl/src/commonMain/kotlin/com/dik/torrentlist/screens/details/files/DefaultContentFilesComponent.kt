@@ -4,7 +4,8 @@ import com.arkivanov.decompose.ComponentContext
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.cmd.CmdRunner
-import com.dik.common.player.playContent
+import com.dik.common.player.PlayersCommands
+import com.dik.common.player.platformPlayersCommands
 import com.dik.torrserverapi.ContentFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -17,7 +18,8 @@ internal class DefaultContentFilesComponent(
     componentContext: ComponentContext,
     private val dispatchers: AppDispatchers,
     private val cmdRunner: CmdRunner,
-    private val appSettings: AppSettings
+    private val appSettings: AppSettings,
+    private val playersCommands: PlayersCommands = platformPlayersCommands()
 ) : ContentFilesComponent, ComponentContext by componentContext {
 
     private val componentScope = CoroutineScope(dispatchers.mainDispatcher() + SupervisorJob())
@@ -32,8 +34,11 @@ internal class DefaultContentFilesComponent(
 
     override fun onClickItemPlay(contentFile: ContentFile) {
         componentScope.launch(dispatchers.defaultDispatcher()) {
-            contentFile.url.playContent(appSettings.defaultPlayer)
-//            cmdRunner.runCmdCommand("vlc '${contentFile.url}'")
+            playersCommands.playFile(
+                fileName = contentFile.path,
+                fileUrl = contentFile.url,
+                player = appSettings.defaultPlayer
+            )
         }
     }
 }

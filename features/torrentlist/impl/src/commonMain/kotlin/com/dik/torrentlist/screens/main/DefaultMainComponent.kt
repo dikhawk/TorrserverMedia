@@ -3,8 +3,11 @@ package com.dik.torrentlist.screens.main
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
+import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.cmd.CmdRunner
+import com.dik.common.player.PlayersCommands
+import com.dik.common.player.platformPlayersCommands
 import com.dik.torrentlist.di.inject
 import com.dik.torrentlist.screens.details.DefaultDetailsComponent
 import com.dik.torrentlist.screens.main.appbar.DefaultMainAppBarComponent
@@ -27,6 +30,8 @@ internal class DefaultMainComponent(
     private val dispatchers: AppDispatchers = inject(),
     private val cmdRunner: CmdRunner = inject(),
     private val openSettingsScreen: () -> Unit = {},
+    private val appSettings: AppSettings = inject(),
+    private val playersCommands: PlayersCommands = platformPlayersCommands()
 ) : MainComponent, ComponentContext by context {
 
     private val componentScope = CoroutineScope(dispatchers.mainDispatcher() + SupervisorJob())
@@ -52,7 +57,11 @@ internal class DefaultMainComponent(
             if (torrent.files.size == 1) {
                 val contentFile = torrent.files.first()
                 componentScope.launch(dispatchers.defaultDispatcher()) {
-                    cmdRunner.run("vlc '${contentFile.url}'")
+                    playersCommands.playFile(
+                        fileName = contentFile.path,
+                        fileUrl = contentFile.url,
+                        player = appSettings.defaultPlayer
+                    )
                 }
             }
             detailsComponent.showDetails(torrent)
