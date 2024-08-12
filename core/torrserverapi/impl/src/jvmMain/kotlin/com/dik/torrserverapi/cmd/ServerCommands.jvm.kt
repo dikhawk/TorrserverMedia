@@ -12,9 +12,7 @@ actual object KmpServerCommands : ServerCommands {
         when (platformName()) {
             Platform.LINUX -> startServerOnLinux(pathToServerFile)
             Platform.WINDOWS -> startServerOnWindows(pathToServerFile)
-            else -> {
-                TODO("Not yet implemented")
-            }
+            else -> throw RuntimeException("Platform not supported")
         }
     }
 
@@ -27,10 +25,7 @@ actual object KmpServerCommands : ServerCommands {
         val makeExecutableCommand = "chmod +x $pathToServerFile"
         val startServerCommand = "cd ${serverFile.parent} && ./${serverFile.name}"
 
-        val startServerProcess = ProcessBuilder(
-            listOf("sh", "-c", "$makeExecutableCommand && $startServerCommand")
-        ).start()
-        println(startServerProcess.readOutput())
+        KmpCmdRunner.run("$makeExecutableCommand && $startServerCommand")
     }
 
     private fun startServerOnWindows(pathToServerFile: String) {
