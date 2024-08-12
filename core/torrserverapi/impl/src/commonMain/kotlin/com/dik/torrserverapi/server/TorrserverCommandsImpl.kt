@@ -21,7 +21,6 @@ internal class TorrserverCommandsImpl(
         installTorrserver.start(pathToServerFile())
 
     override suspend fun startServer(): Result<Unit, TorrserverError> {
-        val test = defaultDirectory()
         try {
             serverCommands.startServer(pathToServerFile())
 
