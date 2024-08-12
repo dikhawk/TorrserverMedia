@@ -7,9 +7,9 @@ import com.dik.common.utils.platformName
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.cmd.ServerCommands
 import com.dik.torrserverapi.model.TorrserverFile
+import com.dik.torrserverapi.utils.defaultDirectory
 import kotlinx.coroutines.flow.Flow
 import okio.Path
-import com.dik.torrserverapi.utils.defaultDirectory
 
 internal class TorrserverCommandsImpl(
     private val serverCommands: ServerCommands,
@@ -22,6 +22,8 @@ internal class TorrserverCommandsImpl(
 
     override suspend fun startServer(): Result<Unit, TorrserverError> {
         try {
+            if (torrserverStuffApi.echo() is Result.Success) return Result.Success(Unit)
+
             serverCommands.startServer(pathToServerFile())
 
             return Result.Success(Unit)
