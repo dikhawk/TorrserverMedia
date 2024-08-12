@@ -255,6 +255,10 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
                     .padding(8.dp)) {
                 AppNormalText(text = stringResource(Res.string.main_settings_default_settings_header))
             }
+
+            Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                AppNormalText(uiState.value.operationSystem)
+            }
         }
     }
 

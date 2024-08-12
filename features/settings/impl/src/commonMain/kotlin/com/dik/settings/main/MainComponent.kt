@@ -38,6 +38,7 @@ internal interface MainComponent {
 @Stable
 internal data class MainState(
     val isShowProgressBar: Boolean = false,
+    val operationSystem: String = "",
     val deafaultPlayer: Player = Player.DEFAULT_PLAYER,
     val playersList: List<Player> = listOf(),
     val cacheSize: String = "0",

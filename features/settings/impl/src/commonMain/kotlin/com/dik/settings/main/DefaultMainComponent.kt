@@ -6,6 +6,7 @@ import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.player.Player
 import com.dik.common.Result
+import com.dik.common.utils.cpuArch
 import com.dik.torrserverapi.model.ServerSettings
 import com.dik.torrserverapi.server.ServerSettingsApi
 import kotlinx.coroutines.CoroutineScope
@@ -230,8 +231,12 @@ internal class DefaultMainComponent(
     }
 
     private fun updateSettingsUiState(settings: ServerSettings) {
+        val platform = platformName()
+        val cpu = cpuArch()
+
         _uiState.update {
             it.copy(
+                operationSystem = "${platform.osname} $cpu",
                 deafaultPlayer = appSettings.defaultPlayer,
                 playersList = getPlayersLists(),
                 cacheSize = settings.cacheSize.bytesToMb().toString(), //to Mb
