@@ -33,6 +33,11 @@ class LinuxPlayersCommands : PlayersCommands {
     }
 
     override suspend fun playFile(fileName: String, fileUrl: String, player: Player) {
+        if (player == Player.DEFAULT_PLAYER) {
+            playFileInDefaultPlayer(fileName, fileUrl)
+            return
+        }
+
         val programmName = getProgrammName(player)
 
         if (programmName == null) {
@@ -41,9 +46,6 @@ class LinuxPlayersCommands : PlayersCommands {
         }
 
         playFile(fileUrl, programmName)
-//        val command = "$programmName $pathToFile"
-
-//        KmpCmdRunner.run(command)
     }
 
     private suspend fun playFile(fileUrl: String, programmName: String) {

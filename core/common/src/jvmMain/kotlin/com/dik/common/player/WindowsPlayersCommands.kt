@@ -37,6 +37,11 @@ class WindowsPlayersCommands: PlayersCommands {
     }
 
     override suspend fun playFile(fileName: String, fileUrl: String, player: Player) {
+        if (player == Player.DEFAULT_PLAYER) {
+            playFileInDefaultPlayer(fileName, fileUrl)
+            return
+        }
+
         var playCommand = findPlayer(fileName, player) ?: throw RuntimeException("Player $player not installed")
 
         playCommand = playCommand.replace("%1", fileUrl)
