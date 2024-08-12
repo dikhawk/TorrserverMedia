@@ -35,9 +35,9 @@ internal class TorrserverCommandsImpl(
         defaultDirectory() + Path.DIRECTORY_SEPARATOR + serverName()
 
     private fun serverName(): String {
-        val serverName = "TorrServer"
+        var serverName = "TorrServer"
 
-        if (platformName() == Platform.WINDOWS) serverName + ".exe"
+        if (platformName() == Platform.WINDOWS) serverName = "$serverName.exe"
 
         return serverName
     }
