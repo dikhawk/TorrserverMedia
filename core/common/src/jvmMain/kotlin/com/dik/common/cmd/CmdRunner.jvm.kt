@@ -11,7 +11,6 @@ actual object KmpCmdRunner : CmdRunner {
     override fun run(command: String) {
         val fullCommand = prepareCommand(command)
         val process = ProcessBuilder(fullCommand).start()
-        println(process.readOutput())
         runnedProcesses.add(process)
     }
 
