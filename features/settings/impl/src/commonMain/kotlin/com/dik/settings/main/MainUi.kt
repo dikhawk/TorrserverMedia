@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -36,6 +37,7 @@ import org.jetbrains.compose.resources.vectorResource
 import torrservermedia.features.settings.impl.generated.resources.Res
 import torrservermedia.features.settings.impl.generated.resources.ic_save_24
 import torrservermedia.features.settings.impl.generated.resources.main_app_bar_title
+import torrservermedia.features.settings.impl.generated.resources.main_settings_available_new_version
 import torrservermedia.features.settings.impl.generated.resources.main_settings_cache_size_header
 import torrservermedia.features.settings.impl.generated.resources.main_settings_cache_size_hint
 import torrservermedia.features.settings.impl.generated.resources.main_settings_default_player_header
@@ -101,6 +103,22 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(8.dp).verticalScroll(scrollstate)) {
             Spacer(modifier = Modifier.height(64.dp))
+
+            if (uiState.value.isAvailableNewVersion) {
+                Column(
+                    modifier = modifier.fillMaxWidth()
+                        .then(if (!uiState.value.isShowAvailableNewVersionProgress)
+                            modifier.clickable { component.onClickUpdateTorrserver() } else modifier)
+                        .padding(8.dp),
+                ) {
+                    Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
+                        AppNormalText(text = uiState.value.availableNewVersionText)
+                        Spacer(modifier = Modifier.weight(1f))
+                        if (uiState.value.isShowAvailableNewVersionProgress)
+                            CircularProgressIndicator()
+                    }
+                }
+            }
 
             DropDownListItem(
                 header = stringResource(Res.string.main_settings_default_player_header),

@@ -9,6 +9,7 @@ internal interface MainComponent {
     val uiState: StateFlow<MainState>
 
     fun onClickBack()
+    fun onClickUpdateTorrserver()
     fun onChangeIpv6(checked: Boolean)
     fun onChangeTcp(checked: Boolean)
     fun onChangeMtp(checked: Boolean)
@@ -38,6 +39,9 @@ internal interface MainComponent {
 @Stable
 internal data class MainState(
     val isShowProgressBar: Boolean = false,
+    val isAvailableNewVersion: Boolean = false,
+    val availableNewVersionText: String = "",
+    val isShowAvailableNewVersionProgress: Boolean = false,
     val operationSystem: String = "",
     val deafaultPlayer: Player = Player.DEFAULT_PLAYER,
     val playersList: List<Player> = listOf(),

@@ -13,12 +13,16 @@ import com.dik.settings.di.inject
 import com.dik.settings.main.DefaultMainComponent
 import com.dik.settings.main.MainComponent
 import com.dik.torrserverapi.server.ServerSettingsApi
+import com.dik.torrserverapi.server.TorrserverCommands
+import com.dik.torrserverapi.server.TorrserverStuffApi
 
 internal class DefaultRootComponent(
     context: ComponentContext,
     private val serverSettingsApi: ServerSettingsApi = inject(),
     private val dispatchers: AppDispatchers = inject(),
     private val appSettings: AppSettings = inject(),
+    private val torrserverStuffApi: TorrserverStuffApi = inject(),
+    private val torrserverCommands: TorrserverCommands = inject(),
     private val onFinish: () -> Unit,
 ) : RootComponent, ComponentContext by context {
 
@@ -42,7 +46,9 @@ internal class DefaultRootComponent(
             onFinish = onFinish,
             serverSettingsApi = serverSettingsApi,
             dispatchers = dispatchers,
-            appSettings = appSettings
+            appSettings = appSettings,
+            torrserverStuffApi = torrserverStuffApi,
+            torrserverCommands = torrserverCommands
         )
 
     private fun childFactory(

@@ -41,4 +41,8 @@
     <string name="main_settings_dialog_button_ok">Ок</string>
     <string name="main_settings_dialog_default_settings_title">Установить настройки сервера по умолчанию?</string>
     <string name="main_settings_snackbar_default_settings">Настройки сервера по умолчанию применены</string>
+    <string name="main_settings_available_new_version">Доступна новая версия. Обновить?</string>
+    <string name="main_settings_available_new_version_update_success">Сервер обновлен</string>
+    <string name="main_settings_available_new_version_update_error">Сервер не удалось обновить</string>
+    <string name="main_settings_available_new_version_update_loading">Загрузка обновления</string>
 </resources>

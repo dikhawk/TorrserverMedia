@@ -4,28 +4,39 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
-import com.dik.common.player.Player
 import com.dik.common.Result
+import com.dik.common.ResultProgress
+import com.dik.common.player.Player
 import com.dik.common.utils.cpuArch
+import com.dik.common.utils.platformName
 import com.dik.torrserverapi.model.ServerSettings
 import com.dik.torrserverapi.server.ServerSettingsApi
+import com.dik.torrserverapi.server.TorrserverCommands
+import com.dik.torrserverapi.server.TorrserverStuffApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
+import com.dik.common.utils.successResult
 import torrservermedia.features.settings.impl.generated.resources.Res
+import torrservermedia.features.settings.impl.generated.resources.main_settings_available_new_version
+import torrservermedia.features.settings.impl.generated.resources.main_settings_available_new_version_update_error
+import torrservermedia.features.settings.impl.generated.resources.main_settings_available_new_version_update_loading
+import torrservermedia.features.settings.impl.generated.resources.main_settings_available_new_version_update_success
 import torrservermedia.features.settings.impl.generated.resources.main_settings_snackbar_default_settings
 import torrservermedia.features.settings.impl.generated.resources.main_settings_snackbar_save
-import com.dik.common.utils.platformName
 
 internal class DefaultMainComponent(
     context: ComponentContext,
     private val serverSettingsApi: ServerSettingsApi,
+    private val torrserverStuffApi: TorrserverStuffApi,
+    private val torrserverCommands: TorrserverCommands,
     private val appSettings: AppSettings,
     private val dispatchers: AppDispatchers,
     private val onFinish: () -> Unit,
@@ -43,6 +54,46 @@ internal class DefaultMainComponent(
 
     override fun onClickBack() {
         onFinish.invoke()
+    }
+
+    override fun onClickUpdateTorrserver() {
+        _uiState.update { it.copy(isShowAvailableNewVersionProgress = true) }
+        componentScope.launch(dispatchers.ioDispatcher()) {
+            torrserverCommands.installServer().collect { result ->
+                when (result) {
+                    is ResultProgress.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                availableNewVersionText = getString(Res.string.main_settings_available_new_version_update_error),
+                                isShowAvailableNewVersionProgress = false
+                            )
+                        }
+                    }
+
+                    is ResultProgress.Loading -> {
+                        _uiState.update {
+                            it.copy(availableNewVersionText = getString(Res.string.main_settings_available_new_version_update_loading) + " ${result.progress.progress} %")
+                        }
+                    }
+
+                    is ResultProgress.Success -> {
+                        restartTorrserver()
+                        _uiState.update {
+                            it.copy(
+                                availableNewVersionText = getString(Res.string.main_settings_available_new_version_update_success),
+                                isAvailableNewVersion = false,
+                                isShowAvailableNewVersionProgress = false
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun restartTorrserver() {
+        torrserverCommands.stopServer()
+        torrserverCommands.startServer()
     }
 
     override fun onChangeDefaultPlayer(value: Player) {
@@ -221,12 +272,28 @@ internal class DefaultMainComponent(
 
         componentScope.launch {
             val result = serverSettingsApi.getSettings()
+
             when (result) {
                 is Result.Error -> showError(result.error.toString())
                 is Result.Success -> updateSettingsUiState(result.data)
             }
 
+            checkUpates()
             _uiState.update { it.copy(isShowProgressBar = false) }
+        }
+    }
+
+    private suspend fun checkUpates() {
+        val echoResult = torrserverStuffApi.echo().successResult()
+        val updatesResult = torrserverCommands.isAvailableNewVersion().successResult() ?: false
+
+        if (!echoResult.isNullOrEmpty() && updatesResult) {
+            _uiState.update {
+                it.copy(
+                    availableNewVersionText = getString(Res.string.main_settings_available_new_version),
+                    isAvailableNewVersion = true
+                )
+            }
         }
     }
 
