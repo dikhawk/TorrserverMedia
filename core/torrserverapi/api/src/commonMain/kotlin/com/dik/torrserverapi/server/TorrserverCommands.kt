@@ -10,4 +10,7 @@ interface TorrserverCommands {
     suspend fun installServer(): Flow<ResultProgress<TorrserverFile, TorrserverError>>
     suspend fun startServer(): Result<Unit, TorrserverError>
     suspend fun stopServer(): Result<Unit, TorrserverError>
+    suspend fun isServerInstalled(): Result<Boolean, TorrserverError>
+    suspend fun isServerStarted(): Result<Boolean, TorrserverError>
+    suspend fun isAvailableNewVersion(): Result<Boolean, TorrserverError>
 }
