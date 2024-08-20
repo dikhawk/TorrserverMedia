@@ -5,10 +5,12 @@ import com.dik.common.cmd.KmpCmdRunner
 import com.dik.torrserverapi.cmd.KmpServerCommands
 import com.dik.torrserverapi.cmd.ServerCommands
 import com.dik.torrserverapi.http.createHttpClient
+import com.dik.torrserverapi.server.BackupFile
 import com.dik.torrserverapi.server.DownloadFile
 import com.dik.torrserverapi.server.InstallTorrserver
 import com.dik.torrserverapi.server.MagnetApi
 import com.dik.torrserverapi.server.MagnetApiImpl
+import com.dik.torrserverapi.server.RestoreServerFromBackUp
 import com.dik.torrserverapi.server.ServerSettingsApi
 import com.dik.torrserverapi.server.ServerSettingsApiImpl
 import com.dik.torrserverapi.server.TorrentApi
@@ -38,6 +40,8 @@ internal val torrserverModule = module {
     singleOf(::ServerSettingsApiImpl).bind<ServerSettingsApi>()
     factoryOf(::DownloadFile).bind<DownloadFile>()
     factoryOf(::InstallTorrserver).bind<InstallTorrserver>()
+    factoryOf(::BackupFile).bind<BackupFile>()
+    factoryOf(::RestoreServerFromBackUp).bind<RestoreServerFromBackUp>()
 }
 
 internal val httpModule = module {

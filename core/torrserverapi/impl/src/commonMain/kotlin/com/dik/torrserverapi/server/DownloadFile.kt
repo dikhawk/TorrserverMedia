@@ -27,7 +27,7 @@ internal class DownloadFile(
     private val ktor: HttpClient
 ) {
 
-    fun start(fileUrl: String, outputFilePath: String): Flow<ResultProgress<TorrserverFile, TorrserverError>> {
+    operator fun invoke(fileUrl: String, outputFilePath: String): Flow<ResultProgress<TorrserverFile, TorrserverError>> {
         var sink: BufferedSink? = null
 
         return flow<ResultProgress<TorrserverFile, TorrserverError>> {
@@ -69,7 +69,7 @@ internal class DownloadFile(
 
             emit(ResultProgress.Success(TorrserverFile(filePath = outputFilePath)))
         }.catch { e ->
-            emit(ResultProgress.Error(TorrserverError.Common.Unknown(e.toString())))
+            emit(ResultProgress.Error(TorrserverError.Unknown(e.toString())))
             sink?.flush()
             sink?.close()
         }.flowOn(dispatchers.defaultDispatcher())

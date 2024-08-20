@@ -43,7 +43,7 @@ class TorrentApiImpl(
 
             return Result.Success(resoponse.mapToTorrentList())
         } catch (e: Exception) {
-            return Result.Error(TorrserverError.Common.Unknown(e.toString()))
+            return Result.Error(TorrserverError.Unknown(e.toString()))
         }
     }
 
@@ -61,7 +61,7 @@ class TorrentApiImpl(
 
             return Result.Success(response.mapToTorrent())
         } catch (e: Exception) {
-            return Result.Error(TorrserverError.Common.Unknown(e.toString()))
+            return Result.Error(TorrserverError.Unknown(e.toString()))
         }
     }
 
@@ -88,10 +88,10 @@ class TorrentApiImpl(
 
                 Result.Success(response.mapToTorrent())
             } else {
-                Result.Error(TorrserverError.Common.Unknown("Response return error ${request.status.value}"))
+                Result.Error(TorrserverError.Unknown("Response return error ${request.status.value}"))
             }
         } catch (e: Exception) {
-            return Result.Error(TorrserverError.Common.Unknown(e.toString()))
+            return Result.Error(TorrserverError.Unknown(e.toString()))
         }
     }
 

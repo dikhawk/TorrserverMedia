@@ -35,7 +35,7 @@ class MagnetApiImpl(
 
             return Result.Success(response.mapToTorrent())
         } catch (e: Exception) {
-            return Result.Error(TorrserverError.Common.Unknown(e.toString()))
+            return Result.Error(TorrserverError.Unknown(e.toString()))
         }
     }
 }

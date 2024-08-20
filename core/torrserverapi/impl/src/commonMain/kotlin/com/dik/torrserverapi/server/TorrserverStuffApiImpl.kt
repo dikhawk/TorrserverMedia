@@ -19,8 +19,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 class TorrserverStuffApiImpl(
@@ -43,11 +41,11 @@ class TorrserverStuffApiImpl(
 
             val result = request.body<String>()
 
-            if (result.isNullOrEmpty()) return Result.Error(TorrserverError.Common.ResponseReturnNull)
+            if (result.isNullOrEmpty()) return Result.Error(TorrserverError.HttpError.ResponseReturnNull)
 
             return Result.Success(result)
         } catch (e: Exception) {
-            return Result.Error(TorrserverError.Common.Unknown(e.message ?: e.toString()))
+            return Result.Error(TorrserverError.Unknown(e.message ?: e.toString()))
         }
     }
 
@@ -71,13 +69,13 @@ class TorrserverStuffApiImpl(
 
             if (request.status != HttpStatusCode.OK) {
                 return Result.Error(
-                    TorrserverError.Common.Unknown("Result return code: ${request.status.value}")
+                    TorrserverError.Unknown("Result return code: ${request.status.value}")
                 )
             }
 
             return Result.Success(Unit)
         } catch (e: Exception) {
-            return Result.Error(TorrserverError.Common.Unknown(e.message ?: e.toString()))
+            return Result.Error(TorrserverError.Unknown(e.message ?: e.toString()))
         }
     }
 
@@ -91,11 +89,11 @@ class TorrserverStuffApiImpl(
 
             val result = request.body<List<ReleaseResponse>>()
 
-            if (result.isNullOrEmpty()) return Result.Error(TorrserverError.Common.ResponseReturnNull)
+            if (result.isNullOrEmpty()) return Result.Error(TorrserverError.HttpError.ResponseReturnNull)
 
             return Result.Success(result.first().mapRelease())
         } catch (e: Exception) {
-            return Result.Error(TorrserverError.Common.Unknown(e.message ?: e.toString()))
+            return Result.Error(TorrserverError.Unknown(e.message ?: e.toString()))
         }
     }
 }

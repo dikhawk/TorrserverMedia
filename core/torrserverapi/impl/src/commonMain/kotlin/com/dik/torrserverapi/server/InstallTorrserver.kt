@@ -17,10 +17,14 @@ import kotlinx.coroutines.flow.flowOn
 internal class InstallTorrserver(
     private val torrserverStuffApi: TorrserverStuffApi,
     private val downloadFile: DownloadFile,
+    private val backupFile: BackupFile,
+    private val restoreServerFromBackUp: RestoreServerFromBackUp,
     private val dispatchers: AppDispatchers
 ) {
 
-    fun start(outputFilePath: String) = flow<ResultProgress<TorrserverFile, TorrserverError>> {
+    operator fun invoke(
+        outputFilePath: String, outputBackupFilePath: String
+    ) = flow<ResultProgress<TorrserverFile, TorrserverError>> {
         val latestRelease = torrserverStuffApi.checkLatestRelease()
 
         if (latestRelease is Result.Error) {
@@ -34,21 +38,23 @@ internal class InstallTorrserver(
             latestRelease.data.findSupportedAsset(cpuArh, platform) else null
 
         if (asset == null) {
-            emit(ResultProgress.Error(TorrserverError.Service.NotSupported("Not os: ${platform.osname} or arch $cpuArh")))
+            emit(ResultProgress.Error(TorrserverError.Server.PlatformNotSupported("Not os: ${platform.osname} or arch $cpuArh")))
             return@flow
         }
 
-        downloadFile.start(
+        backupFile(outputFilePath, outputBackupFilePath)
+
+        downloadFile.invoke(
             fileUrl = asset.browserDownloadUrl,
             outputFilePath = outputFilePath
         ).collect { result ->
             emit(result)
         }
     }.catch { e ->
-        emit(ResultProgress.Error(TorrserverError.Common.Unknown(e.toString())))
+        restoreServerFromBackUp(outputBackupFilePath, outputFilePath)
+        emit(ResultProgress.Error(TorrserverError.Unknown(e.toString())))
     }.flowOn(dispatchers.defaultDispatcher())
 
-    //TODO requred testing for other platforms
     private fun Release.findSupportedAsset(cpuArch: String, platform: Platform): Asset? {
         return assets.find { asset ->
             asset.name.contains(cpuArch, ignoreCase = true) &&

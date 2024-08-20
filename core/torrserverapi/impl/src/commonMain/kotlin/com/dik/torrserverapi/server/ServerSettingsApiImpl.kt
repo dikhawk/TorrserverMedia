@@ -36,10 +36,10 @@ class ServerSettingsApiImpl(
             if (request.status.isSuccess()) {
                 return getSettings()
             } else {
-                return Result.Error(TorrserverError.Common.Unknown("Settings not applied"))
+                return Result.Error(TorrserverError.Unknown("Settings not applied"))
             }
         } catch (e: Exception) {
-            return Result.Error(TorrserverError.Common.Unknown(e.toString()))
+            return Result.Error(TorrserverError.Unknown(e.toString()))
         }
     }
 
@@ -57,7 +57,7 @@ class ServerSettingsApiImpl(
 
             return Result.Success(response.mapToServerSettings())
         } catch (e: Exception) {
-            return Result.Error(TorrserverError.Common.Unknown(e.toString()))
+            return Result.Error(TorrserverError.Unknown(e.toString()))
         }
     }
 
@@ -74,10 +74,10 @@ class ServerSettingsApiImpl(
             if (request.status.isSuccess()) {
                 return getSettings()
             } else {
-                return Result.Error(TorrserverError.Common.Unknown("Default settings not applied"))
+                return Result.Error(TorrserverError.Unknown("Default settings not applied"))
             }
         } catch (e: Exception) {
-            return Result.Error(TorrserverError.Common.Unknown(e.toString()))
+            return Result.Error(TorrserverError.Unknown(e.toString()))
         }
     }
 }
