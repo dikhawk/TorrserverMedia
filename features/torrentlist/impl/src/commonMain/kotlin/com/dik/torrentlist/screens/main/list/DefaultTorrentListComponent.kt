@@ -7,7 +7,9 @@ import com.dik.common.Result
 import com.dik.common.cmd.CmdRunner
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.TorrentApi
+import com.dik.torrserverapi.server.TorrserverCommands
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -16,11 +18,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 internal class DefaultTorrentListComponent(
     context: ComponentContext,
     private val onTorrentClick: (Torrent) -> Unit,
     private val torrentApi: TorrentApi,
+    private val torrserverCommands: TorrserverCommands,
     private val dispatchers: AppDispatchers,
 ) : ComponentContext by context, TorrentListComponent {
 
@@ -31,6 +35,7 @@ internal class DefaultTorrentListComponent(
     init {
         lifecycle.doOnDestroy { componentScope.cancel() }
         torrntsList()
+        componentScope.launch { torrserverCommands.startServer() }
     }
 
     override fun onClickItem(torrent: Torrent) {

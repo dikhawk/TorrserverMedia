@@ -3,9 +3,12 @@ package com.dik.torrentlist.screens.main.appbar
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.common.AppDispatchers
+import com.dik.common.utils.successResult
 import com.dik.torrentlist.screens.main.appbar.utils.defaultFilePickerDirectory
 import com.dik.torrserverapi.server.MagnetApi
 import com.dik.torrserverapi.server.TorrentApi
+import com.dik.torrserverapi.server.TorrserverCommands
+import com.dik.torrserverapi.server.TorrserverStuffApi
 import io.github.vinceglb.filekit.core.FileKit
 import io.github.vinceglb.filekit.core.PickerMode
 import io.github.vinceglb.filekit.core.PickerType
@@ -19,14 +22,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
+import torrservermedia.features.torrentlist.impl.generated.resources.add_torrent_dialog_title
 import torrservermedia.features.torrentlist.impl.generated.resources.main_add_dialog_error_invalid_magnet
-import torrservermedia.features.torrentlist.impl.generated.resources.main_app_bar_title
 
 internal class DefaultMainAppBarComponent(
     context: ComponentContext,
     private val dispatchers: AppDispatchers,
     private val torrentApi: TorrentApi,
     private val magnetApi: MagnetApi,
+    private val torrserverStuffApi: TorrserverStuffApi,
     private val openSettingsScreen: () -> Unit,
 ) : MainAppBarComponent, ComponentContext by context {
 
@@ -36,17 +40,20 @@ internal class DefaultMainAppBarComponent(
 
 
     init {
+        observeServerStatus()
         lifecycle.doOnDestroy { componentScope.cancel() }
     }
 
     override fun onClickAddTorrent() {
+        if (!_uiState.value.isServerStarted) return
+
         componentScope.launch(dispatchers.defaultDispatcher()) {
             val fileType = PickerType.File(extensions = listOf("torrent"))
 
             val file = FileKit.pickFile(
                 type = fileType,
                 mode = PickerMode.Single,
-                title = getString(Res.string.main_app_bar_title),
+                title = getString(Res.string.add_torrent_dialog_title),
                 initialDirectory = defaultFilePickerDirectory()
             )
             val filePath = file?.path
@@ -56,7 +63,9 @@ internal class DefaultMainAppBarComponent(
     }
 
     override fun openAddLinkDialog() {
-        _uiState.update { it.copy(event = MainAppBarEvent.ShowAddLinkDialog) }
+        if (!_uiState.value.isServerStarted) return
+
+        _uiState.update { it.copy(action = MainAppBarAction.ShowAddLinkDialog) }
     }
 
     override fun addLink() {
@@ -72,7 +81,7 @@ internal class DefaultMainAppBarComponent(
     }
 
     override fun dismissDialog() {
-        _uiState.update { it.copy(event = MainAppBarEvent.Undefined) }
+        _uiState.update { it.copy(action = MainAppBarAction.Undefined) }
         clearLink()
     }
 
@@ -85,7 +94,18 @@ internal class DefaultMainAppBarComponent(
     }
 
     override fun openSettingsScreen() {
+        if (!_uiState.value.isServerStarted) return
+
         openSettingsScreen.invoke()
+    }
+
+    private fun observeServerStatus() {
+        componentScope.launch {
+            torrserverStuffApi.observerServerStatus().collect { result ->
+                val isStarted = !result.successResult().isNullOrEmpty()
+                _uiState.update { it.copy(isServerStarted = isStarted) }
+            }
+        }
     }
 
     private fun isValidMagnetLink(magnetLink: String): Boolean {

@@ -1,13 +1,22 @@
 <resources>
-    <string name="main_app_bar_title">Выберите торрент</string>
+    <string name="main_app_bar_title">TorrServerMedia</string>
+    <string name="add_torrent_dialog_title">Выберите торрент</string>
     <string name="main_detiaisl_torrent_size">Размер:</string>
     <string name="main_statistics_torrent_status">Статус:</string>
     <string name="main_statistics_download_speed">Загрузка:</string>
     <string name="main_statistics_active_peers">Активные пиры:</string>
     <string name="main_content_files_files_list">Список файлов:</string>
     <string name="main_torrent_list_filese_count">Файлы:</string>
+    <string name="main_torrent_list_server_not_istalled_stub">TorrServer не установлен</string>
+    <string name="main_torrent_list_server_not_istalled_button_install">Установить TorrServer</string>
     <string name="main_add_dialog_button_cancel">Oтмена</string>
     <string name="main_add_dialog_button_ok">Ок</string>
     <string name="main_add_dialog_placeholder_past_link">Вставьте magnet ссылку</string>
     <string name="main_add_dialog_error_invalid_magnet">Неккоректная magnet ссылка</string>
+    <string name="main_torrserver_bar_button_install_server">Установить TorrServer</string>
+    <string name="main_torrserver_bar_msg_server_not_installed">Сервер не установлен</string>
+    <string name="main_torrserver_bar_button_update_server">Обновить сервер</string>
+    <string name="main_torrserver_bar_msg_server_is_installed">Сервер установлен</string>
+    <string name="main_torrserver_bar_button_start_server">Запустить TorrServer</string>
+    <string name="main_torrserver_bar_msg_installing_torrserver">Установка сервера</string>
 </resources>

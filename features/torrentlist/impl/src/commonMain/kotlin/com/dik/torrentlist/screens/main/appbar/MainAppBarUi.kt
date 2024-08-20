@@ -16,24 +16,30 @@ import torrservermedia.features.torrentlist.impl.generated.resources.ic_settings
 internal fun MainAppBarUi(component: MainAppBarComponent, modifier: Modifier = Modifier) {
     val uiState = component.uiState.collectAsState()
 
-    AppTopBar(actions = {
-        AppActionButton(
-            onClick = { component.onClickAddTorrent() },
-            imageVector = vectorResource(Res.drawable.ic_add_24),
-        )
+    AppTopBar(
+        modifier = modifier,
+        actions = {
+            AppActionButton(
+                enabled = uiState.value.isServerStarted,
+                onClick = { component.onClickAddTorrent() },
+                imageVector = vectorResource(Res.drawable.ic_add_24),
+            )
 
-        AppActionButton(
-            onClick = { component.openAddLinkDialog() },
-            imageVector = vectorResource(Res.drawable.ic_link_24),
-        )
+            AppActionButton(
+                enabled = uiState.value.isServerStarted,
+                onClick = { component.openAddLinkDialog() },
+                imageVector = vectorResource(Res.drawable.ic_link_24),
+            )
 
-        AppActionButton(
-            onClick = { component.openSettingsScreen() },
-            imageVector = vectorResource(Res.drawable.ic_settings_24),
-        )
-    })
+            AppActionButton(
+                enabled = uiState.value.isServerStarted,
+                onClick = { component.openSettingsScreen() },
+                imageVector = vectorResource(Res.drawable.ic_settings_24),
+            )
+        }
+    )
 
-    if (uiState.value.event == MainAppBarEvent.ShowAddLinkDialog) {
+    if (uiState.value.action == MainAppBarAction.ShowAddLinkDialog) {
         val errorLink = uiState.value.errorLink
         AddLlinkDialog(link = uiState.value.link,
             linkError = if (errorLink != null) stringResource(errorLink) else null,

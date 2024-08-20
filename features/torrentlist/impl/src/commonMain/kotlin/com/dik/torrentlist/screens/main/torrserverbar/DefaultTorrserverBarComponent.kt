@@ -5,7 +5,8 @@ import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
 import com.dik.common.ResultProgress
-import com.dik.torrentlist.di.inject
+import com.dik.common.utils.successResult
+import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.server.TorrserverCommands
 import com.dik.torrserverapi.server.TorrserverStuffApi
 import kotlinx.coroutines.CoroutineScope
@@ -17,12 +18,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.getString
+import torrservermedia.features.torrentlist.impl.generated.resources.Res
+import torrservermedia.features.torrentlist.impl.generated.resources.main_torrserver_bar_msg_installing_torrserver
 
-class DefaultTorrserverBarComponent(
+internal class DefaultTorrserverBarComponent(
     context: ComponentContext,
-    private val torrserverStuffApi: TorrserverStuffApi = inject(),
-    private val torrserverCommands: TorrserverCommands = inject(),
-    private val dispatchers: AppDispatchers = inject()
+    private val torrserverStuffApi: TorrserverStuffApi,
+    private val torrserverCommands: TorrserverCommands,
+    private val dispatchers: AppDispatchers
 ) : TorrserverBarComponent, ComponentContext by context {
 
     private val componentScope = CoroutineScope(dispatchers.mainDispatcher() + SupervisorJob())
@@ -30,7 +35,8 @@ class DefaultTorrserverBarComponent(
     override val uiState: StateFlow<TorrserverBarState> = _uiState.asStateFlow()
 
     init {
-        serverStatus()
+        checkServerIsInstalled()
+        observeServerStatus()
         lifecycle.doOnDestroy {
             componentScope.cancel()
         }
@@ -41,43 +47,82 @@ class DefaultTorrserverBarComponent(
             torrserverCommands.installServer().collect { restult ->
                 when (val res = restult) {
                     is ResultProgress.Loading -> _uiState.update {
-                        it.copy(isShowProgress = true, progressUpdate = res.progress.progress)
+                        it.copy(
+                            isShowProgress = true,
+                            progressUpdate = res.progress.progress,
+                            serverStatusText = getString(Res.string.main_torrserver_bar_msg_installing_torrserver),
+                        )
                     }
 
                     is ResultProgress.Error -> _uiState.update {
                         it.copy(isShowProgress = false, error = res.error.toString())
                     }
 
-                    is ResultProgress.Success -> _uiState.update {
-                        it.copy(isShowProgress = false, serverStatus = "!!!!INSTALLED!!!!")
+                    is ResultProgress.Success -> {
+                        _uiState.update { it.copy(isShowProgress = false, isServerInstalled = true) }
+                        torrserverCommands.startServer()
                     }
                 }
             }
         }
     }
 
-    override fun onClickRestartServer() {
+    override fun onClickStartServer() {
         componentScope.launch(dispatchers.defaultDispatcher()) {
-            torrserverCommands.startServer()
+            val result = torrserverCommands.startServer()
+            _uiState.update { it.copy(isServerStarted = result is Result.Success) }
+            checkServerIsInstalled()
         }
     }
 
-    override fun onStopServer() {
+    override fun onClickStopServer() {
         componentScope.launch(dispatchers.defaultDispatcher()) {
             torrserverCommands.stopServer()
+            _uiState.update { it.copy(isServerStarted = false) }
         }
     }
 
-    private fun serverStatus() {
-        componentScope.launch(dispatchers.defaultDispatcher()) {
-            while (true) {
-                val result = torrserverStuffApi.echo()
+    private fun observeServerStatus() {
+        componentScope.launch {
+            torrserverStuffApi.observerServerStatus().collect { result ->
                 when (val res = result) {
-                    is Result.Error -> _uiState.update { it.copy(serverStatus = res.error.toString()) }
-                    is Result.Success -> _uiState.update { it.copy(serverStatus = res.data) }
+                    is Result.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                serverStatusText = res.error.toString(),
+                                isServerStarted = false
+                            )
+                        }
+                    }
+
+                    is Result.Success -> {
+                        _uiState.update {
+                            it.copy(
+                                serverStatusText = res.data,
+                                isServerStarted = true
+                            )
+                        }
+                    }
                 }
-                delay(1000)
             }
         }
+    }
+
+    private fun checkServerIsInstalled() {
+        componentScope.launch {
+            val isIstalled = isServerInstalled()
+            val isStarted = !isIstalled
+            _uiState.update { it.copy(isServerInstalled = isIstalled,  isServerStarted = isStarted) }
+        }
+    }
+
+    private suspend fun isServerInstalled(): Boolean {
+        val result = torrserverCommands.isServerInstalled()
+
+        return result.successResult(::showError) ?: false
+    }
+
+    private fun showError(error: TorrserverError) {
+        _uiState.update { it.copy(serverStatusText = error.toString()) }
     }
 }

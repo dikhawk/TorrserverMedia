@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -14,8 +15,10 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
@@ -23,22 +26,39 @@ import androidx.compose.ui.unit.dp
 import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrserverapi.model.Torrent
 import com.dik.uikit.widgets.AppAsyncImage
+import com.dik.uikit.widgets.AppButton
 import com.dik.uikit.widgets.AppNormalBoldText
 import com.dik.uikit.widgets.AppNormalText
 import com.dik.uikit.widgets.AppStubVideo
+import com.dik.uikit.widgets.AppTitleText
 import org.jetbrains.compose.resources.stringResource
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.main_torrent_list_filese_count
+import torrservermedia.features.torrentlist.impl.generated.resources.main_torrent_list_server_not_istalled_button_install
+import torrservermedia.features.torrentlist.impl.generated.resources.main_torrent_list_server_not_istalled_stub
 
 @Composable
 internal fun TorrentListUi(component: TorrentListComponent, modifier: Modifier = Modifier) {
     val uiState = component.uiState.collectAsState()
 
+    Box(modifier = modifier.fillMaxSize(),contentAlignment = Alignment.Center) {
+        when {
+            else -> Torrents(modifier, uiState.value.torrents, component)
+        }
+    }
+}
+
+@Composable
+private fun Torrents(
+    modifier: Modifier,
+    torrents: List<Torrent>,
+    component: TorrentListComponent
+) {
     LazyVerticalGrid(
         modifier = modifier.fillMaxSize(),
         columns = GridCells.Adaptive(minSize = 200.dp)
     ) {
-        items(uiState.value.torrents, key = { it.hash }) { torrent ->
+        items(torrents, key = { it.hash }) { torrent ->
             TorrentItem(torrent, onClick = { component.onClickItem(torrent) })
         }
     }

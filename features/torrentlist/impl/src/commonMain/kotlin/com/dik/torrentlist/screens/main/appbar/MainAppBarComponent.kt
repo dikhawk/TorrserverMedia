@@ -19,12 +19,13 @@ internal interface MainAppBarComponent {
 
 @Stable
 internal data class MainAppBarState(
-    val event: MainAppBarEvent = MainAppBarEvent.Undefined,
+    val action: MainAppBarAction = MainAppBarAction.Undefined,
     val link: String = "",
-    val errorLink: StringResource? = null
+    val errorLink: StringResource? = null,
+    val isServerStarted: Boolean = false,
 )
 
-internal sealed interface MainAppBarEvent {
-    object ShowAddLinkDialog : MainAppBarEvent
-    object Undefined: MainAppBarEvent
+internal sealed interface MainAppBarAction {
+    object ShowAddLinkDialog : MainAppBarAction
+    object Undefined: MainAppBarAction
 }

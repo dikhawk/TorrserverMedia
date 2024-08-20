@@ -15,9 +15,10 @@ fun AppActionButton(
     imageVector: ImageVector,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     contentDescription: String? = null
 ) {
-    IconButton(onClick = onClick, modifier = modifier) {
+    IconButton(onClick = onClick, modifier = modifier, enabled = enabled) {
         Icon(
             imageVector = imageVector,
             contentDescription = contentDescription

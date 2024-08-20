@@ -18,6 +18,8 @@ import com.dik.torrentlist.screens.main.torrserverbar.DefaultTorrserverBarCompon
 import com.dik.torrentlist.screens.main.torrserverbar.TorrserverBarComponent
 import com.dik.torrserverapi.server.MagnetApi
 import com.dik.torrserverapi.server.TorrentApi
+import com.dik.torrserverapi.server.TorrserverCommands
+import com.dik.torrserverapi.server.TorrserverStuffApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
@@ -31,6 +33,8 @@ internal class DefaultMainComponent(
     private val cmdRunner: CmdRunner = inject(),
     private val openSettingsScreen: () -> Unit = {},
     private val appSettings: AppSettings = inject(),
+    private val torrserverStuffApi: TorrserverStuffApi = inject(),
+    private val torrserverCommands: TorrserverCommands = inject(),
     private val playersCommands: PlayersCommands = platformPlayersCommands()
 ) : MainComponent, ComponentContext by context {
 
@@ -45,11 +49,17 @@ internal class DefaultMainComponent(
         dispatchers = dispatchers,
         torrentApi = torrentApi,
         magnetApi = magnetApi,
-        openSettingsScreen = openSettingsScreen
+        openSettingsScreen = openSettingsScreen,
+        torrserverStuffApi = torrserverStuffApi,
     )
 
     override val torrserverBarComponent: TorrserverBarComponent =
-        DefaultTorrserverBarComponent(childContext("torrserver_bar"))
+        DefaultTorrserverBarComponent(
+            context = childContext("torrserver_bar"),
+            torrserverStuffApi = torrserverStuffApi,
+            torrserverCommands = torrserverCommands,
+            dispatchers = dispatchers
+        )
 
     override val torrentListComponent: TorrentListComponent = DefaultTorrentListComponent(
         context = childContext("torrserverbar"),
@@ -67,6 +77,7 @@ internal class DefaultMainComponent(
             detailsComponent.showDetails(torrent)
         },
         torrentApi = torrentApi,
+        torrserverCommands = torrserverCommands,
         dispatchers = dispatchers
     )
 
