@@ -5,9 +5,11 @@ import com.arkivanov.decompose.childContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
+import com.dik.common.Result
 import com.dik.common.cmd.CmdRunner
 import com.dik.common.player.PlayersCommands
 import com.dik.common.player.platformPlayersCommands
+import com.dik.common.utils.successResult
 import com.dik.torrentlist.di.inject
 import com.dik.torrentlist.screens.details.DefaultDetailsComponent
 import com.dik.torrentlist.screens.main.appbar.DefaultMainAppBarComponent
@@ -23,6 +25,11 @@ import com.dik.torrserverapi.server.TorrserverStuffApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class DefaultMainComponent(
@@ -38,10 +45,14 @@ internal class DefaultMainComponent(
     private val playersCommands: PlayersCommands = platformPlayersCommands()
 ) : MainComponent, ComponentContext by context {
 
+    private val _uiState = MutableStateFlow<MainComponentState>(MainComponentState())
+    override val uiState: StateFlow<MainComponentState> = _uiState.asStateFlow()
+
     private val componentScope = CoroutineScope(dispatchers.mainDispatcher() + SupervisorJob())
 
     init {
         lifecycle.doOnDestroy { componentScope.cancel() }
+        observeServerStatus()
     }
 
     override val mainAppBarComponent: MainAppBarComponent = DefaultMainAppBarComponent(
@@ -75,6 +86,7 @@ internal class DefaultMainComponent(
                 }
             }
             detailsComponent.showDetails(torrent)
+            _uiState.update { it.copy(isShowDetails = true) }
         },
         torrentApi = torrentApi,
         torrserverCommands = torrserverCommands,
@@ -82,4 +94,15 @@ internal class DefaultMainComponent(
     )
 
     override val detailsComponent = DefaultDetailsComponent(childContext(("details")))
+
+    private fun observeServerStatus() {
+        componentScope.launch {
+
+            torrserverStuffApi.observerServerStatus().collect { result ->
+                val isServerStarted = result.successResult()?.isNotEmpty() ?: false
+
+                _uiState.update { it.copy(isServerStarted = isServerStarted) }
+            }
+        }
+    }
 }

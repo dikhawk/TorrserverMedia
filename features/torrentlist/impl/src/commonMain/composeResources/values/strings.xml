@@ -19,4 +19,5 @@
     <string name="main_torrserver_bar_msg_server_is_installed">Сервер установлен</string>
     <string name="main_torrserver_bar_button_start_server">Запустить TorrServer</string>
     <string name="main_torrserver_bar_msg_installing_torrserver">Установка сервера</string>
+    <string name="main_stub_server_not_started">TorrServer не запущен</string>
 </resources>

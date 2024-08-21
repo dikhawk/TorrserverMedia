@@ -21,5 +21,4 @@ data class DetailsState(
     val poster: String = "",
     val title: String = "",
     val size: String = "",
-    val isVisible: Boolean = false,
 )

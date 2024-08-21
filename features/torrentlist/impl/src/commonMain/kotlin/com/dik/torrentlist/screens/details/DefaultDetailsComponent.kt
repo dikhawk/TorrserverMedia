@@ -45,7 +45,6 @@ internal class DefaultDetailsComponent(
         torrentStatisticsComponent.showStatistics(torrent.hash)
         _uiState.update {
             it.copy(
-                isVisible = true,
                 title = torrent.title,
                 poster = torrent.poster,
                 size = torrent.size.toReadableSize()
