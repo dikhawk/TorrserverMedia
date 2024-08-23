@@ -5,16 +5,20 @@ import com.arkivanov.decompose.childContext
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.cmd.CmdRunner
+import com.dik.common.utils.successResult
 import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrentlist.di.inject
 import com.dik.torrentlist.screens.details.files.DefaultContentFilesComponent
 import com.dik.torrentlist.screens.details.torrentstatistics.DefaultTorrentStatisticsComponent
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.TorrentApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 internal class DefaultDetailsComponent(
     componentContext: ComponentContext,
@@ -24,6 +28,7 @@ internal class DefaultDetailsComponent(
     private val appSettings: AppSettings = inject(),
 ) : ComponentContext by componentContext, DetailsComponent {
 
+    private val componentScope = CoroutineScope(dispatchers.mainDispatcher() + SupervisorJob())
     private val _uiState = MutableStateFlow<DetailsState>(DetailsState())
     override val uiState: StateFlow<DetailsState> = _uiState.asStateFlow()
 
@@ -40,15 +45,19 @@ internal class DefaultDetailsComponent(
         torrrentApi = torrrentApi
     )
 
-    override fun showDetails(torrent: Torrent) {
-        contentFilesComponent.showFiles(torrent.files)
-        torrentStatisticsComponent.showStatistics(torrent.hash)
-        _uiState.update {
-            it.copy(
-                title = torrent.title,
-                poster = torrent.poster,
-                size = torrent.size.toReadableSize()
-            )
+    override fun showDetails(hash: String) {
+        componentScope.launch {
+            val torrent = torrrentApi.getTorrent(hash).successResult() ?: return@launch
+
+            contentFilesComponent.showFiles(torrent.files)
+            torrentStatisticsComponent.showStatistics(torrent.hash)
+            _uiState.update {
+                it.copy(
+                    title = torrent.title,
+                    poster = torrent.poster,
+                    size = torrent.size.toReadableSize()
+                )
+            }
         }
     }
 }

@@ -6,12 +6,14 @@ import com.dik.common.AppDispatchers
 import com.dik.common.cmd.CmdRunner
 import com.dik.common.player.PlayersCommands
 import com.dik.common.player.platformPlayersCommands
+import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrserverapi.ContentFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class DefaultContentFilesComponent(
@@ -28,16 +30,35 @@ internal class DefaultContentFilesComponent(
 
 
     override fun showFiles(contentFiles: List<ContentFile>) {
-        _uiState.value.files.clear()
-        _uiState.value.files.addAll(contentFiles)
+        _uiState.update { it.copy(files = prepareFiles(contentFiles)) }
     }
 
-    override fun onClickItemPlay(contentFile: ContentFile) {
+    private fun prepareFiles(contentFiles: List<ContentFile>): Map<String, List<File>> {
+        val directories = mutableMapOf<String, MutableList<File>>()
+
+        contentFiles.forEach { file ->
+            val result = file.path.split("/")
+            val dierctory = result.dropLast(1).joinToString("/")
+
+            if (directories[dierctory] == null) directories[dierctory] = mutableListOf()
+
+            directories[dierctory]?.add(File(
+                id = file.id,
+                name = result.last(),
+                size = file.length.toReadableSize(),
+                isViewed = file.isViewved,
+                path = file.path,
+                url = file.url
+            ))
+        }
+
+        return directories
+    }
+
+    override fun onClickItemPlay(path: String, url: String) {
         componentScope.launch(dispatchers.defaultDispatcher()) {
             playersCommands.playFile(
-                fileName = contentFile.path,
-                fileUrl = contentFile.url,
-                player = appSettings.defaultPlayer
+                fileName = path, fileUrl = url, player = appSettings.defaultPlayer
             )
         }
     }

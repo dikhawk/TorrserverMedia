@@ -13,7 +13,7 @@ internal interface DetailsComponent {
     val contentFilesComponent: ContentFilesComponent
     val torrentStatisticsComponent: TorrentStatisticsComponent
 
-    fun showDetails(torrent: Torrent)
+    fun showDetails(hash: String)
 }
 
 @Stable

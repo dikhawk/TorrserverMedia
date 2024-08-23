@@ -2,13 +2,17 @@ package com.dik.torrserverapi.server
 
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
+import com.dik.common.utils.successResult
 import com.dik.torrserverapi.LOCAL_TORRENT_SERVER
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.Torrent
+import com.dik.torrserverapi.model.Viewed
 import com.dik.torrserverapi.server.mappers.mapToTorrent
 import com.dik.torrserverapi.server.mappers.mapToTorrentList
+import com.dik.torrserverapi.server.mappers.mapToViewedList
 import com.dik.torrserverapi.server.model.Body
 import com.dik.torrserverapi.server.response.TorrentResponse
+import com.dik.torrserverapi.server.response.ViewedReponse
 import com.dik.torrserverapi.utils.fileToByteArray
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -49,6 +53,7 @@ class TorrentApiImpl(
 
     override suspend fun getTorrent(hash: String): Result<Torrent, TorrserverError> {
         try {
+            val viewedList = getViewedList(hash).successResult() ?: emptyList()
             val body = Body(action = TorrentsAction.GET.asString, hash = hash)
             val request = withContext(dispatchers.ioDispatcher()) {
                 client.post("$LOCAL_TORRENT_SERVER/torrents") {
@@ -58,8 +63,9 @@ class TorrentApiImpl(
             }
 
             val response = request.body<TorrentResponse>()
+            val torrent = response.mapToTorrent(viewedList)
 
-            return Result.Success(response.mapToTorrent())
+            return Result.Success(torrent)
         } catch (e: Exception) {
             return Result.Error(TorrserverError.Unknown(e.toString()))
         }
@@ -106,5 +112,23 @@ class TorrentApiImpl(
 //            "poster": "https://masterpiecer-images.s3.yandex.net/5fd531dca6427c7:upscaled",
 //            "category": ""
 //        }
+    }
+
+    override suspend fun getViewedList(hash: String): Result<List<Viewed>, TorrserverError> {
+        try {
+            val body = Body(action = TorrentsAction.LIST.asString, hash = hash)
+            val request = withContext(dispatchers.ioDispatcher()) {
+                client.post("$LOCAL_TORRENT_SERVER/viewed") {
+                    setBody(Json.encodeToString(Body.serializer(), body))
+                    contentType(ContentType.Application.Json)
+                }
+            }
+
+            val resoponse = request.body<List<ViewedReponse>>()
+
+            return Result.Success(resoponse.mapToViewedList())
+        } catch (e: Exception) {
+            return Result.Error(TorrserverError.Unknown(e.toString()))
+        }
     }
 }

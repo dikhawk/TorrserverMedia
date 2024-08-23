@@ -85,7 +85,7 @@ internal class DefaultMainComponent(
                     )
                 }
             }
-            detailsComponent.showDetails(torrent)
+            detailsComponent.showDetails(torrent.hash)
             _uiState.update { it.copy(isShowDetails = true) }
         },
         torrentApi = torrentApi,
