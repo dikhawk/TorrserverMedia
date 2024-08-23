@@ -6,10 +6,10 @@ import com.dik.common.AppDispatchers
 import com.dik.common.Result
 import com.dik.torrentlist.converters.bytesToBits
 import com.dik.torrentlist.converters.toReadableSize
+import com.dik.torrentlist.error.toMessage
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.TorrentApi
-import io.ktor.util.date.GMTDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -75,6 +75,8 @@ class DefaultTorrentStatisticsComponent(
     }
 
     private fun showError(error: TorrserverError) {
-        _uiState.update { it.copy(error = error.toString()) }
+        componentScope.launch {
+            _uiState.update { it.copy(error = error.toMessage()) }
+        }
     }
 }

@@ -6,6 +6,7 @@ import com.dik.common.AppDispatchers
 import com.dik.common.Result
 import com.dik.common.ResultProgress
 import com.dik.common.utils.successResult
+import com.dik.torrentlist.error.toMessage
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.server.TorrserverCommands
 import com.dik.torrserverapi.server.TorrserverStuffApi
@@ -55,7 +56,7 @@ internal class DefaultTorrserverBarComponent(
                     }
 
                     is ResultProgress.Error -> _uiState.update {
-                        it.copy(isShowProgress = false, error = res.error.toString())
+                        it.copy(isShowProgress = false, error = res.error.toMessage())
                     }
 
                     is ResultProgress.Success -> {
@@ -89,7 +90,7 @@ internal class DefaultTorrserverBarComponent(
                     is Result.Error -> {
                         _uiState.update {
                             it.copy(
-                                serverStatusText = res.error.toString(),
+                                serverStatusText = res.error.toMessage(),
                                 isServerStarted = false
                             )
                         }

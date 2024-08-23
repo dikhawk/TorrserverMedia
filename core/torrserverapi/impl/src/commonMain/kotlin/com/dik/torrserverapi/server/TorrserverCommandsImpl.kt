@@ -109,7 +109,7 @@ internal class TorrserverCommandsImpl(
                 val echoResult = withContext(appDispatchers.ioDispatcher()) { torrserverStuffApi.echo() }
                 if (echoResult is Result.Success) return Result.Success(true)
 
-                delay(1000)
+                delay(500)
             }
 
             return Result.Success(false)

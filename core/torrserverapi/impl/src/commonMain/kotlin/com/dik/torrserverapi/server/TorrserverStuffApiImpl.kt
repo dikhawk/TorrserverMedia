@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.net.ConnectException
 
 class TorrserverStuffApiImpl(
     private val serverCommands: ServerCommands, private val client: HttpClient,
@@ -44,6 +45,8 @@ class TorrserverStuffApiImpl(
             if (result.isNullOrEmpty()) return Result.Error(TorrserverError.HttpError.ResponseReturnNull)
 
             return Result.Success(result)
+        } catch (e: ConnectException) {
+            return Result.Error(TorrserverError.Server.NoServerConnection)
         } catch (e: Exception) {
             return Result.Error(TorrserverError.Unknown(e.message ?: e.toString()))
         }
@@ -59,7 +62,8 @@ class TorrserverStuffApiImpl(
         }
     }
 
-    override fun observerServerStatus(): SharedFlow<Result<String, TorrserverError>> = serverStatus.asSharedFlow()
+    override fun observerServerStatus(): SharedFlow<Result<String, TorrserverError>> =
+        serverStatus.asSharedFlow()
 
     override suspend fun stopServer(): Result<Unit, TorrserverError> {
         try {
@@ -74,6 +78,8 @@ class TorrserverStuffApiImpl(
             }
 
             return Result.Success(Unit)
+        } catch (e: ConnectException) {
+            return Result.Error(TorrserverError.Server.NoServerConnection)
         } catch (e: Exception) {
             return Result.Error(TorrserverError.Unknown(e.message ?: e.toString()))
         }
@@ -92,6 +98,8 @@ class TorrserverStuffApiImpl(
             if (result.isNullOrEmpty()) return Result.Error(TorrserverError.HttpError.ResponseReturnNull)
 
             return Result.Success(result.first().mapRelease())
+        } catch (e: ConnectException) {
+            return Result.Error(TorrserverError.Server.NoServerConnection)
         } catch (e: Exception) {
             return Result.Error(TorrserverError.Unknown(e.message ?: e.toString()))
         }

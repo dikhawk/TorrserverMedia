@@ -12,6 +12,7 @@ sealed interface TorrserverError : Error {
         data class PlatformNotSupported(val messeage: String): Server
         data class FileNotExist(val message: String): Server
         object NotStarted: Server
+        object NoServerConnection: Server
     }
 
     data class Unknown(val messeage: String): TorrserverError
