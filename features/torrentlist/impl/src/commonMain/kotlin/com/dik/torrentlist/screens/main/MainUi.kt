@@ -1,14 +1,17 @@
 package com.dik.torrentlist.screens.main
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -39,12 +42,25 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
             TorrserverBarUi(component.torrserverBarComponent)
 
             if (uiState.value.isServerStarted) {
-                Row(modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.weight(1f).sizeIn(minWidth = 400.dp).padding(4.dp)) {
-                        TorrentListUi(component.torrentListComponent)
+                BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                    val minRightColumnWidth = 400.dp
+                    val maxRightColumnWidth = 500.dp
+
+                    val screenWidth = maxWidth
+                    val calculatedWidth = screenWidth / 3
+
+                    val rightColumnWidth = when {
+                        calculatedWidth < minRightColumnWidth -> minRightColumnWidth
+                        calculatedWidth > maxRightColumnWidth -> maxRightColumnWidth
+                        else -> calculatedWidth
                     }
-                    if (uiState.value.isShowDetails) {
-                        Column(modifier = Modifier.sizeIn(maxWidth = 400.dp)) {
+
+                    Row(modifier = Modifier.fillMaxSize()) {
+                        Column(modifier = Modifier.weight(1f).fillMaxHeight().padding(4.dp)) {
+                            TorrentListUi(component.torrentListComponent)
+                        }
+
+                        Column(modifier = Modifier.width(rightColumnWidth).fillMaxHeight()) {
                             DetailsUi(
                                 component = component.detailsComponent,
                                 modifier = Modifier.padding(top = 8.dp, bottom = 8.dp, end = 8.dp)
