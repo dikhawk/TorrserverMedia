@@ -36,6 +36,10 @@ internal class DefaultMainAppBarComponent(
     private val _uiState = MutableStateFlow(MainAppBarState())
     override val uiState: StateFlow<MainAppBarState> = _uiState.asStateFlow()
 
+    init {
+        observeServerStatus()
+    }
+
     override fun onClickAddTorrent() {
         if (!_uiState.value.isServerStarted) return
 
@@ -48,12 +52,12 @@ internal class DefaultMainAppBarComponent(
                 title = getString(Res.string.add_torrent_dialog_title),
                 initialDirectory = defaultFilePickerDirectory()
             )
-            val filePath = file?.path
+/*            val filePath = file?.path
 
             if (filePath != null) {
                 val torrent = torrentApi.addTorrent(filePath)
                 val movieDbSearch = searchTheMovieDbApi.multiSearching("Star Wars")
-            }
+            }*/
         }
     }
 
