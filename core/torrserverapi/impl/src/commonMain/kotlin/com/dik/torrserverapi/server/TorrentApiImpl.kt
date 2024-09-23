@@ -104,8 +104,8 @@ class TorrentApiImpl(
         }
     }
 
-    override suspend fun updateTorrent(hash: String): Result<Torrent, TorrserverError> {
-        TODO("Not yet implemented")
+    override suspend fun updateTorrent(torrent: Torrent): Result<Unit, TorrserverError> {
+//        TODO("Not yet implemented")
 //        url http://127.0.0.1:8090/torrents
 //        body
 //        {
@@ -115,6 +115,26 @@ class TorrentApiImpl(
 //            "poster": "https://masterpiecer-images.s3.yandex.net/5fd531dca6427c7:upscaled",
 //            "category": ""
 //        }
+
+        try {
+            val body = Body(
+                action = TorrentsAction.SET.asString,
+                hash = torrent.hash,
+                poster = torrent.poster
+            )
+            val request = withContext(dispatchers.ioDispatcher()) {
+                client.post("$LOCAL_TORRENT_SERVER/torrents") {
+                    setBody(Json.encodeToString(Body.serializer(), body))
+                    contentType(ContentType.Application.Json)
+                }
+            }
+
+            if (request.status.isSuccess()) return Result.Success(Unit)
+
+            return Result.Error(TorrserverError.HttpError.ResponseReturnError(request.status.description))
+        } catch (e: Exception) {
+            return Result.Error(TorrserverError.Unknown(e.toString()))
+        }
     }
 
     override suspend fun getViewedList(hash: String): Result<List<Viewed>, TorrserverError> {

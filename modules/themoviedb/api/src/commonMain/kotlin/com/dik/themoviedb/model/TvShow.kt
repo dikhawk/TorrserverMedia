@@ -2,7 +2,6 @@ package com.dik.themoviedb.model
 
 import com.dik.themoviedb.MediaType
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 
 data class TvShow(
     val backdropPath: String?,

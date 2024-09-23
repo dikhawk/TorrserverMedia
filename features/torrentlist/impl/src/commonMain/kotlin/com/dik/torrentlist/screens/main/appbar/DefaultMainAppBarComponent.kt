@@ -4,10 +4,15 @@ import com.arkivanov.decompose.ComponentContext
 import com.dik.common.AppDispatchers
 import com.dik.common.utils.successResult
 import com.dik.themoviedb.SearchTheMovieDbApi
+import com.dik.themoviedb.model.Movie
+import com.dik.themoviedb.model.TvShow
 import com.dik.torrentlist.screens.main.appbar.utils.defaultFilePickerDirectory
+import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.MagnetApi
 import com.dik.torrserverapi.server.TorrentApi
 import com.dik.torrserverapi.server.TorrserverStuffApi
+import com.dik.videofilenameparser.parseFileNameBase
+import com.dik.videofilenameparser.parseFileNameTvShow
 import io.github.vinceglb.filekit.core.FileKit
 import io.github.vinceglb.filekit.core.PickerMode
 import io.github.vinceglb.filekit.core.PickerType
@@ -17,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonNull.content
 import org.jetbrains.compose.resources.getString
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.add_torrent_dialog_title
@@ -52,13 +58,45 @@ internal class DefaultMainAppBarComponent(
                 title = getString(Res.string.add_torrent_dialog_title),
                 initialDirectory = defaultFilePickerDirectory()
             )
-/*            val filePath = file?.path
+            val filePath = file?.path
 
             if (filePath != null) {
-                val torrent = torrentApi.addTorrent(filePath)
-                val movieDbSearch = searchTheMovieDbApi.multiSearching("Star Wars")
-            }*/
+                val torrent = torrentApi.addTorrent(filePath).successResult()
+                findAndAddThumbnail(torrent)
+                val test = torrent
+//                val movieDbSearch = searchTheMovieDbApi.multiSearching("Star Wars")
+            }
         }
+    }
+
+    private suspend fun findAndAddThumbnail(torrent: Torrent?) {
+        if (torrent == null || torrent.files.isEmpty()) return
+
+        val tv = parseFileNameTvShow(fileName(torrent.files.first().path))
+        val movie = parseFileNameBase(torrent.name)
+        val seasonNumber = tv?.seasons?.firstOrNull() ?: 0
+        val episodeNumber = tv?.episodeNumbers?.firstOrNull() ?: 0
+        val isTv = (seasonNumber > 0) && (episodeNumber > 0)
+        val title = if (isTv) tv?.title else movie.title
+
+        if(!title.isNullOrEmpty()) {
+            val queryResult = searchTheMovieDbApi.multiSearching(title)
+            val content = queryResult.successResult()?.firstOrNull() ?: return
+
+            val thumbnail = when (content) {
+                is Movie -> content.posterPath
+                is TvShow -> content.posterPath
+                else -> null
+            }
+
+            if (thumbnail.isNullOrEmpty()) return
+
+            torrentApi.updateTorrent(torrent.copy(poster = thumbnail))
+        }
+    }
+
+    private fun fileName(path: String): String {
+        return path.split("/").last()
     }
 
     override fun openAddLinkDialog() {
