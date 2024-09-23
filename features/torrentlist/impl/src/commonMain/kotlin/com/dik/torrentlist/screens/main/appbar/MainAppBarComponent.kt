@@ -26,6 +26,6 @@ internal data class MainAppBarState(
 )
 
 internal sealed interface MainAppBarAction {
-    object ShowAddLinkDialog : MainAppBarAction
-    object Undefined: MainAppBarAction
+    data object ShowAddLinkDialog : MainAppBarAction
+    data object Undefined: MainAppBarAction
 }
