@@ -28,19 +28,16 @@ internal class DefaultTorrserverBarComponent(
     context: ComponentContext,
     private val torrserverStuffApi: TorrserverStuffApi,
     private val torrserverCommands: TorrserverCommands,
-    private val dispatchers: AppDispatchers
+    private val dispatchers: AppDispatchers,
+    private val componentScope: CoroutineScope,
 ) : TorrserverBarComponent, ComponentContext by context {
 
-    private val componentScope = CoroutineScope(dispatchers.mainDispatcher() + SupervisorJob())
     private val _uiState = MutableStateFlow(TorrserverBarState())
     override val uiState: StateFlow<TorrserverBarState> = _uiState.asStateFlow()
 
     init {
         checkServerIsInstalled()
         observeServerStatus()
-        lifecycle.doOnDestroy {
-            componentScope.cancel()
-        }
     }
 
     override fun onClickInstallServer() {

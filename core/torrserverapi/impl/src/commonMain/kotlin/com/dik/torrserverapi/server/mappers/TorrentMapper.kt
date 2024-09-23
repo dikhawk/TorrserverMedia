@@ -36,7 +36,7 @@ internal fun ContentFileResponse.mapToContentFile(
         hash = hash,
         index = this.id ?: 0,
     ),
-    isViewved = viewed.find { it.id == this.id } != null
+    isViewed = viewed.find { it.id == this.id } != null
 )
 
 internal fun List<ContentFileResponse>.mapToConetentFileList(
@@ -74,6 +74,7 @@ private fun createPlayStatistics(torrent: TorrentResponse): PlayStatistics? {
         torrentStatus = torrent.torrentStatus,
         loadedSize = torrent.loadedSize ?: 0L,
         preloadedBytes = torrent.preloadedBytes ?: 0L,
+        preloadSize = torrent.preloadSize?: 0L,
         downloadSpeed = torrent.downloadSpeed ?: 0.0,
         uploadSpeed = torrent.uploadSpeed ?: 0.0,
         totalPeers = torrent.totalPeers ?: 0,

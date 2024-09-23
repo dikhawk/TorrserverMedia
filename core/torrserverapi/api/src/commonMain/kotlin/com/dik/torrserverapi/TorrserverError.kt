@@ -5,15 +5,16 @@ import com.dik.common.errors.Error
 sealed interface TorrserverError : Error {
 
     sealed interface HttpError: TorrserverError {
-        object ResponseReturnNull: HttpError
+        data object ResponseReturnNull: HttpError
+        data class ResponseReturnError(val message: String): HttpError
     }
 
     sealed interface Server: TorrserverError {
-        data class PlatformNotSupported(val messeage: String): Server
+        data class PlatformNotSupported(val message: String): Server
         data class FileNotExist(val message: String): Server
-        object NotStarted: Server
-        object NoServerConnection: Server
+        data object NotStarted: Server
+        data object NoServerConnection: Server
     }
 
-    data class Unknown(val messeage: String): TorrserverError
+    data class Unknown(val message: String): TorrserverError
 }

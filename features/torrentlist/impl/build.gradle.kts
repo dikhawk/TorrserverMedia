@@ -49,6 +49,8 @@ kotlin {
             implementation(projects.core.common)
             implementation(projects.core.uikit)
             implementation(projects.core.appsettings.api)
+            implementation(projects.modules.themoviedb.api)
+            implementation(projects.modules.videoFileNameparser)
 
             implementation(compose.components.resources)
             implementation(libs.bundles.decompose)

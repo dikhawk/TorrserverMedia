@@ -67,6 +67,8 @@ kotlin {
             implementation(projects.core.appsettings.api)
             implementation(projects.core.appsettings.impl)
             implementation(projects.core.uikit)
+            implementation(projects.modules.themoviedb.api)
+            implementation(projects.modules.themoviedb.impl)
 
             implementation(compose.runtime)
             implementation(compose.foundation)

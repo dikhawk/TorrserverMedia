@@ -19,6 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.dik.torrentlist.screens.components.bufferization.BufferizationUi
 import com.dik.torrentlist.screens.details.DetailsUi
 import com.dik.torrentlist.screens.main.appbar.MainAppBarUi
 import com.dik.torrentlist.screens.main.list.TorrentListUi
@@ -28,7 +29,6 @@ import org.jetbrains.compose.resources.stringResource
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.main_stub_server_not_started
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
     val uiState = component.uiState.collectAsState()
@@ -73,6 +73,8 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
             }
         }
     }
+
+    if (uiState.value.isShowBufferization) BufferizationUi(component = component.bufferizationComponent)
 }
 
 @Composable

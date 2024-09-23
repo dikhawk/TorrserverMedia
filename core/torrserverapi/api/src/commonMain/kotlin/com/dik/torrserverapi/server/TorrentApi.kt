@@ -13,7 +13,11 @@ interface TorrentApi {
 
     suspend fun addTorrent(filePath: String): Result<Torrent, TorrserverError>
 
-    suspend fun upateTorrent(hash: String): Result<Torrent, TorrserverError>
+    suspend fun updateTorrent(hash: String): Result<Torrent, TorrserverError>
 
     suspend fun getViewedList(hash: String): Result<List<Viewed>, TorrserverError>
+
+    suspend fun preloadTorrent(hash: String, fileIndex: Int): Result<Unit, TorrserverError>
+
+    suspend fun removeTorrent(hash: String): Result<Unit, TorrserverError>
 }

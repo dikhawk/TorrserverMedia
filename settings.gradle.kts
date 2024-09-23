@@ -35,5 +35,8 @@ include(
     ":features:settings:api",
     ":features:settings:impl",
 
+    ":modules:themoviedb:api",
+    ":modules:themoviedb:impl",
 
+    ":modules:videoFileNameparser",
 )

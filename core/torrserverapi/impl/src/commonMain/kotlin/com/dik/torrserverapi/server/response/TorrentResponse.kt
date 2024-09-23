@@ -14,6 +14,7 @@ data class TorrentResponse(
     @SerialName("loaded_size") val loadedSize: Long? = 0L,
     @SerialName("torrent_size") val torrentSize: Long? = 0L,
     @SerialName("preloaded_bytes") val preloadedBytes: Long? = 0L,
+    @SerialName("preload_size") val preloadSize: Long? = 0L,
     @SerialName("download_speed") val downloadSpeed: Double? = 0.0,
     @SerialName("upload_speed") val uploadSpeed: Double? = 0.0,
     @SerialName("total_peers") val totalPeers: Int? = 0,

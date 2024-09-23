@@ -1,7 +1,6 @@
 package com.dik.torrentlist.screens.details.torrentstatistics
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
 import com.dik.torrentlist.converters.bytesToBits
@@ -12,8 +11,6 @@ import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.TorrentApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,20 +21,14 @@ import kotlinx.coroutines.launch
 class DefaultTorrentStatisticsComponent(
     componentContext: ComponentContext,
     private val dispatchers: AppDispatchers,
+    private val componentScope: CoroutineScope,
     private val torrrentApi: TorrentApi
 ) : TorrentStatisticsComponent, ComponentContext by componentContext {
 
     private val _uiState = MutableStateFlow(TorrentStatisticsState())
     override val uiState: StateFlow<TorrentStatisticsState> = _uiState.asStateFlow()
-    private val componentScope = CoroutineScope(dispatchers.mainDispatcher() + SupervisorJob())
     private var showStatisticsJob: Job? = null
 
-    init {
-        lifecycle.doOnDestroy {
-            showStatisticsJob?.cancel()
-            componentScope.cancel()
-        }
-    }
 
     override fun showStatistics(hash: String) {
         showStatisticsJob?.cancel()
@@ -47,7 +38,7 @@ class DefaultTorrentStatisticsComponent(
                 val result = torrrentApi.getTorrent(hash)
                 when (val res = result) {
                     is Result.Error -> showError(res.error)
-                    is Result.Success -> upddateUiState(res.data)
+                    is Result.Success -> updateUiState(res.data)
                 }
 
                 delay(3000)
@@ -55,10 +46,8 @@ class DefaultTorrentStatisticsComponent(
         }
     }
 
-    private fun upddateUiState(torrent: Torrent) {
-        val statistics = torrent.statistics
-
-        if (statistics == null) return
+    private fun updateUiState(torrent: Torrent) {
+        val statistics = torrent.statistics ?: return
 
         _uiState.update {
             it.copy(

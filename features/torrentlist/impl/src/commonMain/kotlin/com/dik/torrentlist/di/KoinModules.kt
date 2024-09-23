@@ -5,6 +5,9 @@ import com.dik.common.AppDispatchers
 import com.dik.common.cmd.CmdRunner
 import com.dik.common.cmd.KmpCmdRunner
 import com.dik.settings.SettingsFeatureApi
+import com.dik.themoviedb.MoviesTheMovieDbApi
+import com.dik.themoviedb.SearchTheMovieDbApi
+import com.dik.themoviedb.TvEpisodesTheMovieDbApi
 import com.dik.torrserverapi.di.TorrserverApi
 import com.dik.torrserverapi.server.MagnetApi
 import com.dik.torrserverapi.server.TorrentApi
@@ -22,7 +25,7 @@ object KoinModules {
         }.koin
     }
 
-    fun init(dependecies: TorrentListDependecies): Koin {
+    fun init(dependecies: TorrentListDependencies): Koin {
         koin.loadModules(listOf(module {
             single<TorrserverApi> { dependecies.torrServerApi() }
             single<TorrserverStuffApi> { dependecies.torrServerApi().torrserverStuffApi() }
@@ -33,6 +36,9 @@ object KoinModules {
             factory<CmdRunner> { KmpCmdRunner }
             factory<SettingsFeatureApi> { dependecies.settingsFeatureApi() }
             single<AppSettings> { dependecies.appSettings() }
+            single<SearchTheMovieDbApi> { dependecies.theMovieDbApi().searchApi() }
+            single<MoviesTheMovieDbApi> { dependecies.theMovieDbApi().movieApi() }
+            single<TvEpisodesTheMovieDbApi> { dependecies.theMovieDbApi().tvEpisodesApi() }
         }))
 
         return koin

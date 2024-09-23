@@ -14,6 +14,7 @@ object KoinModules {
                 appSettingsModule,
                 featuresModule,
                 torrserverModule,
+                theMovieDbApiModule
             )
         }.koin
     }

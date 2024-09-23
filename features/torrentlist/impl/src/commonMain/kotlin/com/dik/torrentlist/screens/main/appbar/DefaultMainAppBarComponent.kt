@@ -1,20 +1,17 @@
 package com.dik.torrentlist.screens.main.appbar
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.common.AppDispatchers
 import com.dik.common.utils.successResult
+import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.torrentlist.screens.main.appbar.utils.defaultFilePickerDirectory
 import com.dik.torrserverapi.server.MagnetApi
 import com.dik.torrserverapi.server.TorrentApi
-import com.dik.torrserverapi.server.TorrserverCommands
 import com.dik.torrserverapi.server.TorrserverStuffApi
 import io.github.vinceglb.filekit.core.FileKit
 import io.github.vinceglb.filekit.core.PickerMode
 import io.github.vinceglb.filekit.core.PickerType
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,21 +25,16 @@ import torrservermedia.features.torrentlist.impl.generated.resources.main_add_di
 internal class DefaultMainAppBarComponent(
     context: ComponentContext,
     private val dispatchers: AppDispatchers,
+    private val componentScope: CoroutineScope,
     private val torrentApi: TorrentApi,
     private val magnetApi: MagnetApi,
     private val torrserverStuffApi: TorrserverStuffApi,
+    private val searchTheMovieDbApi: SearchTheMovieDbApi,
     private val openSettingsScreen: () -> Unit,
 ) : MainAppBarComponent, ComponentContext by context {
 
-    private val componentScope = CoroutineScope(dispatchers.mainDispatcher() + SupervisorJob())
     private val _uiState = MutableStateFlow(MainAppBarState())
     override val uiState: StateFlow<MainAppBarState> = _uiState.asStateFlow()
-
-
-    init {
-        observeServerStatus()
-        lifecycle.doOnDestroy { componentScope.cancel() }
-    }
 
     override fun onClickAddTorrent() {
         if (!_uiState.value.isServerStarted) return
@@ -58,7 +50,10 @@ internal class DefaultMainAppBarComponent(
             )
             val filePath = file?.path
 
-            if (filePath != null) torrentApi.addTorrent(filePath)
+            if (filePath != null) {
+                val torrent = torrentApi.addTorrent(filePath)
+                val movieDbSearch = searchTheMovieDbApi.multiSearching("Star Wars")
+            }
         }
     }
 

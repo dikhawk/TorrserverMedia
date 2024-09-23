@@ -9,7 +9,7 @@ internal interface ContentFilesComponent {
     val uiState: StateFlow<ContentFilesState>
 
     fun showFiles(contentFiles: List<ContentFile>)
-    fun onClickItemPlay(path: String, url: String)
+    fun onClickItem(contentFile: ContentFile)
 }
 
 @Stable
@@ -18,10 +18,7 @@ internal data class ContentFilesState(
 )
 
 internal data class File(
-    val id : Int,
     val name: String,
     val size: String,
-    val isViewed: Boolean,
-    val path: String,
-    val url: String
+    val contentFile: ContentFile
 )

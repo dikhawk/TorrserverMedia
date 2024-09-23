@@ -16,8 +16,11 @@ import com.dik.torrserverapi.server.response.ViewedReponse
 import com.dik.torrserverapi.utils.fileToByteArray
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.timeout
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -101,7 +104,7 @@ class TorrentApiImpl(
         }
     }
 
-    override suspend fun upateTorrent(hash: String): Result<Torrent, TorrserverError> {
+    override suspend fun updateTorrent(hash: String): Result<Torrent, TorrserverError> {
         TODO("Not yet implemented")
 //        url http://127.0.0.1:8090/torrents
 //        body
@@ -130,5 +133,38 @@ class TorrentApiImpl(
         } catch (e: Exception) {
             return Result.Error(TorrserverError.Unknown(e.toString()))
         }
+    }
+
+    override suspend fun preloadTorrent(
+        hash: String,
+        fileIndex: Int
+    ): Result<Unit, TorrserverError> {
+        try {
+            val request = withContext(dispatchers.ioDispatcher()) {
+                client.get("$LOCAL_TORRENT_SERVER/stream") {
+                    parameter("link", hash)
+                    parameter("index", fileIndex)
+                    parameter("preload", true)
+
+                    timeout {
+                        requestTimeoutMillis = 60000 * 5
+                        socketTimeoutMillis = 60000 * 5
+                    }
+                }
+            }
+
+            if (request.status.isSuccess()) return Result.Success(Unit)
+
+            return Result.Error(
+                TorrserverError.HttpError
+                    .ResponseReturnError("Response return error: ${request.status.value}")
+            )
+        } catch (e: Exception) {
+            return Result.Error(TorrserverError.Unknown(e.toString()))
+        }
+    }
+
+    override suspend fun removeTorrent(hash: String): Result<Unit, TorrserverError> {
+        TODO("Not yet implemented")
     }
 }

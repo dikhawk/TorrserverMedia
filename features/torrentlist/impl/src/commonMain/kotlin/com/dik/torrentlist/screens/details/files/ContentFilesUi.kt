@@ -38,11 +38,11 @@ internal fun ContentFilesUi(component: ContentFilesComponent, modifier: Modifier
                     item { DirectoryItem(name = directoryName) }
                 }
 
-                items(items = files, key = { it.id }) { file ->
+                items(items = files, key = { it.contentFile.id }) { file ->
                     FileItem(
                         file = file,
                         directoryName = directoryName,
-                        onClickItem = { component.onClickItemPlay(url = file.url, path = file.path) }
+                        onClickItem = { component.onClickItem(file.contentFile) }
                     )
                 }
             }
@@ -69,7 +69,7 @@ private fun FileItem(
             Row(modifier = Modifier.fillMaxWidth()) {
                 AppNormaBoldlItalicText(text = file.size)
                 Spacer(modifier = Modifier.weight(1f))
-                if (file.isViewed) {
+                if (file.contentFile.isViewed) {
                     Icon(
                         imageVector = vectorResource(Res.drawable.is_eye_24),
                         contentDescription = null

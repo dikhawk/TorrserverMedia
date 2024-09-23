@@ -4,7 +4,6 @@ import com.dik.torrserverapi.TorrserverError
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
-import torrservermedia.features.torrentlist.impl.generated.resources.main_app_bar_title
 import torrservermedia.features.torrentlist.impl.generated.resources.main_error_msg_no_server_connection
 import torrservermedia.features.torrentlist.impl.generated.resources.main_error_msg_platform_not_supported
 import torrservermedia.features.torrentlist.impl.generated.resources.main_error_msg_resoponse_return_null
@@ -23,7 +22,8 @@ suspend fun TorrserverError.toMessage(): String {
             Res.string.main_error_msg_server_not_started.asString()
         is TorrserverError.Server.PlatformNotSupported ->
             Res.string.main_error_msg_platform_not_supported.asString()
-        is TorrserverError.Unknown -> this.messeage
+        is TorrserverError.Unknown -> this.message
+        is TorrserverError.HttpError.ResponseReturnError -> this.message
     }
 }
 

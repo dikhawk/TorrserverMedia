@@ -22,6 +22,7 @@ okio = "3.9.0"
 kotlinx-io-core = "0.4.0"
 androidx-compose-windowSizeClass = "1.2.1"
 filekit = "0.6.2"
+buildkonfig = "0.15.1"
 
 [libraries]
 
@@ -72,6 +73,7 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 
 [bundles]
 decompose = [

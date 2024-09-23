@@ -3,6 +3,7 @@ package com.dik.torrserverapi.model
 data class PlayStatistics(
     val torrentStatus: String,//stat_string
     val loadedSize: Long,
+    val preloadSize: Long,
     val preloadedBytes: Long,
     val downloadSpeed: Double,
     val uploadSpeed: Double,

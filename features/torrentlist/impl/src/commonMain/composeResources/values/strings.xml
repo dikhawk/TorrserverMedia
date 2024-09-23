@@ -25,4 +25,7 @@
     <string name="main_error_msg_no_server_connection">Нет соеденения с TorrServer</string>
     <string name="main_error_msg_server_not_started">TorrServer не запущен</string>
     <string name="main_error_msg_platform_not_supported">Текущая платформа не поддерживается</string>
+    <string name="main_bufferization_button_cancel">Отмена</string>
+    <string name="main_bufferization_downloading_speed">Загрузка</string>
+    <string name="main_bufferization_season_and_episode">Сезон: %s; Эпизод %s</string>
 </resources>

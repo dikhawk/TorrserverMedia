@@ -6,12 +6,12 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-object TorrentListComponentHolder : ComponentHolder<TorrentListFeatureApi, TorrentListDependecies> {
+object TorrentListComponentHolder : ComponentHolder<TorrentListFeatureApi, TorrentListDependencies> {
 
     private var componentHolder: TorrentListComponent? = null
     private val mutex = Mutex()
 
-    override fun init(dependencies: TorrentListDependecies) {
+    override fun init(dependencies: TorrentListDependencies) {
         if (componentHolder == null) {
             runBlocking {
                 mutex.withLock {

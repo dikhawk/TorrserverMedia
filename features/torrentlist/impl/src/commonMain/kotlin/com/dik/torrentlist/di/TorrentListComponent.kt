@@ -6,11 +6,11 @@ import com.dik.torrentlist.TorrentListFeatureApi
 
 internal abstract class TorrentListComponent : TorrentListFeatureApi {
     companion object {
-        fun initAndGet(dependecies: TorrentListDependecies): TorrentListComponent {
+        fun initAndGet(dependencies: TorrentListDependencies): TorrentListComponent {
 
             return object : TorrentListComponent() {
                 init {
-                    KoinModules.init(dependecies)
+                    KoinModules.init(dependencies)
                 }
 
                 override fun start(): TorrentListEntry {

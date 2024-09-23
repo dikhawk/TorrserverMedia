@@ -5,5 +5,5 @@ data class ContentFile(
     val path: String,
     val length: Long,
     val url: String,
-    val isViewved: Boolean
+    val isViewed: Boolean
 )

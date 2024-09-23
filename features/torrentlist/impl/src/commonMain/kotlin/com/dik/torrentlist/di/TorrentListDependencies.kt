@@ -4,9 +4,10 @@ import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.moduleinjector.BaseDependencies
 import com.dik.settings.SettingsFeatureApi
+import com.dik.themoviedb.di.TheMovieDbApi
 import com.dik.torrserverapi.di.TorrserverApi
 
-interface TorrentListDependecies : BaseDependencies {
+interface TorrentListDependencies : BaseDependencies {
 
     fun torrServerApi(): TorrserverApi
 
@@ -15,4 +16,6 @@ interface TorrentListDependecies : BaseDependencies {
     fun settingsFeatureApi(): SettingsFeatureApi
 
     fun appSettings(): AppSettings
+
+    fun theMovieDbApi(): TheMovieDbApi
 }
