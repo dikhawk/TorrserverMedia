@@ -133,7 +133,7 @@ internal class DefaultBufferizationComponent(
         val movie: ParsedBase = parseFileNameBase(fileName)
         val seasonNumber = tv?.seasons?.firstOrNull() ?: 0
         val episodeNumber = tv?.episodeNumbers?.firstOrNull() ?: 0
-        val isTv = (seasonNumber == 0) && (episodeNumber == 0)
+        val isTv = (seasonNumber > 0) && (episodeNumber > 0)
 
         componentScope.launch {
             val queryTitle = if (isTv) tv?.title ?: "" else movie.title
