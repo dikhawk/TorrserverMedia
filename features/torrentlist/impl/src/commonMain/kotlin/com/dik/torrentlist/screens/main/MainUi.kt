@@ -60,11 +60,17 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
                             TorrentListUi(component.torrentListComponent)
                         }
 
-                        Column(modifier = Modifier.width(rightColumnWidth).fillMaxHeight()) {
-                            DetailsUi(
-                                component = component.detailsComponent,
-                                modifier = Modifier.padding(top = 8.dp, bottom = 8.dp, end = 8.dp)
-                            )
+                        if (uiState.value.isShowDetails) {
+                            Column(modifier = Modifier.width(rightColumnWidth).fillMaxHeight()) {
+                                DetailsUi(
+                                    component = component.detailsComponent,
+                                    modifier = Modifier.padding(
+                                        top = 8.dp,
+                                        bottom = 8.dp,
+                                        end = 8.dp
+                                    )
+                                )
+                            }
                         }
                     }
                 }
