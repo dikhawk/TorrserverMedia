@@ -1,7 +1,8 @@
 <resources>
     <string name="main_app_bar_title">TorrServerMedia</string>
     <string name="add_torrent_dialog_title">Выберите торрент</string>
-    <string name="main_detiaisl_torrent_size">Размер:</string>
+    <string name="main_details_torrent_size">Размер:</string>
+    <string name="main_details_season">Сезон: %s</string>
     <string name="main_statistics_torrent_status">Статус:</string>
     <string name="main_statistics_download_speed">Загрузка:</string>
     <string name="main_statistics_active_peers">Активные пиры:</string>

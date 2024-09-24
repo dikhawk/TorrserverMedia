@@ -3,7 +3,6 @@ package com.dik.torrentlist.screens.details
 import androidx.compose.runtime.Stable
 import com.dik.torrentlist.screens.details.files.ContentFilesComponent
 import com.dik.torrentlist.screens.details.torrentstatistics.TorrentStatisticsComponent
-import com.dik.torrserverapi.model.Torrent
 import kotlinx.coroutines.flow.StateFlow
 
 internal interface DetailsComponent {
@@ -19,6 +18,9 @@ internal interface DetailsComponent {
 @Stable
 data class DetailsState(
     val poster: String = "",
+    val filePath: String = "",
     val title: String = "",
+    val seasonNumber: String = "",
     val size: String = "",
+    val overview: String = "",
 )

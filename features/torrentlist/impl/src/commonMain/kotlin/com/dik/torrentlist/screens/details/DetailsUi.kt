@@ -23,7 +23,7 @@ import com.dik.uikit.widgets.AppNormalText
 import com.dik.uikit.widgets.AppStubVideo
 import org.jetbrains.compose.resources.stringResource
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
-import torrservermedia.features.torrentlist.impl.generated.resources.main_detiaisl_torrent_size
+import torrservermedia.features.torrentlist.impl.generated.resources.main_details_torrent_size
 
 @Composable
 internal fun DetailsUi(component: DetailsComponent, modifier: Modifier = Modifier) {
@@ -42,17 +42,20 @@ internal fun DetailsUi(component: DetailsComponent, modifier: Modifier = Modifie
                 }
             }
             Column(modifier = Modifier.padding(8.dp)) {
-                AppNormalText(text = uiState.value.title)
+                AppNormalText(text = uiState.value.filePath)
                 Row {
-                    AppNormalItalicText(text = stringResource(Res.string.main_detiaisl_torrent_size))
+                    AppNormalItalicText(text = stringResource(Res.string.main_details_torrent_size))
                     Spacer(modifier = Modifier.width(8.dp))
                     AppNormalBoldText(text = uiState.value.size)
                 }
                 TorrentStatisticsUI(component = component.torrentStatisticsComponent)
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
+
         ContentFilesUi(
+            title = uiState.value.title,
+            overview = uiState.value.overview,
+            season = uiState.value.seasonNumber,
             component = component.contentFilesComponent,
             modifier = Modifier.padding(8.dp)
         )

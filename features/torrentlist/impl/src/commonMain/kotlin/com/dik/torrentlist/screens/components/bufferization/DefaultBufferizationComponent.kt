@@ -10,6 +10,7 @@ import com.dik.themoviedb.model.Movie
 import com.dik.themoviedb.model.TvShow
 import com.dik.torrentlist.converters.bytesToBits
 import com.dik.torrentlist.converters.toReadableSize
+import com.dik.torrentlist.utils.fileName
 import com.dik.torrserverapi.ContentFile
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.TorrentApi
@@ -178,9 +179,5 @@ internal class DefaultBufferizationComponent(
             seasonNumber,
             episodeNumber
         )
-    }
-
-    private fun String.fileName(): String {
-        return this.split("/").last()
     }
 }

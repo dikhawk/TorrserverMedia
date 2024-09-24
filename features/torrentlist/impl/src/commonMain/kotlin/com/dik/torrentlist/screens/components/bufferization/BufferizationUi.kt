@@ -53,7 +53,7 @@ internal fun BufferizationUi(component: BufferizationComponent, modifier: Modifi
                     )
                     AppNormalBoldText(text = uiState.value.downloadProgressText)
                     if(uiState.value.overview.isNotEmpty())
-                        AppNormalText(text = uiState.value.overview)
+                        AppNormalItalicText(text = uiState.value.overview)
 
                 }
                 Spacer(modifier = Modifier.height(8.dp))

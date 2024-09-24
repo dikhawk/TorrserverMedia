@@ -7,6 +7,7 @@ import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.model.Movie
 import com.dik.themoviedb.model.TvShow
 import com.dik.torrentlist.screens.main.appbar.utils.defaultFilePickerDirectory
+import com.dik.torrentlist.utils.fileName
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.MagnetApi
 import com.dik.torrserverapi.server.TorrentApi
@@ -22,7 +23,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonNull.content
 import org.jetbrains.compose.resources.getString
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.add_torrent_dialog_title
@@ -63,8 +63,6 @@ internal class DefaultMainAppBarComponent(
             if (filePath != null) {
                 val torrent = torrentApi.addTorrent(filePath).successResult()
                 findAndAddThumbnail(torrent)
-                val test = torrent
-//                val movieDbSearch = searchTheMovieDbApi.multiSearching("Star Wars")
             }
         }
     }
@@ -72,7 +70,8 @@ internal class DefaultMainAppBarComponent(
     private suspend fun findAndAddThumbnail(torrent: Torrent?) {
         if (torrent == null || torrent.files.isEmpty()) return
 
-        val tv = parseFileNameTvShow(fileName(torrent.files.first().path))
+        val firstFile = torrent.files.first()
+        val tv = parseFileNameTvShow(firstFile.path.fileName())
         val movie = parseFileNameBase(torrent.name)
         val seasonNumber = tv?.seasons?.firstOrNull() ?: 0
         val episodeNumber = tv?.episodeNumbers?.firstOrNull() ?: 0
@@ -93,10 +92,6 @@ internal class DefaultMainAppBarComponent(
 
             torrentApi.updateTorrent(torrent.copy(poster = thumbnail))
         }
-    }
-
-    private fun fileName(path: String): String {
-        return path.split("/").last()
     }
 
     override fun openAddLinkDialog() {
