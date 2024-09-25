@@ -50,7 +50,7 @@ private fun String?.toContentFileList(
     hash: String,
     viewed: List<Viewed> = emptyList()
 ): List<ContentFile> {
-    if (this == null) return emptyList()
+    if (isNullOrEmpty()) return emptyList()
 
     val contentFile = Json.decodeFromString<Files>(this)
 

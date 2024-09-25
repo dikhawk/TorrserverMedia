@@ -14,6 +14,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.http.isSuccess
 import kotlinx.coroutines.withContext
 
 class MagnetApiImpl(
@@ -31,7 +32,11 @@ class MagnetApiImpl(
                 }
             }
 
+            if (!request.status.isSuccess())
+                return Result.Error(TorrserverError.HttpError.ResponseReturnError(request.status.description))
+
             val response = request.body<TorrentResponse>()
+            val string = response
 
             return Result.Success(response.mapToTorrent())
         } catch (e: Exception) {

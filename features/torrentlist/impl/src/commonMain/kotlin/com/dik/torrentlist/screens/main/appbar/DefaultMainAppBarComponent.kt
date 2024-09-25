@@ -62,35 +62,9 @@ internal class DefaultMainAppBarComponent(
 
             if (filePath != null) {
                 val torrent = torrentApi.addTorrent(filePath).successResult()
+
                 findAndAddThumbnail(torrent)
             }
-        }
-    }
-
-    private suspend fun findAndAddThumbnail(torrent: Torrent?) {
-        if (torrent == null || torrent.files.isEmpty()) return
-
-        val firstFile = torrent.files.first()
-        val tv = parseFileNameTvShow(firstFile.path.fileName())
-        val movie = parseFileNameBase(torrent.name)
-        val seasonNumber = tv?.seasons?.firstOrNull() ?: 0
-        val episodeNumber = tv?.episodeNumbers?.firstOrNull() ?: 0
-        val isTv = (seasonNumber > 0) && (episodeNumber > 0)
-        val title = if (isTv) tv?.title else movie.title
-
-        if(!title.isNullOrEmpty()) {
-            val queryResult = searchTheMovieDbApi.multiSearching(title)
-            val content = queryResult.successResult()?.firstOrNull() ?: return
-
-            val thumbnail = when (content) {
-                is Movie -> content.posterPath
-                is TvShow -> content.posterPath
-                else -> null
-            }
-
-            if (thumbnail.isNullOrEmpty()) return
-
-            torrentApi.updateTorrent(torrent.copy(poster = thumbnail))
         }
     }
 
@@ -107,7 +81,9 @@ internal class DefaultMainAppBarComponent(
         }
 
         componentScope.launch(dispatchers.ioDispatcher()) {
-            magnetApi.addMagnet(magnetUrl = _uiState.value.link)
+            val torrent = magnetApi.addMagnet(magnetUrl = _uiState.value.link).successResult()
+
+            findAndAddThumbnail(torrent)
             dismissDialog()
         }
     }
@@ -143,5 +119,33 @@ internal class DefaultMainAppBarComponent(
     private fun isValidMagnetLink(magnetLink: String): Boolean {
         val magnetUriRegex = Regex("^magnet:\\?xt=urn:[a-z0-9]+:[a-zA-Z0-9]{32,40}(&.+)?$")
         return magnetUriRegex.matches(magnetLink)
+    }
+
+    private suspend fun findAndAddThumbnail(torrent: Torrent?) {
+        if (torrent == null) return
+
+        val firstFile = torrent.files.firstOrNull()
+        val name = firstFile?.path?.fileName() ?: torrent.name
+        val tv = parseFileNameTvShow(name)
+        val movie = parseFileNameBase(torrent.name)
+        val seasonNumber = tv?.seasons?.firstOrNull() ?: 0
+        val episodeNumber = tv?.episodeNumbers?.firstOrNull() ?: 0
+        val isTv = (seasonNumber > 0) && (episodeNumber > 0)
+        val title = if (isTv) tv?.title else movie.title
+
+        if(!title.isNullOrEmpty()) {
+            val queryResult = searchTheMovieDbApi.multiSearching(title)
+            val content = queryResult.successResult()?.firstOrNull() ?: return
+
+            val thumbnail = when (content) {
+                is Movie -> content.posterPath
+                is TvShow -> content.posterPath
+                else -> null
+            }
+
+            if (thumbnail.isNullOrEmpty()) return
+
+            torrentApi.updateTorrent(torrent.copy(poster = thumbnail))
+        }
     }
 }
