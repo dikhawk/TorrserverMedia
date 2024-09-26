@@ -1,3 +1,5 @@
+//That libs ChatGpt converted to Kotlin. Original https://github.com/scttcper/video-filename-parser/
+
 plugins {
     alias(libs.plugins.multiplatform)
 }
