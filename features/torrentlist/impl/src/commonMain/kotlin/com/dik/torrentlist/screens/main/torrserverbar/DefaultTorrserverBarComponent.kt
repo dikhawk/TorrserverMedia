@@ -1,7 +1,6 @@
 package com.dik.torrentlist.screens.main.torrserverbar
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
 import com.dik.common.ResultProgress
@@ -11,15 +10,11 @@ import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.server.TorrserverCommands
 import com.dik.torrserverapi.server.TorrserverStuffApi
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.getString
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.main_torrserver_bar_msg_installing_torrserver
@@ -108,9 +103,9 @@ internal class DefaultTorrserverBarComponent(
 
     private fun checkServerIsInstalled() {
         componentScope.launch {
-            val isIstalled = isServerInstalled()
-            val isStarted = !isIstalled
-            _uiState.update { it.copy(isServerInstalled = isIstalled,  isServerStarted = isStarted) }
+            val isInstalled = isServerInstalled()
+            val isStarted = !isInstalled
+            _uiState.update { it.copy(isServerInstalled = isInstalled,  isServerStarted = isStarted) }
         }
     }
 
