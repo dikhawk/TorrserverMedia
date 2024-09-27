@@ -6,14 +6,14 @@ import org.jetbrains.compose.resources.getString
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.main_error_msg_no_server_connection
 import torrservermedia.features.torrentlist.impl.generated.resources.main_error_msg_platform_not_supported
-import torrservermedia.features.torrentlist.impl.generated.resources.main_error_msg_resoponse_return_null
+import torrservermedia.features.torrentlist.impl.generated.resources.main_error_msg_response_return_null
 import torrservermedia.features.torrentlist.impl.generated.resources.main_error_msg_server_file_not_exist
 import torrservermedia.features.torrentlist.impl.generated.resources.main_error_msg_server_not_started
 
 suspend fun TorrserverError.toMessage(): String {
     return when (this) {
         TorrserverError.HttpError.ResponseReturnNull ->
-            Res.string.main_error_msg_resoponse_return_null.asString()
+            Res.string.main_error_msg_response_return_null.asString()
         is TorrserverError.Server.FileNotExist ->
             Res.string.main_error_msg_server_file_not_exist.asString()
         TorrserverError.Server.NoServerConnection ->
