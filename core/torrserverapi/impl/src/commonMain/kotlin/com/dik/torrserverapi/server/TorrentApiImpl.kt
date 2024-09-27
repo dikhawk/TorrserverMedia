@@ -105,17 +105,6 @@ class TorrentApiImpl(
     }
 
     override suspend fun updateTorrent(torrent: Torrent): Result<Unit, TorrserverError> {
-//        TODO("Not yet implemented")
-//        url http://127.0.0.1:8090/torrents
-//        body
-//        {
-//            "action": "set",
-//            "hash": "1740f609785866e6f1137ae87450559163b977d0",
-//            "title": "House of the Dragon 1 - LostFilm.TV [1080p]",
-//            "poster": "https://masterpiecer-images.s3.yandex.net/5fd531dca6427c7:upscaled",
-//            "category": ""
-//        }
-
         try {
             val body = Body(
                 action = TorrentsAction.SET.asString,
@@ -185,6 +174,28 @@ class TorrentApiImpl(
     }
 
     override suspend fun removeTorrent(hash: String): Result<Unit, TorrserverError> {
-        TODO("Not yet implemented")
+        try {
+            try {
+                val viewedList = getViewedList(hash).successResult() ?: emptyList()
+                val body = Body(action = TorrentsAction.REM.asString, hash = hash)
+                val request = withContext(dispatchers.ioDispatcher()) {
+                    client.post("$LOCAL_TORRENT_SERVER/torrents") {
+                        setBody(Json.encodeToString(Body.serializer(), body))
+                        contentType(ContentType.Application.Json)
+                    }
+                }
+
+                if (request.status.isSuccess()) return Result.Success(Unit)
+
+                return Result.Error(
+                    TorrserverError.HttpError
+                        .ResponseReturnError("Response return error: ${request.status.value}")
+                )
+            } catch (e: Exception) {
+                return Result.Error(TorrserverError.Unknown(e.toString()))
+            }
+        } catch (e: Exception) {
+            return Result.Error(TorrserverError.Unknown(e.toString()))
+        }
     }
 }

@@ -35,6 +35,12 @@ internal class DefaultTorrentListComponent(
         onTorrentClick(torrent)
     }
 
+    override fun onClickDeleteItem(torrent: Torrent) {
+        componentScope.launch {
+            torrentApi.removeTorrent(torrent.hash)
+        }
+    }
+
     private fun torrentsList() {
         componentScope.launch {
             while (true) {

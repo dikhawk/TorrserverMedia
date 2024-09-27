@@ -1,6 +1,9 @@
 package com.dik.torrentlist.screens.main.list
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +18,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,12 +27,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrserverapi.model.Torrent
+import com.dik.uikit.widgets.AppActionButton
 import com.dik.uikit.widgets.AppAsyncImage
 import com.dik.uikit.widgets.AppNormalBoldText
 import com.dik.uikit.widgets.AppNormalText
 import com.dik.uikit.widgets.AppStubVideo
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
+import torrservermedia.features.torrentlist.impl.generated.resources.ic_cross
 import torrservermedia.features.torrentlist.impl.generated.resources.main_torrent_list_files_count
 import torrservermedia.features.torrentlist.impl.generated.resources.main_torrent_list_is_empty
 
@@ -36,7 +43,7 @@ import torrservermedia.features.torrentlist.impl.generated.resources.main_torren
 internal fun TorrentListUi(component: TorrentListComponent, modifier: Modifier = Modifier) {
     val uiState = component.uiState.collectAsState()
 
-    Box(modifier = modifier.fillMaxSize(),contentAlignment = Alignment.Center) {
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         when {
             uiState.value.torrents.isEmpty() -> EmptyListStub()
             else -> Torrents(uiState.value.torrents, component)
@@ -55,7 +62,10 @@ private fun Torrents(
         columns = GridCells.Adaptive(minSize = 200.dp)
     ) {
         items(torrents, key = { it.hash }) { torrent ->
-            TorrentItem(torrent, onClick = { component.onClickItem(torrent) })
+            TorrentItem(
+                torrent,
+                onClickItem = { component.onClickItem(torrent) },
+                onClickDelete = { component.onClickDeleteItem(torrent) })
         }
     }
 }
@@ -63,17 +73,24 @@ private fun Torrents(
 @Composable
 private fun TorrentItem(
     torrent: Torrent,
-    onClick: (Torrent) -> Unit,
+    onClickItem: (Torrent) -> Unit,
+    onClickDelete: (Torrent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val torrentSize = remember { torrent.size.toReadableSize() }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isHovered by interactionSource.collectIsHoveredAsState()
 
     Card(modifier = modifier
         .padding(4.dp)
-        .clickable { onClick(torrent) }
+        .clickable { onClickItem(torrent) }
         .fillMaxSize()
     ) {
-        Box(modifier = Modifier.aspectRatio(0.65f)) {
+        Box(
+            modifier = Modifier
+                .aspectRatio(0.65f)
+                .hoverable(interactionSource)
+        ) {
             if (torrent.poster.isEmpty()) {
                 AppStubVideo()
             } else {
@@ -82,6 +99,12 @@ private fun TorrentItem(
                     url = torrent.poster,
                     contentScale = ContentScale.Crop
                 )
+            }
+            if (isHovered) {
+                AppActionButton(
+                    modifier = Modifier.align(Alignment.TopEnd),
+                    imageVector = vectorResource(Res.drawable.ic_cross),
+                    onClick = { onClickDelete(torrent) })
             }
         }
 
