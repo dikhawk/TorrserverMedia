@@ -6,6 +6,7 @@ import com.dik.themoviedb.model.Content
 import com.dik.themoviedb.model.Movie
 import com.dik.themoviedb.model.Person
 import com.dik.themoviedb.model.TvEpisode
+import com.dik.themoviedb.model.TvSeason
 import com.dik.themoviedb.model.TvShow
 import com.dik.themoviedb.response.MoviePolymorphResponse
 import com.dik.themoviedb.response.MovieResponse
@@ -13,6 +14,7 @@ import com.dik.themoviedb.response.PersonPolymorphResponse
 import com.dik.themoviedb.response.PersonResponse
 import com.dik.themoviedb.response.PolymorphContentResponse
 import com.dik.themoviedb.response.TvEpisodeResponse
+import com.dik.themoviedb.response.TvSeasonResponse
 import com.dik.themoviedb.response.TvShowPolymorphResponse
 import com.dik.themoviedb.response.TvShowResponse
 import com.dik.themoviedb.toMediaType
@@ -152,6 +154,24 @@ internal fun TvShowResponse.mapToTvShow(): TvShow {
         voteCount = this.voteCount ?: 0,
         originCountry = this.originCountry ?: emptyList()
     )
+}
+
+internal fun TvSeasonResponse.mapToTvSeason(): TvSeason {
+    return TvSeason(
+        id = this.id,
+        name = this.name,
+        airDate = this.airDate,
+        episodeCount = this.episodeCount,
+        overview = this.overview,
+        posterPath = this.posterPath,
+        seasonNumber = this.seasonNumber,
+        voteAverage = this.voteAverage,
+        episodes = this.episodes?.mapToListTvEpisode() ?: emptyList()
+    )
+}
+
+internal fun List<TvEpisodeResponse>.mapToListTvEpisode(): List<TvEpisode> {
+    return map { it.mapToTvEpisode() }
 }
 
 internal fun TvEpisodeResponse.mapToTvEpisode(): TvEpisode {

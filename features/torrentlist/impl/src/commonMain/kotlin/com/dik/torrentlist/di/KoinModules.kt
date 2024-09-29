@@ -8,6 +8,7 @@ import com.dik.settings.SettingsFeatureApi
 import com.dik.themoviedb.MoviesTheMovieDbApi
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
+import com.dik.themoviedb.TvSeasonsTheMovieDbApi
 import com.dik.torrserverapi.di.TorrserverApi
 import com.dik.torrserverapi.server.MagnetApi
 import com.dik.torrserverapi.server.TorrentApi
@@ -39,6 +40,7 @@ object KoinModules {
             single<SearchTheMovieDbApi> { dependecies.theMovieDbApi().searchApi() }
             single<MoviesTheMovieDbApi> { dependecies.theMovieDbApi().movieApi() }
             single<TvEpisodesTheMovieDbApi> { dependecies.theMovieDbApi().tvEpisodesApi() }
+            single<TvSeasonsTheMovieDbApi> { dependecies.theMovieDbApi().tvSeasonsApi() }
         }))
 
         return koin

@@ -30,7 +30,7 @@ internal data class TvShowDetailsResponse(
     @SerialName("poster_path") val posterPath: String,
     @SerialName("production_companies") val productionCompanies: List<CompanyResponse>,
     @SerialName("production_countries") val productionCountries: List<CountryResponse>,
-    @SerialName("seasons") val seasons: List<SeasonResponse>,
+    @SerialName("seasons") val seasons: List<TvSeasonResponse>,
     @SerialName("spoken_languages") val spokenLanguages: List<SpokenLanguageResponse>,
     @SerialName("status") val status: String,
     @SerialName("tagline") val tagline: String,

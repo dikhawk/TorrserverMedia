@@ -6,6 +6,8 @@ import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.SearchTheMovieDbApiImpl
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApiImpl
+import com.dik.themoviedb.TvSeasonsTheMovieDbApi
+import com.dik.themoviedb.TvSeasonsTheMovieDbApiImpl
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -14,4 +16,5 @@ internal val theMovieDbModule = module {
     singleOf(::SearchTheMovieDbApiImpl).bind<SearchTheMovieDbApi>()
     singleOf(::MoviesTheMovieDbApiImpl).bind<MoviesTheMovieDbApi>()
     singleOf(::TvEpisodesTheMovieDbApiImpl).bind<TvEpisodesTheMovieDbApi>()
+    singleOf(::TvSeasonsTheMovieDbApiImpl).bind<TvSeasonsTheMovieDbApi>()
 }

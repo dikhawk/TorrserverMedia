@@ -8,5 +8,6 @@ data class TvSeason(
     val overview: String,
     val posterPath: String?,
     val seasonNumber: Int,
-    val voteAverage: Double
+    val voteAverage: Double,
+    val episodes: List<TvEpisode>
 )

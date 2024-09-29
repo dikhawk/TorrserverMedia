@@ -6,6 +6,7 @@ import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.utils.successResult
 import com.dik.themoviedb.SearchTheMovieDbApi
+import com.dik.themoviedb.TvSeasonsTheMovieDbApi
 import com.dik.themoviedb.model.Movie
 import com.dik.themoviedb.model.TvShow
 import com.dik.torrentlist.converters.toReadableSize
@@ -28,7 +29,6 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.main_details_season
-import torrservermedia.features.torrentlist.impl.generated.resources.main_details_torrent_size
 
 internal class DefaultDetailsComponent(
     componentContext: ComponentContext,
@@ -36,6 +36,7 @@ internal class DefaultDetailsComponent(
     private val torrentApi: TorrentApi = inject(),
     private val appSettings: AppSettings = inject(),
     private val searchingTmdb: SearchTheMovieDbApi = inject(),
+    private val tvSeasonTmdb: TvSeasonsTheMovieDbApi = inject(),
     private val onClickPlayFile: suspend (torrent: Torrent, contentFile: ContentFile) -> Unit
 ) : ComponentContext by componentContext, DetailsComponent {
 
@@ -111,14 +112,18 @@ internal class DefaultDetailsComponent(
         }
     }
 
-    private suspend fun showTvShowTmdb(tvShow: TvShow, seasonNumber: Int) {
+    private fun showTvShowTmdb(tvShow: TvShow, seasonNumber: Int) {
         val season = if (seasonNumber > 0) seasonNumber.toString() else ""
-        _uiState.update {
-            it.copy(
-                title = "${tvShow.name} (${tvShow.originalName})",
-                seasonNumber = getString(Res.string.main_details_season).format(season),
-                overview = tvShow.overview ?: ""
-            )
+
+        componentScope.launch {
+            val tvSeason = tvSeasonTmdb.details(tvShow.id, seasonNumber).successResult()
+            _uiState.update {
+                it.copy(
+                    title = "${tvShow.name} (${tvShow.originalName})",
+                    seasonNumber = getString(Res.string.main_details_season).format(season),
+                    overview = tvSeason?.overview ?: (tvShow.overview ?: "")
+                )
+            }
         }
     }
 }
