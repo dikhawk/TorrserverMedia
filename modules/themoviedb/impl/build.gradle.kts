@@ -60,7 +60,7 @@ buildkonfig {
     packageName = "com.dik.themoviedb.impl"
 
     defaultConfigs {
-        val apiKey: String = gradleLocalProperties(rootDir).getProperty("MOVIEDB_API")
+        val apiKey: String = gradleLocalProperties(rootDir, providers).getProperty("MOVIEDB_API")
 
         if (apiKey.isEmpty()) {
             logger.error("MOVIEDB_API is empty")
@@ -69,3 +69,4 @@ buildkonfig {
         buildConfigField(STRING, "MOVIEDB_API", apiKey)
     }
 }
+
