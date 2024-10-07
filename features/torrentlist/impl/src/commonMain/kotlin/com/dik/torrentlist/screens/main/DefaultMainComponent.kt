@@ -37,16 +37,15 @@ import kotlinx.coroutines.launch
 internal class DefaultMainComponent(
     context: ComponentContext,
     private val torrentApi: TorrentApi = inject(),
-    private val magnetApi: MagnetApi = inject(),
     private val dispatchers: AppDispatchers = inject(),
     private val openSettingsScreen: () -> Unit = {},
-    private val appSettings: AppSettings = inject(),
     private val torrserverStuffApi: TorrserverStuffApi = inject(),
     private val torrserverCommands: TorrserverCommands = inject(),
     private val searchTheMovieDbApi: SearchTheMovieDbApi = inject(),
+    private val addTorrentFile: AddTorrentFile = inject(),
+    private val addMagnetLink: AddMagnetLink = inject(),
     private val tvEpisodesTheMovieDbApi: TvEpisodesTheMovieDbApi = inject(),
     private val onClickPlayFile: suspend (contentFile: ContentFile) -> Unit,
-    private val playersCommands: PlayersCommands = platformPlayersCommands()
 ) : MainComponent, ComponentContext by context {
 
     private val _uiState = MutableStateFlow(MainComponentState())
@@ -63,11 +62,10 @@ internal class DefaultMainComponent(
         context = childContext("main_app_bar"),
         dispatchers = dispatchers,
         componentScope = componentScope,
-        torrentApi = torrentApi,
-        magnetApi = magnetApi,
         openSettingsScreen = openSettingsScreen,
         torrserverStuffApi = torrserverStuffApi,
-        searchTheMovieDbApi = searchTheMovieDbApi,
+        addTorrentFile = addTorrentFile,
+        addMagnetLink = addMagnetLink
     )
 
     override val torrserverBarComponent: TorrserverBarComponent =
@@ -101,8 +99,8 @@ internal class DefaultMainComponent(
         },
         torrentApi = torrentApi,
         torrserverCommands = torrserverCommands,
-        dispatchers = dispatchers,
-        componentScope = componentScope
+        componentScope = componentScope,
+        addTorrentFile = addTorrentFile
     )
 
     private fun playFile(contentFile: ContentFile) {

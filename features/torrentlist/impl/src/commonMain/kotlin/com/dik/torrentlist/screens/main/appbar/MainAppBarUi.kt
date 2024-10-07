@@ -42,10 +42,10 @@ internal fun MainAppBarUi(component: MainAppBarComponent, modifier: Modifier = M
     if (uiState.value.action == MainAppBarAction.ShowAddLinkDialog) {
         val errorLink = uiState.value.errorLink
         AddLlinkDialog(link = uiState.value.link,
-            linkError = if (errorLink != null) stringResource(errorLink) else null,
+            linkError = errorLink,
             onDismissRequest = { component.dismissDialog() },
             onClickOkButton = { component.addLink() },
             onClickCancelButton = { component.dismissDialog() },
-            onValueChange = { component.onLinkChaged(it) })
+            onValueChange = { component.onLinkChanged(it) })
     }
 }

@@ -2,7 +2,6 @@ package com.dik.torrentlist.screens.main.appbar
 
 import androidx.compose.runtime.Stable
 import kotlinx.coroutines.flow.StateFlow
-import org.jetbrains.compose.resources.StringResource
 
 internal interface MainAppBarComponent {
 
@@ -12,7 +11,7 @@ internal interface MainAppBarComponent {
     fun openAddLinkDialog()
     fun addLink()
     fun dismissDialog()
-    fun onLinkChaged(value: String)
+    fun onLinkChanged(value: String)
     fun clearLink()
     fun openSettingsScreen()
 }
@@ -21,7 +20,7 @@ internal interface MainAppBarComponent {
 internal data class MainAppBarState(
     val action: MainAppBarAction = MainAppBarAction.Undefined,
     val link: String = "",
-    val errorLink: StringResource? = null,
+    val errorLink: String? = null,
     val isServerStarted: Boolean = false,
 )
 

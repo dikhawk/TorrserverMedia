@@ -10,6 +10,7 @@ interface TorrentListComponent {
     val uiState: StateFlow<TorrentListState>
     fun onClickItem(torrent: Torrent)
     fun onClickDeleteItem(torrent: Torrent)
+    fun addTorrents(paths: List<String>)
 }
 
 @Stable

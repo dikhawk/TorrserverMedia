@@ -11,6 +11,8 @@
     <string name="main_torrent_list_server_not_installed_stub">TorrServer не установлен</string>
     <string name="main_torrent_list_server_not_installed_button_install">Установить TorrServer</string>
     <string name="main_torrent_list_is_empty">Список торрентов пуст</string>
+    <string name="main_torrent_list_add_torrent">Добавить торрент</string>
+    <string name="main_torrent_list_add_torrent_file_not_exist">Файл не существует</string>
     <string name="main_add_dialog_button_cancel">Отмена</string>
     <string name="main_add_dialog_button_ok">Ок</string>
     <string name="main_add_dialog_placeholder_past_link">Вставьте magnet ссылку</string>
