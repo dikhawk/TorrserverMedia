@@ -23,7 +23,7 @@ actual object KmpServerCommands : ServerCommands {
         if (!serverFile.exists()) throw RuntimeException("Server file not found")
 
         val makeExecutableCommand = "chmod +x $pathToServerFile"
-        val startServerCommand = "cd ${serverFile.parent} && ./${serverFile.name}"
+        val startServerCommand = "cd ${serverFile.parent} && ./${serverFile.name} --dontkill"
 
         KmpCmdRunner.run("$makeExecutableCommand && $startServerCommand")
     }
