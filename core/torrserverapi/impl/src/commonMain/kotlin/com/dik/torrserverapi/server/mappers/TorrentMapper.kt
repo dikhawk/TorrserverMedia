@@ -17,7 +17,9 @@ internal fun TorrentResponse.mapToTorrent(viewed: List<Viewed> = emptyList()): T
     title = this.title ?: "",
     poster = this.poster ?: "",
     name = this.name ?: "",
-    files = this.files.toContentFileList(this.hash ?: "", viewed),
+    files = if (!this.fileStats.isNullOrEmpty())
+        this.fileStats.mapToContentFileList(this.hash ?: "", viewed) else
+        this.files.toContentFileList(this.hash ?: "", viewed),
     size = this.torrentSize ?: 0L,
     statistics = createPlayStatistics(this),
 )
@@ -39,7 +41,7 @@ internal fun ContentFileResponse.mapToContentFile(
     isViewed = viewed.find { it.id == this.id } != null
 )
 
-internal fun List<ContentFileResponse>.mapToConetentFileList(
+internal fun List<ContentFileResponse>.mapToContentFileList(
     hash: String,
     viewed: List<Viewed> = emptyList()
 ): List<ContentFile> = map {
@@ -54,7 +56,7 @@ private fun String?.toContentFileList(
 
     val contentFile = Json.decodeFromString<Files>(this)
 
-    return contentFile.torrServer.files.mapToConetentFileList(hash, viewed)
+    return contentFile.torrServer.files.mapToContentFileList(hash, viewed)
 }
 
 @Serializable
@@ -74,7 +76,7 @@ private fun createPlayStatistics(torrent: TorrentResponse): PlayStatistics? {
         torrentStatus = torrent.torrentStatus,
         loadedSize = torrent.loadedSize ?: 0L,
         preloadedBytes = torrent.preloadedBytes ?: 0L,
-        preloadSize = torrent.preloadSize?: 0L,
+        preloadSize = torrent.preloadSize ?: 0L,
         downloadSpeed = torrent.downloadSpeed ?: 0.0,
         uploadSpeed = torrent.uploadSpeed ?: 0.0,
         totalPeers = torrent.totalPeers ?: 0,

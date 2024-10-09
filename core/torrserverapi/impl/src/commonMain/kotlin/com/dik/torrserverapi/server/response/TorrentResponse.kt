@@ -2,6 +2,7 @@ package com.dik.torrserverapi.server.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.io.File
 
 @Serializable
 data class TorrentResponse(
@@ -27,7 +28,8 @@ data class TorrentResponse(
     @SerialName("chunks_read") val chunksRead: Int? = 0,
     @SerialName("chunks_read_useful") val chunksReadUseful: Int? = 0,
     @SerialName("chunks_read_wasted") val chunksReadWasted: Int? = 0,
-    @SerialName("pieces_dirtied_good") val piecesDirtiedGood: Int? = 0
+    @SerialName("pieces_dirtied_good") val piecesDirtiedGood: Int? = 0,
+    @SerialName("file_stats") val fileStats: List<ContentFileResponse>? = emptyList()
 )
 
 @Serializable

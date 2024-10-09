@@ -109,7 +109,8 @@ class TorrentApiImpl(
             val body = Body(
                 action = TorrentsAction.SET.asString,
                 hash = torrent.hash,
-                poster = torrent.poster
+                poster = torrent.poster,
+                saveToDb = true,
             )
             val request = withContext(dispatchers.ioDispatcher()) {
                 client.post("$LOCAL_TORRENT_SERVER/torrents") {
