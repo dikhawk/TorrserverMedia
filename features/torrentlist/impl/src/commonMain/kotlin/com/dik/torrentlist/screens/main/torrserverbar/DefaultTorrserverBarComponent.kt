@@ -42,7 +42,7 @@ internal class DefaultTorrserverBarComponent(
                     is ResultProgress.Loading -> _uiState.update {
                         it.copy(
                             isShowProgress = true,
-                            progressUpdate = res.progress.progress,
+                            progressUpdate = res.progress.progress.toFloat() / 100.0f,
                             serverStatusText = getString(Res.string.main_torrserver_bar_msg_installing_torrserver),
                         )
                     }
