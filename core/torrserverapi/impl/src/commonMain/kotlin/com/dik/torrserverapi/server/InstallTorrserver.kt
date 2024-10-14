@@ -9,7 +9,6 @@ import com.dik.common.utils.platformName
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.Asset
 import com.dik.torrserverapi.model.Release
-import com.dik.torrserverapi.model.TorrserverFile
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -24,7 +23,7 @@ internal class InstallTorrserver(
 
     operator fun invoke(
         outputFilePath: String, outputBackupFilePath: String
-    ) = flow<ResultProgress<TorrserverFile, TorrserverError>> {
+    ) = flow {
         val latestRelease = torrserverStuffApi.checkLatestRelease()
 
         if (latestRelease is Result.Error) {
