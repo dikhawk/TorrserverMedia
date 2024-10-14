@@ -19,7 +19,7 @@ internal interface TorrserverBarComponent {
 internal data class TorrserverBarState(
     val serverStatusText: String = "Not initialized",
     val isShowProgress: Boolean = false,
-    val progressUpdate: Double = 0.0,
+    val progressUpdate: Float = 0.0f,
     val error: String? = null,
     val isServerStarted: Boolean = true,
     val isServerInstalled: Boolean = true,

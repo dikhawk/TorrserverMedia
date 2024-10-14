@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.main_torrserver_bar_msg_installing_torrserver
+import torrservermedia.features.torrentlist.impl.generated.resources.main_torrserver_bar_msg_server_not_installed
 
 internal class DefaultTorrserverBarComponent(
     context: ComponentContext,
@@ -52,7 +53,12 @@ internal class DefaultTorrserverBarComponent(
                     }
 
                     is ResultProgress.Success -> {
-                        _uiState.update { it.copy(isShowProgress = false, isServerInstalled = true) }
+                        _uiState.update {
+                            it.copy(
+                                isShowProgress = false,
+                                isServerInstalled = true
+                            )
+                        }
                         torrserverCommands.startServer()
                     }
                 }
@@ -80,6 +86,7 @@ internal class DefaultTorrserverBarComponent(
             torrserverStuffApi.observerServerStatus().collect { result ->
                 when (val res = result) {
                     is Result.Error -> {
+                        if (!uiState.value.isServerInstalled) return@collect
                         _uiState.update {
                             it.copy(
                                 serverStatusText = res.error.toMessage(),
@@ -104,13 +111,25 @@ internal class DefaultTorrserverBarComponent(
     private fun checkServerIsInstalled() {
         componentScope.launch {
             val isInstalled = isServerInstalled()
-            val isStarted = !isInstalled
-            _uiState.update { it.copy(isServerInstalled = isInstalled,  isServerStarted = isStarted) }
+            val isStarted = isServerStarted()
+            _uiState.update {
+                it.copy(
+                    serverStatusText = getString(Res.string.main_torrserver_bar_msg_server_not_installed),
+                    isServerInstalled = isInstalled,
+                    isServerStarted = isStarted
+                )
+            }
         }
     }
 
     private suspend fun isServerInstalled(): Boolean {
         val result = torrserverCommands.isServerInstalled()
+
+        return result.successResult(::showError) ?: false
+    }
+
+    private suspend fun isServerStarted(): Boolean {
+        val result = torrserverCommands.isServerStarted()
 
         return result.successResult(::showError) ?: false
     }

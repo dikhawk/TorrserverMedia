@@ -50,7 +50,7 @@ internal fun TorrserverBarUi(component: TorrserverBarComponent, modifier: Modifi
         if (uiState.isShowProgress) {
             Spacer(modifier = Modifier.padding(8.dp))
             LinearProgressIndicator(
-                progress = { uiState.progressUpdate.toFloat() },
+                progress = { uiState.progressUpdate },
                 modifier = Modifier.fillMaxWidth()
             )
         }
