@@ -7,9 +7,12 @@ import com.dik.common.utils.round
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.TorrserverFile
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.timeout
 import io.ktor.client.request.prepareGet
+import io.ktor.client.request.request
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.contentLength
+import io.ktor.http.isSuccess
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.core.isEmpty
 import io.ktor.utils.io.core.readBytes
@@ -27,7 +30,10 @@ internal class DownloadFile(
     private val ktor: HttpClient
 ) {
 
-    operator fun invoke(fileUrl: String, outputFilePath: String): Flow<ResultProgress<TorrserverFile, TorrserverError>> {
+    operator fun invoke(
+        fileUrl: String,
+        outputFilePath: String
+    ): Flow<ResultProgress<TorrserverFile, TorrserverError>> {
         var sink: BufferedSink? = null
 
         return flow<ResultProgress<TorrserverFile, TorrserverError>> {
@@ -37,8 +43,25 @@ internal class DownloadFile(
             FileSystem.SYSTEM.createDirectories(pathFile.parent!!)
             FileSystem.SYSTEM.delete(pathFile)
             sink = FileSystem.SYSTEM.sink(pathFile).buffer()
-            ktor.prepareGet(fileUrl).execute { response ->
+            ktor.prepareGet(fileUrl).apply {
+                request {
+//                    headers {
+//                        append("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8")
+//                        append("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:131.0) Gecko/20100101 Firefox/131.0")
+//                    }
+                    timeout {
+                        requestTimeoutMillis = 15000
+                        socketTimeoutMillis = 60000 * 2
+                    }
+                }
+            }.execute { response ->
+                if (!response.status.isSuccess()) {
+                    emit(ResultProgress.Error(TorrserverError.HttpError.ResponseReturnError(response.status.description)))
+                    return@execute
+                }
+
                 val channel: ByteReadChannel = response.bodyAsChannel()
+
 
                 while (!channel.isClosedForRead) {
                     val packet = channel.readRemaining(DEFAULT_BUFFER_SIZE.toLong())
@@ -50,16 +73,19 @@ internal class DownloadFile(
 
                         sink?.write(bytes)
 
-                        if (totalBytes > 0L)
+                        if (totalBytes > 0L) {
+                            val progress = calculateProgress(fileSize!!, totalBytes)
+
                             emit(
                                 ResultProgress.Loading(
                                     Progress(
-                                        progress = calculateProgress(fileSize!!, totalBytes),
+                                        progress = progress,
                                         currentBytes = fileSize,
                                         totalBytes = totalBytes
                                     )
                                 )
                             )
+                        }
                     }
                 }
 
