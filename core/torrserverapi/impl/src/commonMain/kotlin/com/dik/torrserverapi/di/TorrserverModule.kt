@@ -1,5 +1,6 @@
 package com.dik.torrserverapi.di
 
+import com.dik.common.AppDispatchers
 import com.dik.common.cmd.CmdRunner
 import com.dik.common.cmd.KmpCmdRunner
 import com.dik.torrserverapi.cmd.KmpServerCommands
@@ -24,6 +25,8 @@ import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -61,5 +64,14 @@ internal val httpModule = module {
 
             install(HttpCache)
         }
+    }
+}
+
+internal fun dependencyModule(deps: TorrserverDependencies) = module {
+    single<AppDispatchers> { deps.dispatchers() }
+    single<CoroutineScope> {
+        CoroutineScope(
+            SupervisorJob() + deps.dispatchers().mainDispatcher()
+        )
     }
 }

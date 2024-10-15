@@ -4,7 +4,7 @@ import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.settings.SettingsFeatureApi
 import com.dik.settings.di.SettingsComponentHolder
-import com.dik.settings.di.SettingsDependecies
+import com.dik.settings.di.SettingsDependencies
 import com.dik.themoviedb.di.TheMovieDbApi
 import com.dik.torrentlist.TorrentListFeatureApi
 import com.dik.torrentlist.di.TorrentListComponentHolder
@@ -25,7 +25,7 @@ val featuresModule = module {
     }
 
     factory<SettingsFeatureApi> {
-        SettingsComponentHolder.init(object : SettingsDependecies {
+        SettingsComponentHolder.init(object : SettingsDependencies {
             override fun torrServerApi(): TorrserverApi = get()
             override fun dispatchers(): AppDispatchers = get()
             override fun appSettings(): AppSettings = get()

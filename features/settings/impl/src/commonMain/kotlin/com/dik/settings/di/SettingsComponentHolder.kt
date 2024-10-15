@@ -1,6 +1,5 @@
 package com.dik.settings.di
 
-import com.dik.appsettings.api.model.AppSettings
 import com.dik.moduleinjector.ComponentHolder
 import com.dik.settings.SettingsFeatureApi
 import kotlinx.coroutines.runBlocking
@@ -9,12 +8,12 @@ import kotlinx.coroutines.sync.withLock
 
 
 object SettingsComponentHolder :
-    ComponentHolder<SettingsFeatureApi, SettingsDependecies> {
+    ComponentHolder<SettingsFeatureApi, SettingsDependencies> {
 
     private var componentHolder: SettingsComponent? = null
     private val mutex = Mutex()
 
-    override fun init(dependencies: SettingsDependecies) {
+    override fun init(dependencies: SettingsDependencies) {
         if (componentHolder == null) {
             runBlocking {
                 mutex.withLock {

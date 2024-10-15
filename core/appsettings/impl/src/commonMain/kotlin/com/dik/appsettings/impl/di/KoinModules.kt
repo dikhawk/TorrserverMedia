@@ -12,7 +12,7 @@ import org.koin.dsl.module
 object KoinModules {
     val koin: Koin by lazy {
         koinApplication {
-            modules()
+//            modules()
         }.koin
     }
 

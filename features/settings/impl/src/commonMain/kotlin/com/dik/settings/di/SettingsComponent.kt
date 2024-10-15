@@ -6,11 +6,11 @@ import com.dik.settings.SettingsFeatureApi
 
 internal abstract class SettingsComponent : SettingsFeatureApi {
     companion object {
-        fun initAndGet(dependecies: SettingsDependecies): SettingsComponent {
+        fun initAndGet(dependencies: SettingsDependencies): SettingsComponent {
 
             return object : SettingsComponent() {
                 init {
-                    KoinModules.init(dependecies)
+                    KoinModules.init(dependencies)
                 }
 
                 override fun start(): SettingsEntry {

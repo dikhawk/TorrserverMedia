@@ -9,6 +9,7 @@ import com.arkivanov.decompose.defaultComponentContext
 import com.dik.torrservermedia.di.KoinModules
 import com.dik.torrservermedia.di.inject
 import com.dik.torrservermedia.nanigation.DefaultRootComponent
+import com.dik.uikit.theme.AppTheme
 import org.koin.android.ext.koin.androidContext
 
 class AndroidApp : Application() {
@@ -20,8 +21,9 @@ class AndroidApp : Application() {
         super.onCreate()
         INSTANCE = this
 
+
         KoinModules.init {
-            androidContext(AndroidApp.INSTANCE)
+            androidContext(INSTANCE)
         }
     }
 }
@@ -37,6 +39,10 @@ class AppActivity : ComponentActivity() {
         )
 
         enableEdgeToEdge()
-        setContent { RootUi(component = root) }
+        setContent {
+            AppTheme {
+                RootUi(component = root)
+            }
+        }
     }
 }

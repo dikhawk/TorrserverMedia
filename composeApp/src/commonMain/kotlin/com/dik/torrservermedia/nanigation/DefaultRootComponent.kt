@@ -33,7 +33,7 @@ class DefaultRootComponent(
 
     private fun childFactory(
         config: ChildConfig, componentContext: ComponentContext
-    ): RootComponent.Child = when (config) {
+    ): Child = when (config) {
         ChildConfig.TorrentList -> Child.TorrentList(
             composable = featureTorrentListApi.start().composableMain(componentContext)
         )
@@ -48,8 +48,8 @@ class DefaultRootComponent(
 @Serializable
 private sealed interface ChildConfig {
     @Serializable
-    object TorrentList : ChildConfig
+    data object TorrentList : ChildConfig
 
     @Serializable
-    object Settings : ChildConfig
+    data object Settings : ChildConfig
 }

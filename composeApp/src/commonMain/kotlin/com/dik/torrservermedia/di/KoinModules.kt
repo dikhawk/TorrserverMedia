@@ -7,10 +7,14 @@ import org.koin.dsl.koinApplication
 
 object KoinModules {
 
+    private var koinConfig: KoinAppDeclaration? = null
+
     val koin: Koin by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         koinApplication {
+            koinConfig?.invoke(this)
             modules(
                 appModule,
+                platformModule(),
                 appSettingsModule,
                 featuresModule,
                 torrserverModule,
@@ -20,9 +24,9 @@ object KoinModules {
     }
 
     fun init(config: KoinAppDeclaration? = null): Koin {
-        startKoin {
-            config?.invoke(this)
-        }
+        koinConfig = config
+
+        startKoin { }
 
         return koin
     }

@@ -9,7 +9,7 @@ import com.russhwolf.settings.get
 class AppSettingsImpl(private val settings: Settings) : AppSettings {
 
     override var defaultPlayer: Player
-        get() = settings.get("default_player", Player.DEFAULT_PLAYER.shortName).toPlayer()
+        get() = settings["default_player", Player.DEFAULT_PLAYER.shortName].toPlayer()
         set(value) {
             settings.putString("default_player", value.shortName)
         }

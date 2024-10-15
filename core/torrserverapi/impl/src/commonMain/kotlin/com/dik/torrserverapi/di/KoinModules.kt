@@ -1,33 +1,34 @@
 package com.dik.torrserverapi.di
 
-import com.dik.common.AppDispatchers
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.koin.core.Koin
+import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.koinApplication
-import org.koin.dsl.module
 
 object KoinModules {
-    val koin: Koin by lazy {
-        koinApplication {
-            modules(torrserverModule, httpModule)
-        }.koin
-    }
+    private val mutex = Mutex()
 
-    fun init(appDispatchers: AppDispatchers) {
-        koin.loadModules(
-            listOf(
-                module {
-                    single<AppDispatchers> { appDispatchers }
-                    single<CoroutineScope> {
-                        CoroutineScope(SupervisorJob() + appDispatchers.mainDispatcher())
-                    }
+    var koin: Koin? = null
+        private set
+
+    fun init(dependencies: TorrserverDependencies) {
+        if (koin == null) {
+            runBlocking {
+                mutex.withLock {
+                    koin = koinApplication {
+                        koinConfiguration(dependencies).invoke(this)
+                        modules(torrserverModule, httpModule, dependencyModule(dependencies))
+                    }.koin
                 }
-            )
-        )
+            }
+        }
     }
 }
 
+internal expect fun koinConfiguration(dependencies: TorrserverDependencies): KoinAppDeclaration
+
 internal inline fun <reified T> inject(): T {
-    return KoinModules.koin.get()
+    return KoinModules.koin!!.get()
 }

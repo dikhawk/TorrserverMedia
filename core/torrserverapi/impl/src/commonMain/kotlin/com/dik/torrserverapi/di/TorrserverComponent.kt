@@ -16,14 +16,14 @@ abstract class TorrserverComponent : TorrserverApi {
         private var torrserverComponent: TorrserverComponent? = null
         private val mutex = Mutex()
 
-        fun get(appDispatchers: AppDispatchers): TorrserverComponent {
+        fun get(dependencies: TorrserverDependencies): TorrserverComponent {
             if (torrserverComponent == null) {
                 runBlocking {
                     mutex.withLock {
                         if (torrserverComponent == null) {
                             torrserverComponent = object : TorrserverComponent() {
                                 init {
-                                    KoinModules.init(appDispatchers)
+                                    KoinModules.init(dependencies)
                                 }
 
                                 override fun magnetApi(): MagnetApi = inject()

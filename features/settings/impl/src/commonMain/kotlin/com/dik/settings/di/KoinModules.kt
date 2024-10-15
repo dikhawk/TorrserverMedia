@@ -17,7 +17,7 @@ object KoinModules {
         }.koin
     }
 
-    fun init(dependecies: SettingsDependecies): Koin {
+    fun init(dependecies: SettingsDependencies): Koin {
         koin.loadModules(listOf(module {
             single<ServerSettingsApi> { dependecies.torrServerApi().serverSettingsApi() }
             single<AppSettings> { dependecies.appSettings() }
