@@ -77,8 +77,4 @@ class AppActivity : ComponentActivity() {
             }
         }
     }
-
-    override fun finish() {
-        super.finish()
-    }
 }
