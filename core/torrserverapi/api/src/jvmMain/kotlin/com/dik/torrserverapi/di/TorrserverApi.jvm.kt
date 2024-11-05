@@ -8,10 +8,10 @@ import com.dik.torrserverapi.server.TorrserverCommands
 import com.dik.torrserverapi.server.TorrserverStuffApi
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-expect interface TorrserverApi : BaseApi {
-    fun magnetApi(): MagnetApi
-    fun torrentApi(): TorrentApi
-    fun torrserverStuffApi(): TorrserverStuffApi
-    fun torrserverCommands(): TorrserverCommands
-    fun serverSettingsApi(): ServerSettingsApi
+actual interface TorrserverApi : BaseApi {
+    actual fun magnetApi(): MagnetApi
+    actual fun torrentApi(): TorrentApi
+    actual fun torrserverStuffApi(): TorrserverStuffApi
+    actual fun torrserverCommands(): TorrserverCommands
+    actual fun serverSettingsApi(): ServerSettingsApi
 }

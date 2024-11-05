@@ -1,16 +1,16 @@
 [versions]
 android-compileSdk = "34"
 android-minSdk = "24"
-android-targetSdk = "34"
+android-targetSdk = "28"
 
 kotlin = "2.0.20"
-compose = "1.7.0-beta02"
+compose = "1.7.0"
 agp = "8.7.0"
-androidx-activityCompose = "1.9.2"
+androidx-activityCompose = "1.9.3"
 androidx-uiTest = "1.7.2"
-coil = "3.0.0-alpha06"
+coil = "3.0.0-rc01"
 kotlinx-coroutines = "1.9.0"
-ktor = "3.0.0-wasm2"
+ktor = "3.0.0"
 kotlinx-serialization = "1.7.3"
 multiplatformSettings = "1.2.0"
 koin = "4.0.0"
@@ -19,10 +19,14 @@ decompose = "3.1.0"
 datetime = "0.6.1"
 essenty = "2.1.0"
 okio = "3.9.1"
-kotlinx-io-core = "0.5.3"
+kotlinx-io-core = "0.5.4"
 androidx-compose-windowSizeClass = "1.3.0"
 filekit = "0.8.7"
 buildkonfig = "0.15.2"
+kermit = "2.0.4"
+accompanist = "0.36.0"
+libsu = "6.0.0"
+android-lifecycle = "2.4.0"
 
 [libraries]
 
@@ -31,8 +35,8 @@ androidx-testManifest = { module = "androidx.compose.ui:ui-test-manifest", versi
 androidx-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-uiTest" }
 androidx-compose-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "androidx-compose-windowSizeClass" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
-coil-compose-core = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coil" }
-coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil" }
+coil-compose-core = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
+coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
@@ -63,6 +67,12 @@ essenty-lifecycle-coroutines = { module = "com.arkivanov.essenty:lifecycle-corou
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit" }
 filekit-compose = { module = "io.github.vinceglb:filekit-compose", version.ref = "filekit" }
+kermit-core = { module = "co.touchlab:kermit", version.ref = "kermit" }
+
+#Android
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
+libsu-core = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsu" }
+android-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "android-lifecycle" }
 
 [plugins]
 

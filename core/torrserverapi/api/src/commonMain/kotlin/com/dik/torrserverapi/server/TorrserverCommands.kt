@@ -13,4 +13,5 @@ interface TorrserverCommands {
     suspend fun isServerInstalled(): Result<Boolean, TorrserverError>
     suspend fun isServerStarted(): Result<Boolean, TorrserverError>
     suspend fun isAvailableNewVersion(): Result<Boolean, TorrserverError>
+    suspend fun restoreServerFromBackUp(): Result<Unit, TorrserverError>
 }
