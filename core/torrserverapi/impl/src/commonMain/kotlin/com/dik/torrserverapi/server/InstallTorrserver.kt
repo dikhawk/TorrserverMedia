@@ -1,5 +1,7 @@
 package com.dik.torrserverapi.server
 
+import co.touchlab.kermit.Logger
+import co.touchlab.kermit.Logger.Companion.tag
 import com.dik.common.AppDispatchers
 import com.dik.common.Platform
 import com.dik.common.Result
@@ -20,10 +22,12 @@ internal class InstallTorrserver(
     private val restoreServerFromBackUp: RestoreServerFromBackUp,
     private val dispatchers: AppDispatchers
 ) {
+    private val tag = "InstallTorrserver:"
 
     operator fun invoke(
         outputFilePath: String, outputBackupFilePath: String
     ) = flow {
+        Logger.i("$tag started installing")
         val latestRelease = torrserverStuffApi.checkLatestRelease()
 
         if (latestRelease is Result.Error) {
@@ -35,9 +39,11 @@ internal class InstallTorrserver(
         val platform = platformName()
         val asset = if (latestRelease is Result.Success)
             latestRelease.data.findSupportedAsset(cpuArh, platform) else null
+        Logger.i("$tag platform: $asset")
 
         if (asset == null) {
-            emit(ResultProgress.Error(TorrserverError.Server.PlatformNotSupported("Not os: ${platform.osname} or arch $cpuArh")))
+            emit(ResultProgress.Error(TorrserverError.Server.PlatformNotSupported("Not supported os: ${platform.osname} or arch $cpuArh")))
+            Logger.i("$tag Not supported os: ${platform.osname} or arch $cpuArh")
             return@flow
         }
 
@@ -51,6 +57,7 @@ internal class InstallTorrserver(
         }
     }.catch { e ->
         restoreServerFromBackUp(outputBackupFilePath, outputFilePath)
+        Logger.e("$tag $e")
         emit(ResultProgress.Error(TorrserverError.Unknown(e.toString())))
     }.flowOn(dispatchers.defaultDispatcher())
 
