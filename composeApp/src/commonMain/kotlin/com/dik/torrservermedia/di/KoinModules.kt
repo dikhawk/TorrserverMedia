@@ -36,7 +36,8 @@ object KoinModules {
             appSettingsModule,
             featuresModule,
             torrserverModule,
-            theMovieDbApiModule
+            theMovieDbApiModule,
+            platformModule()
         )
     }
 }
