@@ -37,13 +37,14 @@ internal class DefaultTorrserverBarComponent(
     }
 
     override fun onClickInstallServer() {
+        _uiState.update { it.copy(isShowProgress = true) }
         componentScope.launch(dispatchers.defaultDispatcher()) {
             torrserverCommands.installServer().collect { restult ->
                 when (val res = restult) {
                     is ResultProgress.Loading -> _uiState.update {
                         it.copy(
                             isShowProgress = true,
-                            progressUpdate = res.progress.progress.toFloat() / 100.0f,
+                            progressValue = res.progress.progress.toFloat() / 100.0f,
                             serverStatusText = getString(Res.string.main_torrserver_bar_msg_installing_torrserver),
                         )
                     }
