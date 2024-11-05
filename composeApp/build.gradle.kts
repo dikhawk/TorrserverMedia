@@ -100,6 +100,8 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.decompose.core)
             implementation(libs.koin.android)
+            implementation(libs.accompanist.permissions)
+            implementation(libs.android.lifecycle.runtime)
         }
 
         jvmMain.dependencies {
