@@ -46,9 +46,9 @@ class TorrentApiImpl(
                 }
             }
 
-            val resoponse = request.body<List<TorrentResponse>>()
+            val response = request.body<List<TorrentResponse>>()
 
-            return Result.Success(resoponse.mapToTorrentList())
+            return Result.Success(response.mapToTorrentList())
         } catch (e: Exception) {
             return Result.Error(TorrserverError.Unknown(e.toString()))
         }
@@ -76,7 +76,7 @@ class TorrentApiImpl(
 
     override suspend fun addTorrent(filePath: String): Result<Torrent, TorrserverError> {
         try {
-            val byteArray = filePath.fileToByteArray()
+            val byteArray = fileToByteArray(filePath)
 
             val request = withContext(dispatchers.ioDispatcher()) {
                 client.post("$LOCAL_TORRENT_SERVER/torrent/upload") {
