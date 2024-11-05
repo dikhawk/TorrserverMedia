@@ -16,8 +16,6 @@ import io.ktor.http.contentLength
 import io.ktor.http.headers
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.ByteReadChannel
-import io.ktor.utils.io.core.isEmpty
-import io.ktor.utils.io.core.readBytes
 import io.ktor.utils.io.readRemaining
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -28,6 +26,7 @@ import okio.BufferedSink
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.buffer
+import okio.use
 
 internal class DownloadFile(
     private val dispatchers: AppDispatchers,
@@ -45,20 +44,16 @@ internal class DownloadFile(
         return flow<ResultProgress<TorrserverFile, TorrserverError>> {
             emit(ResultProgress.Loading(Progress(progress = 0.0)))
 
-            val pathFile = outputFilePath.toPath()
-            FileSystem.SYSTEM.createDirectories(pathFile.parent!!)
-            FileSystem.SYSTEM.delete(pathFile)
-            sink = FileSystem.SYSTEM.sink(pathFile).buffer()
-            ktor.prepareGet(fileUrl).apply {
+            ktor.prepareGet(fileUrl) {
+                timeout {
+                    connectTimeoutMillis = 60000 * 2
+                    requestTimeoutMillis = 60000 * 2
+                    socketTimeoutMillis = 60000 * 2
+                }
                 request {
                     headers {
                         append("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8")
                         append("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:131.0) Gecko/20100101 Firefox/131.0")
-                    }
-                    timeout {
-                        connectTimeoutMillis = 60000 * 2
-                        requestTimeoutMillis = 60000 * 2
-                        socketTimeoutMillis = 60000 * 2
                     }
                 }
             }.execute { response ->
@@ -68,38 +63,42 @@ internal class DownloadFile(
                 }
 
                 val channel: ByteReadChannel = response.bodyAsChannel()
+                val pathFile = outputFilePath.toPath()
+                FileSystem.SYSTEM.createDirectories(pathFile.parent!!)
+                FileSystem.SYSTEM.delete(pathFile)
+                sink = FileSystem.SYSTEM.sink(pathFile).buffer()
 
+                sink.use { sink ->
+                    while (!channel.isClosedForRead) {
+                        val packet = channel.readRemaining(DEFAULT_BUFFER_SIZE.toLong())
 
-                while (!channel.isClosedForRead) {
-                    val packet = channel.readRemaining(DEFAULT_BUFFER_SIZE.toLong())
+                        while (!packet.exhausted()) {
+                            val bytes = packet.readByteArray()
+                            val totalBytes = response.contentLength() ?: 0L
+                            val fileSize = FileSystem.SYSTEM.metadata(pathFile).size
 
-                    while (!packet.exhausted()) {
-                        val bytes = packet.readByteArray()
-                        val totalBytes = response.contentLength() ?: 0L
-                        val fileSize = FileSystem.SYSTEM.metadata(pathFile).size
+                            sink?.write(bytes)
 
-                        sink?.write(bytes)
+                            if (totalBytes > 0L) {
+                                val progress = calculateProgress(fileSize!!, totalBytes)
 
-                        if (totalBytes > 0L) {
-                            val progress = calculateProgress(fileSize!!, totalBytes)
+                                Logger.i("$tag Downloading files progress: $progress")
 
-                            Logger.i("$tag Downloading files progress: $progress")
-
-                            emit(
-                                ResultProgress.Loading(
-                                    Progress(
-                                        progress = progress,
-                                        currentBytes = fileSize,
-                                        totalBytes = totalBytes
+                                emit(
+                                    ResultProgress.Loading(
+                                        Progress(
+                                            progress = progress,
+                                            currentBytes = fileSize,
+                                            totalBytes = totalBytes
+                                        )
                                     )
                                 )
-                            )
+                            }
                         }
                     }
+                    sink?.flush()
+                    sink?.close()
                 }
-
-                sink?.flush()
-                sink?.close()
             }
 
             Logger.i("$tag Successfully download file from $fileUrl to $outputFilePath")
