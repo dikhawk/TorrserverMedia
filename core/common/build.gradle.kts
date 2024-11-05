@@ -42,5 +42,11 @@ kotlin {
                 implementation(libs.decompose.core)
             }
         }
+
+        androidMain {
+            dependencies {
+                implementation(libs.libsu.core)
+            }
+        }
     }
 }
