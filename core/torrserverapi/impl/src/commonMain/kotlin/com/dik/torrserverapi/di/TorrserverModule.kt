@@ -3,8 +3,6 @@ package com.dik.torrserverapi.di
 import com.dik.common.AppDispatchers
 import com.dik.common.cmd.CmdRunner
 import com.dik.common.cmd.KmpCmdRunner
-import com.dik.torrserverapi.cmd.KmpServerCommands
-import com.dik.torrserverapi.cmd.ServerCommands
 import com.dik.torrserverapi.http.createHttpClient
 import com.dik.torrserverapi.server.BackupFile
 import com.dik.torrserverapi.server.DownloadFile
@@ -12,12 +10,14 @@ import com.dik.torrserverapi.server.InstallTorrserver
 import com.dik.torrserverapi.server.MagnetApi
 import com.dik.torrserverapi.server.MagnetApiImpl
 import com.dik.torrserverapi.server.RestoreServerFromBackUp
+import com.dik.torrserverapi.server.ServerConfig
 import com.dik.torrserverapi.server.ServerSettingsApi
 import com.dik.torrserverapi.server.ServerSettingsApiImpl
 import com.dik.torrserverapi.server.TorrentApi
 import com.dik.torrserverapi.server.TorrentApiImpl
 import com.dik.torrserverapi.server.TorrserverCommands
 import com.dik.torrserverapi.server.TorrserverCommandsImpl
+import com.dik.torrserverapi.server.TorrserverConfig
 import com.dik.torrserverapi.server.TorrserverStuffApi
 import com.dik.torrserverapi.server.TorrserverStuffApiImpl
 import io.ktor.client.HttpClient
@@ -35,10 +35,10 @@ import org.koin.dsl.module
 
 internal val torrserverModule = module {
     factory<CmdRunner> { KmpCmdRunner }
+    factory<ServerConfig> { TorrserverConfig }
     singleOf(::MagnetApiImpl).bind<MagnetApi>()
     singleOf(::TorrentApiImpl).bind<TorrentApi>()
     singleOf(::TorrserverStuffApiImpl).bind<TorrserverStuffApi>()
-    single<ServerCommands> { KmpServerCommands }
     singleOf(::TorrserverCommandsImpl).bind<TorrserverCommands>()
     singleOf(::ServerSettingsApiImpl).bind<ServerSettingsApi>()
     factoryOf(::DownloadFile).bind<DownloadFile>()
