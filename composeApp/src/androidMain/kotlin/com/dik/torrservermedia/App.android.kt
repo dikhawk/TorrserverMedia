@@ -10,9 +10,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.lifecycle.lifecycleScope
 import com.arkivanov.decompose.defaultComponentContext
-import com.dik.common.utils.successResult
 import com.dik.torrserverapi.di.TorrserverApi
-import com.dik.torrserverapi.server.TorrserverCommands
+import com.dik.torrserverapi.model.TorrserverServiceManager
 import com.dik.torrservermedia.di.KoinModules
 import com.dik.torrservermedia.di.inject
 import com.dik.torrservermedia.nanigation.DefaultRootComponent
@@ -44,7 +43,7 @@ class AppActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val torrserverApi: TorrserverApi = inject()
-        val commands: TorrserverCommands = torrserverApi.torrserverCommands()
+        val torrserverService: TorrserverServiceManager = torrserverApi.torrserverServiceManager()
         val root = DefaultRootComponent(
             componentContext = defaultComponentContext(),
             featureTorrentListApi = inject(),
@@ -52,8 +51,7 @@ class AppActivity : ComponentActivity() {
         )
 
         lifecycleScope.launch {
-            val isInstalledServer = commands.isServerInstalled().successResult() ?: false
-            if (isInstalledServer) commands.startServer()
+            torrserverService.startService()
         }
 
         enableEdgeToEdge()
