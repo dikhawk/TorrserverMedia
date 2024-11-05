@@ -1,34 +1,31 @@
 package com.dik.torrserverapi.server
 
+import co.touchlab.kermit.Logger
 import com.dik.common.AppDispatchers
-import com.dik.common.Platform
 import com.dik.common.Result
 import com.dik.common.ResultProgress
-import com.dik.common.utils.platformName
 import com.dik.common.utils.successResult
 import com.dik.torrserverapi.TorrserverError
-import com.dik.torrserverapi.cmd.ServerCommands
 import com.dik.torrserverapi.model.TorrserverFile
-import com.dik.torrserverapi.utils.defaultDirectory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import okio.FileNotFoundException
 import okio.FileSystem
-import okio.Path
 import okio.Path.Companion.toPath
 
 internal class TorrserverCommandsImpl(
-    private val serverCommands: ServerCommands,
+    private val torserverRunner: TorrserverRunner,
     private val torrserverStuffApi: TorrserverStuffApi,
     private val installTorrserver: InstallTorrserver,
     private val restoreServerFromBackUp: RestoreServerFromBackUp,
-    private val appDispatchers: AppDispatchers
+    private val appDispatchers: AppDispatchers,
+    private val config: ServerConfig
 ) : TorrserverCommands {
 
     override suspend fun installServer(): Flow<ResultProgress<TorrserverFile, TorrserverError>> =
         withContext(appDispatchers.defaultDispatcher()) {
-            installTorrserver(pathToServerFile(), pathToBackupServerFile())
+            installTorrserver(config.pathToServerFile, config.pathToBackupServerFile)
         }
 
     override suspend fun startServer(): Result<Unit, TorrserverError> {
@@ -37,37 +34,17 @@ internal class TorrserverCommandsImpl(
 
             if (isStartedServer) return Result.Success(Unit)
 
-            withContext(appDispatchers.defaultDispatcher()) {
-                serverCommands.startServer(pathToServerFile())
-            }
-
-            isStartedServer = isServerStarted().successResult() ?: false
-            if (isStartedServer) return Result.Success(Unit)
-
-            restoreServerFromBackUp(pathToBackupServerFile(), pathToServerFile())
+            torserverRunner.run()
 
             isStartedServer = isServerStarted().successResult() ?: false
             if (isStartedServer) return Result.Success(Unit)
 
             return Result.Error(TorrserverError.Server.NotStarted)
         } catch (e: Exception) {
+            Logger.e(e.toString())
             return Result.Error(TorrserverError.Unknown(e.message ?: ""))
         }
     }
-
-    private fun pathToServerFile() = defaultDirectory() + Path.DIRECTORY_SEPARATOR + serverName()
-
-    private fun pathToBackupServerFile() = defaultDirectory() + Path.DIRECTORY_SEPARATOR + backUpServerName()
-
-    private fun serverName(): String {
-        var serverName = "TorrServer"
-
-        if (platformName() == Platform.WINDOWS) serverName = "$serverName.exe"
-
-        return serverName
-    }
-
-    private fun backUpServerName() = "old_${serverName()}"
 
     override suspend fun stopServer(): Result<Unit, TorrserverError> {
         val result = withContext(appDispatchers.ioDispatcher()) {
@@ -75,7 +52,7 @@ internal class TorrserverCommandsImpl(
         }
 
         //A waiting when server stopped
-        var tries = 5
+        val tries = 5
         for (t in 1..tries) {
             val echoResult = withContext(appDispatchers.ioDispatcher()) { torrserverStuffApi.echo() }
             if (echoResult is Result.Error) break
@@ -89,12 +66,13 @@ internal class TorrserverCommandsImpl(
     override suspend fun isServerInstalled(): Result<Boolean, TorrserverError> {
         val isServerInstalled = withContext(appDispatchers.ioDispatcher()) {
             try {
-                val path = pathToServerFile().toPath()
+                val path = config.pathToServerFile.toPath()
                 val fileSize = FileSystem.SYSTEM.metadata(path).size ?: 0L
-                val isfileExist = FileSystem.SYSTEM.exists(path)
+                val isFileExist = FileSystem.SYSTEM.exists(path)
 
-                fileSize > 0 && isfileExist
+                fileSize > 0 && isFileExist
             } catch (e: FileNotFoundException) {
+                Logger.e(e.toString())
                 false
             }
         }
@@ -104,7 +82,7 @@ internal class TorrserverCommandsImpl(
 
     override suspend fun isServerStarted(): Result<Boolean, TorrserverError> {
         try {
-            var tries = 10
+            val tries = 10
             for (t in 1..tries) {
                 val echoResult = withContext(appDispatchers.ioDispatcher()) { torrserverStuffApi.echo() }
                 if (echoResult is Result.Success) return Result.Success(true)
@@ -114,6 +92,7 @@ internal class TorrserverCommandsImpl(
 
             return Result.Success(false)
         } catch (e: Exception) {
+            Logger.e(e.toString())
             return Result.Error(TorrserverError.Unknown(e.message ?: ""))
         }
     }
@@ -140,7 +119,17 @@ internal class TorrserverCommandsImpl(
 
             return Result.Error(TorrserverError.Unknown("Can't check updates"))
         } catch (e: Exception) {
+            Logger.e(e.toString())
             return Result.Error(TorrserverError.Unknown(e.message ?: ""))
+        }
+    }
+
+    override suspend fun restoreServerFromBackUp(): Result<Unit, TorrserverError> {
+        return try {
+            restoreServerFromBackUp(config.pathToBackupServerFile, config.pathToServerFile)
+        } catch (e: Exception) {
+            Logger.e(e.toString())
+            Result.Error(TorrserverError.Unknown(e.toString()))
         }
     }
 }
