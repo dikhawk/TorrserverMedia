@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.koin.core.Koin
+import org.koin.core.KoinApplication
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.koinApplication
 
@@ -19,11 +20,20 @@ object KoinModules {
                 mutex.withLock {
                     koin = koinApplication {
                         koinConfiguration(dependencies).invoke(this)
-                        modules(torrserverModule, httpModule, dependencyModule(dependencies))
+                        torrserverModules(dependencies)
                     }.koin
                 }
             }
         }
+    }
+
+    private fun KoinApplication.torrserverModules(dependencies: TorrserverDependencies) {
+        modules(
+            torrserverModule,
+            httpModule,
+            dependencyModule(dependencies),
+            platformModule()
+        )
     }
 }
 
