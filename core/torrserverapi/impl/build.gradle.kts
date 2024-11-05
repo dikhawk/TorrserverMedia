@@ -10,6 +10,15 @@ android {
     namespace = "com.dik.torrserverapi.impl"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+
+    sourceSets["main"].apply {
+        manifest.srcFile("src/androidMain/AndroidManifest.xml")
+//        res.srcDirs("src/androidMain/res")
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -41,6 +50,7 @@ kotlin {
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.okio)
+            implementation(libs.kermit.core)
         }
 
         androidMain.dependencies {
