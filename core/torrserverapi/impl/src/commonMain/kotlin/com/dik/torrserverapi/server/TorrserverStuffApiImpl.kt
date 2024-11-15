@@ -4,7 +4,6 @@ import com.dik.common.AppDispatchers
 import com.dik.common.Result
 import com.dik.torrserverapi.LOCAL_TORRENT_SERVER
 import com.dik.torrserverapi.TorrserverError
-import com.dik.torrserverapi.cmd.ServerCommands
 import com.dik.torrserverapi.model.Release
 import com.dik.torrserverapi.server.mappers.mapRelease
 import com.dik.torrserverapi.server.response.ReleaseResponse
@@ -23,7 +22,7 @@ import kotlinx.coroutines.withContext
 import java.net.ConnectException
 
 class TorrserverStuffApiImpl(
-    private val serverCommands: ServerCommands, private val client: HttpClient,
+    private val client: HttpClient,
     private val appDispatchers: AppDispatchers,
     private val scope: CoroutineScope
 ) : TorrserverStuffApi {
@@ -42,7 +41,7 @@ class TorrserverStuffApiImpl(
 
             val result = request.body<String>()
 
-            if (result.isNullOrEmpty()) return Result.Error(TorrserverError.HttpError.ResponseReturnNull)
+            if (result.isEmpty()) return Result.Error(TorrserverError.HttpError.ResponseReturnNull)
 
             return Result.Success(result)
         } catch (e: ConnectException) {
@@ -95,7 +94,7 @@ class TorrserverStuffApiImpl(
 
             val result = request.body<List<ReleaseResponse>>()
 
-            if (result.isNullOrEmpty()) return Result.Error(TorrserverError.HttpError.ResponseReturnNull)
+            if (result.isEmpty()) return Result.Error(TorrserverError.HttpError.ResponseReturnNull)
 
             return Result.Success(result.first().mapRelease())
         } catch (e: ConnectException) {
