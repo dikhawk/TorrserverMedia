@@ -7,4 +7,7 @@ interface PlayersCommands {
     suspend fun playFile(fileName: String, fileUrl: String, player: Player = Player.DEFAULT_PLAYER)
 }
 
-expect fun platformPlayersCommands() : PlayersCommands
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+expect interface PlatformPlayersDependencies
+
+expect fun platformPlayersCommands(deps: PlatformPlayersDependencies) : PlayersCommands
