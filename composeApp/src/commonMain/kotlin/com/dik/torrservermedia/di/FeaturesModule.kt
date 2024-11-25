@@ -14,13 +14,7 @@ import org.koin.dsl.module
 
 val featuresModule = module {
     factory<TorrentListFeatureApi> {
-        TorrentListComponentHolder.init(object : TorrentListDependencies {
-            override fun torrServerApi(): TorrserverApi = get()
-            override fun dispatchers(): AppDispatchers = get()
-            override fun settingsFeatureApi(): SettingsFeatureApi = get()
-            override fun appSettings(): AppSettings = get()
-            override fun theMovieDbApi(): TheMovieDbApi = get()
-        })
+        TorrentListComponentHolder.init(torrentListDependencies())
         TorrentListComponentHolder.get()
     }
 
@@ -33,3 +27,5 @@ val featuresModule = module {
         SettingsComponentHolder.get()
     }
 }
+
+internal expect fun  torrentListDependencies(): TorrentListDependencies
