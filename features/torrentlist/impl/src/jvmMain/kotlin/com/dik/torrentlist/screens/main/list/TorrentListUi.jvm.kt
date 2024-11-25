@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrserverapi.model.Torrent
+import com.dik.uikit.utils.currentWindowSize
 import com.dik.uikit.widgets.AppActionButton
 import com.dik.uikit.widgets.AppAsyncImage
 import com.dik.uikit.widgets.AppNormalBoldText
@@ -167,14 +168,16 @@ private fun Torrents(
     component: TorrentListComponent,
     modifier: Modifier = Modifier
 ) {
+    val windowSize = currentWindowSize()
+
     LazyVerticalGrid(
         modifier = modifier.fillMaxSize(),
-        columns = GridCells.Adaptive(minSize = 200.dp)
+        columns = GridCells.Adaptive(minSize = 180.dp)
     ) {
         items(torrents, key = { it.hash }) { torrent ->
             TorrentItem(
                 torrent,
-                onClickItem = { component.onClickItem(torrent) },
+                onClickItem = { component.onClickItem(torrent, windowSize) },
                 onClickDelete = { component.onClickDeleteItem(torrent) })
         }
     }

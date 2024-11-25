@@ -11,9 +11,9 @@ internal interface RootComponent {
 
     val childStack: Value<ChildStack<*, Child>>
 
-    fun mainComponent(): MainComponent
+    fun mainComponent(componentContext: ComponentContext): MainComponent
 
-    fun detailisComponent(): DetailsComponent
+    fun detailsComponent(componentContext: ComponentContext, torrentHash: String? = null): DetailsComponent
 
     sealed interface Child {
         class Main(val component: MainComponent) : Child

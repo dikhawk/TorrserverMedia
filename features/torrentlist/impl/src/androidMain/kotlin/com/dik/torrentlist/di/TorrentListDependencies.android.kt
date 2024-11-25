@@ -1,5 +1,6 @@
 package com.dik.torrentlist.di
 
+import android.content.Context
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.moduleinjector.BaseDependencies
@@ -8,15 +9,11 @@ import com.dik.themoviedb.di.TheMovieDbApi
 import com.dik.torrserverapi.di.TorrserverApi
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-expect interface TorrentListDependencies : BaseDependencies {
-
-    fun torrServerApi(): TorrserverApi
-
-    fun dispatchers(): AppDispatchers
-
-    fun settingsFeatureApi(): SettingsFeatureApi
-
-    fun appSettings(): AppSettings
-
-    fun theMovieDbApi(): TheMovieDbApi
+actual interface TorrentListDependencies : BaseDependencies {
+    actual fun torrServerApi(): TorrserverApi
+    actual fun dispatchers(): AppDispatchers
+    actual fun settingsFeatureApi(): SettingsFeatureApi
+    actual fun appSettings(): AppSettings
+    actual fun theMovieDbApi(): TheMovieDbApi
+    fun context(): Context
 }

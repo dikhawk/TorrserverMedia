@@ -12,6 +12,7 @@ internal interface DetailsComponent {
     val contentFilesComponent: ContentFilesComponent
     val torrentStatisticsComponent: TorrentStatisticsComponent
 
+    fun onClickBack()
     fun showDetails(hash: String)
 }
 

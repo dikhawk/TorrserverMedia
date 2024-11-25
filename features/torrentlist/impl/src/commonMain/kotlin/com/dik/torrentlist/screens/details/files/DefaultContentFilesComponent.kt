@@ -19,7 +19,6 @@ internal class DefaultContentFilesComponent(
     private val dispatchers: AppDispatchers,
     private val componentScope: CoroutineScope,
     private val appSettings: AppSettings,
-    private val playersCommands: PlayersCommands = platformPlayersCommands(),
     private val onClickPlayFile: suspend (contentFile: ContentFile) -> Unit
 ) : ContentFilesComponent, ComponentContext by componentContext {
 

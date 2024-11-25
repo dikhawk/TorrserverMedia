@@ -2,6 +2,7 @@ package com.dik.torrentlist.screens.details
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import com.arkivanov.essenty.lifecycle.doOnResume
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.utils.successResult
@@ -37,14 +38,14 @@ internal class DefaultDetailsComponent(
     private val appSettings: AppSettings = inject(),
     private val searchingTmdb: SearchTheMovieDbApi = inject(),
     private val tvSeasonTmdb: TvSeasonsTheMovieDbApi = inject(),
-    private val onClickPlayFile: suspend (torrent: Torrent, contentFile: ContentFile) -> Unit
+    private val onClickPlayFile: suspend (torrent: Torrent, contentFile: ContentFile) -> Unit,
+    private val onClickBack: () -> Unit = {}
 ) : ComponentContext by componentContext, DetailsComponent {
 
     private val componentScope = CoroutineScope(dispatchers.mainDispatcher() + SupervisorJob())
     private val _uiState = MutableStateFlow(DetailsState())
     override val uiState: StateFlow<DetailsState> = _uiState.asStateFlow()
     private var selectedTorrent: Torrent? = null
-
 
     override val contentFilesComponent = DefaultContentFilesComponent(
         componentContext = childContext("content_files"),
@@ -62,6 +63,8 @@ internal class DefaultDetailsComponent(
         componentScope = componentScope,
         torrrentApi = torrentApi
     )
+
+    override fun onClickBack() = onClickBack.invoke()
 
     override fun showDetails(hash: String) {
         _uiState.update { DetailsState() }

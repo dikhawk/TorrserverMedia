@@ -6,11 +6,11 @@ import kotlinx.serialization.Serializable
 sealed interface ChildConfig {
 
     @Serializable
-    object Main : ChildConfig
+    data object Main : ChildConfig
 
     @Serializable
-    data class Details(val torrentUrl: String) : ChildConfig
+    data class Details(var torrentHash: String) : ChildConfig
 
     @Serializable
-    object Settings : ChildConfig
+    data object Settings : ChildConfig
 }

@@ -3,10 +3,7 @@ package com.dik.torrentlist.screens.main
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
-import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
-import com.dik.common.player.PlayersCommands
-import com.dik.common.player.platformPlayersCommands
 import com.dik.common.utils.successResult
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
@@ -21,10 +18,12 @@ import com.dik.torrentlist.screens.main.list.TorrentListComponent
 import com.dik.torrentlist.screens.main.torrserverbar.DefaultTorrserverBarComponent
 import com.dik.torrentlist.screens.main.torrserverbar.TorrserverBarComponent
 import com.dik.torrserverapi.ContentFile
-import com.dik.torrserverapi.server.MagnetApi
+import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.TorrentApi
 import com.dik.torrserverapi.server.TorrserverCommands
 import com.dik.torrserverapi.server.TorrserverStuffApi
+import com.dik.uikit.utils.WindowSize
+import com.dik.uikit.utils.WindowSizeClass
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
@@ -46,12 +45,13 @@ internal class DefaultMainComponent(
     private val addMagnetLink: AddMagnetLink = inject(),
     private val tvEpisodesTheMovieDbApi: TvEpisodesTheMovieDbApi = inject(),
     private val onClickPlayFile: suspend (contentFile: ContentFile) -> Unit,
+    private val navigateToDetails: (torrentHash: String) -> Unit
 ) : MainComponent, ComponentContext by context {
 
     private val _uiState = MutableStateFlow(MainComponentState())
     override val uiState: StateFlow<MainComponentState> = _uiState.asStateFlow()
 
-    private val componentScope = CoroutineScope(dispatchers.mainDispatcher() + SupervisorJob())
+    private val componentScope = CoroutineScope(dispatchers.defaultDispatcher() + SupervisorJob())
 
     init {
         lifecycle.doOnDestroy { componentScope.cancel() }
@@ -79,29 +79,37 @@ internal class DefaultMainComponent(
 
     override val torrentListComponent: TorrentListComponent = DefaultTorrentListComponent(
         context = childContext("torrserverbar"),
-        onTorrentClick = { torrent ->
-            if (torrent.files.size == 1) {
-                bufferizationComponent.startBufferezation(
-                    torrent = torrent,
-                    contentFile = torrent.files.first(),
-                    runAferBuferazation = {
-                        if (torrent.files.size == 1) {
-                            val contentFile = torrent.files.first()
-                            playFile(contentFile)
-                        }
-                    }
-                )
-            }
-            detailsComponent.showDetails(torrent.hash)
-            _uiState.update {
-                it.copy(isShowDetails = true, isShowBufferization = torrent.files.size == 1)
-            }
+        onTorrentClick = { torrent, windowSize ->
+            showDetails(torrent, windowSize)
         },
         torrentApi = torrentApi,
-        torrserverCommands = torrserverCommands,
         componentScope = componentScope,
         addTorrentFile = addTorrentFile
     )
+
+    private fun showDetails(torrent: Torrent, windowSizeClass: WindowSizeClass) {
+        if (windowSizeClass.windowWidthSizeClass == WindowSize.Width.COMPACT) {
+            navigateToDetails(torrent.hash)
+            return
+        }
+
+        if (torrent.files.size == 1) {
+            bufferizationComponent.startBufferezation(
+                torrent = torrent,
+                contentFile = torrent.files.first(),
+                runAferBuferazation = {
+                    if (torrent.files.size == 1) {
+                        val contentFile = torrent.files.first()
+                        playFile(contentFile)
+                    }
+                }
+            )
+        }
+        detailsComponent.showDetails(torrent.hash)
+        _uiState.update {
+            it.copy(isShowDetails = true, isShowBufferization = torrent.files.size == 1)
+        }
+    }
 
     private fun playFile(contentFile: ContentFile) {
         componentScope.launch(dispatchers.defaultDispatcher()) {
