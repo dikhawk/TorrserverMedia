@@ -20,47 +20,47 @@ val reportTitleExp = listOf(
     ),
     // Multi-Part episodes without a title (S01E05.S01E06)
     Regex(
-        "^(?:\\W*S(?<season>(?<!\\d+)(?:\\d{1,2}|\\d{4})(?!\\d+))(?:e{1,2}(?<episode>\\d{1,3}(?!\\d+)))+){2,}",
+        "^(?:\\W*S(?<season>(?<!\\d{1,20})(?:\\d{1,2}|\\d{4})(?!\\d+))(?:e{1,2}(?<episode>\\d{1,3}(?!\\d+)))+){2,}",
         RegexOption.IGNORE_CASE
     ),
     // Multi-episode with single episode numbers (S6.E1-E2, S6.E1E2, S6E1E2, etc)
     Regex(
-        "^(?<title>.+?)[-_. ]S(?<season>(?<!\\d+)(?:\\d{1,2}|\\d{4})(?!\\d+))(?:[-_. ]?[ex]?(?<episode>(?<!\\d+)\\d{1,2}(?!\\d+)))+",
+        "^(?<title>.+?)[-_. ]S(?<season>(?<!\\d{1,20})(?:\\d{1,2}|\\d{4})(?!\\d+))(?:[-_. ]?[ex]?(?<episode>(?<!\\d{1,20})\\d{1,2}(?!\\d+)))+",
         RegexOption.IGNORE_CASE
     ),
     // Multi-Episode with a title (S01E05E06, S01E05-06, S01E05 E06, etc) and trailing info in slashes
     Regex(
-        "^(?<title>.+?)(?:(?:-\\W)+S?(?<season>(?<!\\d+)(?:\\d{1,2})(?!\\d+))(?:[ex]|\\W[ex]|){1,2}(?<episode>\\d{2,3}(?!\\d+))(?:(?:-|[ex]|\\W[ex]|){1,2}(?<episode1>\\d{2,3}(?!\\d+)))+).+?(?:[.+?])(?!\\))",
+        "^(?<title>.+?)(?:(?:-\\W)+S?(?<season>(?<!\\d{1,20})(?:\\d{1,2})(?!\\d+))(?:[ex]|\\W[ex]|){1,2}(?<episode>\\d{2,3}(?!\\d+))(?:(?:-|[ex]|\\W[ex]|){1,2}(?<episode1>\\d{2,3}(?!\\d+)))+).+?(?:[.+?])(?!\\))",
         RegexOption.IGNORE_CASE
     ),
     // Episodes without a title, Multi (S01E04E05, 1x04x05, etc)
     Regex(
-        "(?:S?(?<season>(?<!\\d+)(?:\\d{1,2}|\\d{4})(?!\\d+))(?:(?:[-_]|[ex]){1,2}(?<episode>\\d{2,3}(?!\\d+))){2,})",
+        "(?:S?(?<season>(?<!\\d{1,50})(?:\\d{1,2}|\\d{4})(?!\\d+))(?:(?:[-_]|[ex]){1,2}(?<episode>\\d{2,3}(?!\\d+))){2,})",
         RegexOption.IGNORE_CASE
     ),
     // Episodes without a title, Single (S01E05, 1x05)
     Regex(
-        "^(?:S?(?<season>(?<!\\d+)(?:\\d{1,2}|\\d{4})(?!\\d+))(?:(?:[-_ ]?[ex])(?<episode>\\d{2,3}(?!\\d+))))",
+        "^(?:S?(?<season>(?<!\\d{1,50})(?:\\d{1,2}|\\d{4})(?!\\d+))(?:(?:[-_ ]?[ex])(?<episode>\\d{2,3}(?!\\d+))))",
         RegexOption.IGNORE_CASE
     ),
     // Anime - [SubGroup] Title Episode Absolute Episode Number ([SubGroup] Series Title Episode 01)
     Regex(
-        "^(?:\\[(?<subgroup>.+?)\\][-_. ]?)(?<title>.+?)[-_. ](?:Episode)(?:[-_. ]+(?<absoluteepisode>(?<!\\d+)\\d{2,3}(\\.\\d{1,2})?(?!\\d+)))+(?:_|-|\\s|\\.)*?(?<hash>\\[.{8}\\])?(?:$|\\.)?",
+        "^(?:\\[(?<subgroup>.+?)\\][-_. ]?)(?<title>.+?)[-_. ](?:Episode)(?:[-_. ]+(?<absoluteepisode>(?<!\\d{1,50})\\d{2,3}(\\.\\d{1,2})?(?!\\d+)))+(?:_|-|\\s|\\.)*?(?<hash>\\[.{8}\\])?(?:$|\\.)?",
         RegexOption.IGNORE_CASE
     ),
     // Anime - [SubGroup] Title Absolute Episode Number + Season+Episode
     Regex(
-        "^(?:\\[(?<subgroup>.+?)\\](?:_|-|\\s|\\.)?)(?<title>.+?)(?:(?:[-_\\W](?<![\\(\\)\\[!]))+(?<absoluteepisode>\\d{2,3}(\\.\\d{1,2})?))+(?:_|-|\\s|\\.)+(?:S?(?<season>(?<!\\d+)\\d{1,2}(?!\\d+))(?:(?:-|[ex]|\\W[ex]){1,2}(?<episode>\\d{2}(?!\\d+)))+).*?(?<hash>[\\(\\[]\\w{8}[\\)\\]])?(?:$|\\.)",
+        "^(?:\\[(?<subgroup>.+?)\\](?:_|-|\\s|\\.)?)(?<title>.+?)(?:(?:[-_\\W](?<![\\(\\)\\[!]))+(?<absoluteepisode>\\d{2,3}(\\.\\d{1,2})?))+(?:_|-|\\s|\\.)+(?:S?(?<season>(?<!\\d{1,50})\\d{1,2}(?!\\d+))(?:(?:-|[ex]|\\W[ex]){1,2}(?<episode>\\d{2}(?!\\d+)))+).*?(?<hash>[\\(\\[]\\w{8}[\\)\\]])?(?:$|\\.)",
         RegexOption.IGNORE_CASE
     ),
     // Anime - [SubGroup] Title Season+Episode + Absolute Episode Number
     Regex(
-        "^(?:\\[(?<subgroup>.+?)\\](?:_|-|\\s|\\.)?)(?<title>.+?)(?:[-_\\W](?<![\\[\\(\\)\\[]!))+(?:S?(?<season>(?<!\\d+)\\d{1,2}(?!\\d+))(?:(?:-|[ex]|\\W[ex]){1,2}(?<episode>\\d{2}(?!\\d+)))+)(?:(?:_|-|\\s|\\.)+(?<absoluteepisode>(?<!\\d+)\\d{2,3}(\\.\\d{1,2})?(?!\\d+)))+.*?(?<hash>\\[\\w{8}\\])?(?:$|\\.)",
+        "^(?:\\[(?<subgroup>.+?)\\](?:_|-|\\s|\\.)?)(?<title>.+?)(?:[-_\\W](?<![\\[\\(\\)\\[]!))+(?:S?(?<season>(?<!\\d{1,50})\\d{1,2}(?!\\d+))(?:(?:-|[ex]|\\W[ex]){1,2}(?<episode>\\d{2}(?!\\d+)))+)(?:(?:_|-|\\s|\\.)+(?<absoluteepisode>(?<!\\d{1,20})\\d{2,3}(\\.\\d{1,2})?(?!\\d+)))+.*?(?<hash>\\[\\w{8}\\])?(?:$|\\.)",
         RegexOption.IGNORE_CASE
     ),
     // Anime - [SubGroup] Title Season+Episode
     Regex(
-        "^(?:\\[(?<subgroup>.+?)\\](?:_|-|\\s|\\.)?)(?<title>.+?)(?:[-_\\W](?<![\\(\\)\\[!]))+(?:S?(?<season>(?<!\\d+)\\d{1,2}(?!\\d+))(?:(?:[ex]|\\W[ex]){1,2}(?<episode>\\d{2}(?!\\d+)))+)(?:\\s|\\.).*?(?<hash>\\[\\w{8}\\])?(?:$|\\.)",
+        "^(?:\\[(?<subgroup>.+?)\\](?:_|-|\\s|\\.)?)(?<title>.+?)(?:[-_\\W](?<![\\(\\)\\[!]))+(?:S?(?<season>(?<!\\d{1,50})\\d{1,2}(?!\\d+))(?:(?:[ex]|\\W[ex]){1,2}(?<episode>\\d{2}(?!\\d+)))+)(?:\\s|\\.).*?(?<hash>\\[\\w{8}\\])?(?:$|\\.)",
         RegexOption.IGNORE_CASE
     ),
     // Anime - [SubGroup] Title with trailing number Absolute Episode Number
@@ -81,20 +81,20 @@ val reportTitleExp = listOf(
     ),
     // Multi-episode Repeated (S01E05 - S01E06, 1x05 - 1x06, etc)
     Regex(
-        "^(?<title>.+?)(?:(?:[-_\\W](?<![\\(\\[!]))+S?(?<season>(?<!\\d+)(?:\\d{1,2}|\\d{4})(?!\\d+))(?:(?:[ex]|[-_. ]e){1,2}(?<episode>\\d{1,3}(?!\\d+)))+){2,}",
+        "^(?<title>.+?)(?:(?:[-_\\W](?<![\\(\\[!]))+S?(?<season>(?<!\\d{1,50})(?:\\d{1,2}|\\d{4})(?!\\d+))(?:(?:[ex]|[-_. ]e){1,2}(?<episode>\\d{1,3}(?!\\d+)))+){2,}",
         RegexOption.IGNORE_CASE
     ),
 
     // Single episodes with a title (S01E05, 1x05, etc)
     // modified from sonarr to not match "trailing info in slashes"
     Regex(
-        "^(?<title>.+?)(?:(?:[-_\\W](?<![\\(\\[!]))+S?(?<season>(?<!\\d+)(?:\\d{1,2})(?!\\d+))(?:[ex]|\\W[ex]|_){1,2}(?<episode>(?!265|264)\\d{2,3}(?!\\d+|(?:[ex]|\\W[ex]|_|-){1,2})))",
+        "^(?<title>.+?)(?:(?:[-_\\W](?<![\\(\\[!]))+S?(?<season>(?<!\\d{1,50})(?:\\d{1,2})(?!\\d+))(?:[ex]|\\W[ex]|_){1,2}(?<episode>(?!265|264)\\d{2,3}(?!\\d+|(?:[ex]|\\W[ex]|_|-){1,2})))",
         RegexOption.IGNORE_CASE
     ),
 
     // Anime - Title Season EpisodeNumber + Absolute Episode Number [SubGroup]
     Regex(
-        "^(?<title>.+?)(?:[-_\\W](?<![\\(\\[!]))+(?:S?(?<season>(?<!\\d+)\\d{1,2}(?!\\d+))(?:(?:[ex]|\\W[ex]){1,2}(?<episode>(?<!\\d+)\\d{2}(?!\\d+)))).+?(?:[-_. ]?(?<absoluteepisode>(?<!\\d+)\\d{3}(\\.\\d{1,2})?(?!\\d+)))+.+?\\[(?<subgroup>.+?)\\](?:$|\\.mkv)",
+        "^(?<title>.+?)(?:[-_\\W](?<![\\(\\[!]))+(?:S?(?<season>(?<!\\d{1,50})\\d{1,2}(?!\\d+))(?:(?:[ex]|\\W[ex]){1,2}(?<episode>(?<!\\d{1,50})\\d{2}(?!\\d+)))).+?(?:[-_. ]?(?<absoluteepisode>(?<!\\d{1,50})\\d{3}(\\.\\d{1,2})?(?!\\d+)))+.+?\\[(?<subgroup>.+?)\\](?:$|\\.mkv)",
         RegexOption.IGNORE_CASE
     ),
 
@@ -118,37 +118,37 @@ val reportTitleExp = listOf(
 
     // Episodes with airdate AND season/episode number, capture season/epsiode only
     Regex(
-        "^(?<title>.+?)?\\W*(?<airdate>\\d{4}\\W+[0-1][0-9]\\W+[0-3][0-9])(?!\\W+[0-3][0-9])[-_. ](?:s?(?<season>(?<!\\d+)(?:\\d{1,2})(?!\\d+)))(?:[ex](?<episode>(?<!\\d+)(?:\\d{1,3})(?!\\d+)))",
+        "^(?<title>.+?)?\\W*(?<airdate>\\d{4}\\W+[0-1][0-9]\\W+[0-3][0-9])(?!\\W+[0-3][0-9])[-_. ](?:s?(?<season>(?<!\\d{1,50})(?:\\d{1,2})(?!\\d+)))(?:[ex](?<episode>(?<!\\d{1,50})(?:\\d{1,3})(?!\\d+)))",
         RegexOption.IGNORE_CASE
     ),
 
     // Episodes with airdate AND season/episode number
     Regex(
-        "^(?<title>.+?)?\\W*(?<airyear>\\d{4})\\W+(?<airmonth>[0-1][0-9])\\W+(?<airday>[0-3][0-9])(?!\\W+[0-3][0-9]).+?(?:s?(?<season>(?<!\\d+)(?:\\d{1,2})(?!\\d+)))(?:[ex](?<episode>(?<!\\d+)(?:\\d{1,3})(?!\\d+)))",
+        "^(?<title>.+?)?\\W*(?<airyear>\\d{4})\\W+(?<airmonth>[0-1][0-9])\\W+(?<airday>[0-3][0-9])(?!\\W+[0-3][0-9]).+?(?:s?(?<season>(?<!\\d{1,50})(?:\\d{1,2})(?!\\d+)))(?:[ex](?<episode>(?<!\\d{1,50})(?:\\d{1,3})(?!\\d+)))",
         RegexOption.IGNORE_CASE
     ),
 
     // Episodes with a title, 4 digit season number, Single episodes (S2016E05, etc) & Multi-episode (S2016E05E06, S2016E05-06, S2016E05 E06, etc)
     Regex(
-        "^(?<title>.+?)(?:(?:[-_\\W](?<![\\(\\[!]))+S(?<season>(?<!\\d+)(?:\\d{4})(?!\\d+))(?:e|\\We|_){1,2}(?<episode>\\d{2,3}(?!\\d+))(?:(?:-|e|\\We|_){1,2}(?<episode1>\\d{2,3}(?!\\d+)))*)\\W?(?!\\\\)",
+        "^(?<title>.+?)(?:(?:[-_\\W](?<![\\(\\[!]))+S(?<season>(?<!\\d{1,50})(?:\\d{4})(?!\\d+))(?:e|\\We|_){1,2}(?<episode>\\d{2,3}(?!\\d+))(?:(?:-|e|\\We|_){1,2}(?<episode1>\\d{2,3}(?!\\d+)))*)\\W?(?!\\\\)",
         RegexOption.IGNORE_CASE
     ),
 
     // Episodes with a title, 4 digit season number, Single episodes (2016x05, etc) & Multi-episode (2016x05x06, 2016x05-06, 2016x05 x06, etc)
     Regex(
-        "^(?<title>.+?)(?:(?:[-_\\W](?<![\\(\\[!]))+(?<season>(?<!\\d+)(?:\\d{4})(?!\\d+))(?:x|\\Wx){1,2}(?<episode>\\d{2,3}(?!\\d+))(?:(?:-|x|\\Wx|_){1,2}(?<episode1>\\d{2,3}(?!\\d+)))*)\\W?(?!\\\\)",
+        "^(?<title>.+?)(?:(?:[-_\\W](?<![\\(\\[!]))+(?<season>(?<!\\d{1,50})(?:\\d{4})(?!\\d+))(?:x|\\Wx){1,2}(?<episode>\\d{2,3}(?!\\d+))(?:(?:-|x|\\Wx|_){1,2}(?<episode1>\\d{2,3}(?!\\d+)))*)\\W?(?!\\\\)",
         RegexOption.IGNORE_CASE
     ),
 
     //Multi-season pack
     Regex(
-        "^(?<title>.+?)[-_. ]+S(?<season>(?<!\\d+)(?:\\d{1,2})(?!\\d+))\\W?-\\W?S?(?<season1>(?<!\\d+)(?:\\d{1,2})(?!\\d+))",
+        "^(?<title>.+?)[-_. ]+S(?<season>(?<!\\d{1,50})(?:\\d{1,2})(?!\\d+))\\W?-\\W?S?(?<season1>(?<!\\d{1,50})(?:\\d{1,2})(?!\\d+))",
         RegexOption.IGNORE_CASE
     ),
 
     // Partial season pack
     Regex(
-        "^(?<title>.+?)(?:\\W+S(?<season>(?<!\\d+)(?:\\d{1,2})(?!\\d+))\\W+(?:(?:Part\\W?|(?<!\\d+\\W+)e)(?<seasonpart>\\d{1,2}(?!\\d+)))+)",
+        "^(?<title>.+?)(?:\\W+S(?<season>(?<!\\d{1,50})(?:\\d{1,2})(?!\\d+))\\W+(?:(?:Part\\W?|(?<!\\d{1,50}\\W{1,150})e)(?<seasonpart>\\d{1,2}(?!\\d+)))+)",
         RegexOption.IGNORE_CASE
     ),
 
@@ -166,7 +166,7 @@ val reportTitleExp = listOf(
 
     // Mini-Series, treated as season 1, episodes are labelled as Part01, Part 01, Part.1
     Regex(
-        "^(?<title>.+?)(?:\\W+(?:(?:Part\\W?|(?<!\\d+\\W+)e)(?<episode>\\d{1,2}(?!\\d+)))+)",
+        "^(?<title>.+?)(?:\\W+(?:(?:Part\\W?|(?<!\\d{1,50}\\W{1,50})e)(?<episode>\\d{1,2}(?!\\d+)))+)",
         RegexOption.IGNORE_CASE
     ),
 
@@ -178,56 +178,56 @@ val reportTitleExp = listOf(
 
     // Mini-Series, treated as season 1, episodes are labelled as XofY
     Regex(
-        "^(?<title>.+?)(?:\\W+(?:(?<episode>(?<!\\d+)\\d{1,2}(?!\\d+))of\\d+)+)",
+        "^(?<title>.+?)(?:\\W+(?:(?<episode>(?<!\\d{1,50})\\d{1,2}(?!\\d+))of\\d+)+)",
         RegexOption.IGNORE_CASE
     ),
 
     // Supports Season 01 Episode 03
     Regex(
-        "(?:.(?:\"\"|^))(?<title>.?)(?:-_\\W)+(?:\\W?Season\\W?)(?<season>(?<!\\d+)\\d{1,2}(?!\\d+))(?:\\W|)+(?:Episode\\W)(?:[-. ]?(?<episode>(?<!\\d+)\\d{1,2}(?!\\d+)))+",
+        "(?:.(?:\"\"|^))(?<title>.?)(?:-_\\W)+(?:\\W?Season\\W?)(?<season>(?<!\\d{1,50})\\d{1,2}(?!\\d+))(?:\\W|)+(?:Episode\\W)(?:[-. ]?(?<episode>(?<!\\d{1,50})\\d{1,2}(?!\\d+)))+",
         RegexOption.IGNORE_CASE
     ),
 
     // Multi-episode with episodes in square brackets (Series Title [S01E11E12] or Series Title [S01E11-12])
     Regex(
-        "(?:.*(?:^))(?<title>.*?)[-._ ]+\\[S(?<season>(?<!\\d+)\\d{2}(?!\\d+))(?:[E-]{1,2}(?<episode>(?<!\\d+)\\d{2}(?!\\d+)))+\\]",
+        "(?:.*(?:^))(?<title>.*?)[-._ ]+\\[S(?<season>(?<!\\d{1,50})\\d{2}(?!\\d+))(?:[E-]{1,2}(?<episode>(?<!\\d{1,50})\\d{2}(?!\\d+)))+\\]",
         RegexOption.IGNORE_CASE
     ),
 
     // Multi-episode release with no space between series title and season (S01E11E12)
     Regex(
-        "(?:.*(?:^))(?<title>.*?)S(?<season>(?<!\\d+)\\d{2}(?!\\d+))(?:E(?<episode>(?<!\\d+)\\d{2}(?!\\d+)))+",
+        "(?:.*(?:^))(?<title>.*?)S(?<season>(?<!\\d{1,50})\\d{2}(?!\\d+))(?:E(?<episode>(?<!\\d{1,50})\\d{2}(?!\\d+)))+",
         RegexOption.IGNORE_CASE
     ),
 
 
     // Single episode season or episode S1E1 or S1-E1 or S1.Ep1 or S01.Ep.01
     Regex(
-        "(?:.*(?:\"\"|^))(?<title>.*?)(?:\\W?|_)S(?<season>(?<!\\d+)\\d{1,2}(?!\\d+))(?:\\W|_)?Ep?[ ._]?(?<episode>(?<!\\d+)\\d{1,2}(?!\\d+))",
+        "(?:.*(?:\"\"|^))(?<title>.*?)(?:\\W?|_)S(?<season>(?<!\\d{1,50})\\d{1,2}(?!\\d+))(?:\\W|_)?Ep?[ ._]?(?<episode>(?<!\\d{1,50})\\d{1,2}(?!\\d+))",
         RegexOption.IGNORE_CASE
     ),
 
     // 3 digit season S010E05
     Regex(
-        "(?:.*(?:\"\"|^))(?<title>.*?)(?:\\W?|_)S(?<season>(?<!\\d+)\\d{3}(?!\\d+))(?:\\W|_)?E(?<episode>(?<!\\d+)\\d{1,2}(?!\\d+))",
+        "(?:.*(?:\"\"|^))(?<title>.*?)(?:\\W?|_)S(?<season>(?<!\\d{1,50})\\d{3}(?!\\d+))(?:\\W|_)?E(?<episode>(?<!\\d{1,50})\\d{1,2}(?!\\d+))",
         RegexOption.IGNORE_CASE
     ),
 
     // 5 digit episode number with a title
     Regex(
-        "^(?:(?<title>.+?)(?:_|-|\\s|\\.)+)(?:S?(?<season>(?<!\\d+)\\d{1,2}(?!\\d+)))(?:(?:-|[ex]|\\W[ex]|_){1,2}(?<episode>(?<!\\d+)\\d{5}(?!\\d+)))",
+        "^(?:(?<title>.+?)(?:_|-|\\s|\\.)+)(?:S?(?<season>(?<!\\d{1,50})\\d{1,2}(?!\\d+)))(?:(?:-|[ex]|\\W[ex]|_){1,2}(?<episode>(?<!\\d{1,50})\\d{5}(?!\\d+)))",
         RegexOption.IGNORE_CASE
     ),
 
     // 5 digit multi-episode with a title
     Regex(
-        "^(?:(?<title>.+?)(?:_|-|\\s|\\.)+)(?:S?(?<season>(?<!\\d+)\\d{1,2}(?!\\d+)))(?:(?:[-_. ]{1,3}ep){1,2}(?<episode>(?<!\\d+)\\d{5}(?!\\d+)))+",
+        "^(?:(?<title>.+?)(?:_|-|\\s|\\.)+)(?:S?(?<season>(?<!\\d{1,50})\\d{1,2}(?!\\d+)))(?:(?:[-_. ]{1,3}ep){1,2}(?<episode>(?<!\\d{1,50})\\d{5}(?!\\d+)))+",
         RegexOption.IGNORE_CASE
     ),
 
     // Separated season and episode numbers S01 - E01
     Regex(
-        "^(?<title>.+?)(?:_|-|\\s|\\.)+S(?<season>\\d{2}(?!\\d+))(\\W-\\W)E(?<episode>(?<!\\d+)\\d{2}(?!\\d+))(?!\\\\)",
+        "^(?<title>.+?)(?:_|-|\\s|\\.)+S(?<season>\\d{2}(?!\\d+))(\\W-\\W)E(?<episode>(?<!\\d{1,50})\\d{2}(?!\\d+))(?!\\\\)",
         RegexOption.IGNORE_CASE
     ),
 
@@ -252,20 +252,20 @@ val reportTitleExp = listOf(
 
     // Episodes with a title and season/episode in square brackets
     Regex(
-        "^(?<title>.+?)(?:(?:[-_\\W](?<![()\\[!]))+\\[S?(?<season>(?<!\\d+)\\d{1,2}(?!\\d+))(?:(?:-|[ex]|\\W[ex]|_){1,2}(?<episode>(?<!\\d+)\\d{2}(?!\\d+|i|p)))+\\])\\W?(?!\\\\)",
+        "^(?<title>.+?)(?:(?:[-_\\W](?<![()\\[!]))+\\[S?(?<season>(?<!\\d{1,50})\\d{1,2}(?!\\d+))(?:(?:-|[ex]|\\W[ex]|_){1,2}(?<episode>(?<!\\d{1,50})\\d{2}(?!\\d+|i|p)))+\\])\\W?(?!\\\\)",
         RegexOption.IGNORE_CASE
     ),
 
     // Supports 103/113 naming
     Regex(
-        "^(?<title>.+?)?(?:(?:[_.](?<![()\\[!]))+(?<season>(?<!\\d+)[1-9])(?<episode>[1-9][0-9]|[0][1-9])(?![a-z]|\\d+))+(?:[_.]|$)",
+        "^(?<title>.+?)?(?:(?:[_.](?<![()\\[!]))+(?<season>(?<!\\d{1,50})[1-9])(?<episode>[1-9][0-9]|[0][1-9])(?![a-z]|\\d+))+(?:[_.]|$)",
         RegexOption.IGNORE_CASE
     ),
 
     // 4 digit episode number
     // Episodes without a title, Single (S01E05, 1x05) AND Multi (S01E04E05, 1x04x05, etc)
     Regex(
-        "^(?:S?(?<season>(?<!\\d+)\\d{1,2}(?!\\d+))(?:(?:-|[ex]|\\W[ex]|_){1,2}(?<episode>\\d{4}(?!\\d+|i|p)))+)(\\W+|_|\$)(?!\\\\)",
+        "^(?:S?(?<season>(?<!\\d{1,50})\\d{1,2}(?!\\d+))(?:(?:-|[ex]|\\W[ex]|_){1,2}(?<episode>\\d{4}(?!\\d+|i|p)))+)(\\W+|_|\$)(?!\\\\)",
         RegexOption.IGNORE_CASE
     ),
 
@@ -273,7 +273,7 @@ val reportTitleExp = listOf(
     // 4 digit episode number
     // Episodes with a title, Single episodes (S01E05, 1x05, etc) & Multi-episode (S01E05E06, S01E05-06, S01E05 E06, etc)
     Regex(
-        "^(?<title>.+?)(?:(?:[-_\\W](?<![()\\[!]))+S?(?<season>(?<!\\d+)\\d{1,2}(?!\\d+))(?:(?:-|[ex]|\\W[ex]|_){1,2}(?<episode>\\d{4}(?!\\d+|i|p)))+)\\W?(?!\\\\)",
+        "^(?<title>.+?)(?:(?:[-_\\W](?<![()\\[!]))+S?(?<season>(?<!\\d{1,50})\\d{1,2}(?!\\d+))(?:(?:-|[ex]|\\W[ex]|_){1,2}(?<episode>\\d{4}(?!\\d+|i|p)))+)\\W?(?!\\\\)",
         RegexOption.IGNORE_CASE
     ),
 
@@ -291,31 +291,31 @@ val reportTitleExp = listOf(
 
     // Supports 1103/1113 naming
     Regex(
-        "^(?<title>.+?)?(?:(?:[-_\\W](?<![()\\[!]))*(?<season>(?<!\\d+|\\(|\\[|e|x)\\d{2})(?<episode>(?<!e|x)\\d{2}(?!p|i|\\d+|\\)|\\]|\\W\\d+|\\W(?:e|ep|x)\\d+)))+(\\W+|_|$)(?!\\\\)",
+        "^(?<title>.+?)?(?:(?:[-_\\W](?<![()\\[!]))*(?<season>(?<!\\d{1,50}|\\(|\\[|e|x)\\d{2})(?<episode>(?<!e|x)\\d{2}(?!p|i|\\d+|\\)|\\]|\\W\\d+|\\W(?:e|ep|x)\\d+)))+(\\W+|_|$)(?!\\\\)",
         RegexOption.IGNORE_CASE
     ),
 
     // Episodes with single digit episode number (S01E1, S01E5E6, etc)
     Regex(
-        "^(?<title>.*?)(?:(?:[-_\\W](?<![()\\[!]))+S?(?<season>(?<!\\d+)\\d{1,2}(?!\\d+))(?:(?:-|[ex]){1,2}(?<episode>\\d{1}))+)+(\\W+|_|$)(?!\\\\)",
+        "^(?<title>.*?)(?:(?:[-_\\W](?<![()\\[!]))+S?(?<season>(?<!\\d{1,50})\\d{1,2}(?!\\d+))(?:(?:-|[ex]){1,2}(?<episode>\\d{1}))+)+(\\W+|_|$)(?!\\\\)",
         RegexOption.IGNORE_CASE
     ),
 
     // iTunes Season 1\05 Title (Quality).ext
     Regex(
-        "^(?:Season(?:_|-|\\s|\\.)(?<season>(?<!\\d+)\\d{1,2}(?!\\d+)))(?:_|-|\\s|\\.)(?<episode>(?<!\\d+)\\d{1,2}(?!\\d+))",
+        "^(?:Season(?:_|-|\\s|\\.)(?<season>(?<!\\d{1,50})\\d{1,2}(?!\\d+)))(?:_|-|\\s|\\.)(?<episode>(?<!\\d{1,50})\\d{1,2}(?!\\d+))",
         RegexOption.IGNORE_CASE
     ),
 
     // iTunes 1-05 Title (Quality).ext
     Regex(
-        "^(?:(?<season>(?<!\\d+)(?:\\d{1,2})(?!\\d+))(?:-(?<episode>\\d{2,3}(?!\\d+))))",
+        "^(?:(?<season>(?<!\\d{1,50})(?:\\d{1,2})(?!\\d+))(?:-(?<episode>\\d{2,3}(?!\\d+))))",
         RegexOption.IGNORE_CASE
     ),
 
     // Anime Range - Title Absolute Episode Number (ep01-12)
     Regex(
-        "^(?:\\[(?<subgroup>.+?)\\][-_. ]?)?(?<title>.+?)(?:_|\\s|\\.)+(?:e|ep)(?<absoluteepisode>\\d{2,3}(\\.\\d{1,2})?)-(?<absoluteepisode1>(?<!\\d+)\\d{1,2}(\\.\\d{1,2})?(?!\\d+|-)).*?(?<hash>\\[\\w{8}\\])?(?:\$|\\.)",
+        "^(?:\\[(?<subgroup>.+?)\\][-_. ]?)?(?<title>.+?)(?:_|\\s|\\.)+(?:e|ep)(?<absoluteepisode>\\d{2,3}(\\.\\d{1,2})?)-(?<absoluteepisode1>(?<!\\d{1,50})\\d{1,2}(\\.\\d{1,2})?(?!\\d+|-)).*?(?<hash>\\[\\w{8}\\])?(?:\$|\\.)",
         RegexOption.IGNORE_CASE
     ),
 
@@ -327,25 +327,25 @@ val reportTitleExp = listOf(
 
     // Anime - Title Episode Absolute Episode Number (Series Title Episode 01)
     Regex(
-        "^(?<title>.+?)[-_. ](?:Episode)(?:[-_. ]+(?<absoluteepisode>(?<!\\d+)\\d{2,3}(\\.\\d{1,2})?(?!\\d+)))+(?:_|-|\\s|\\.)*?(?<hash>\\[.{8}\\\\])?(?:\$|\\.)?",
+        "^(?<title>.+?)[-_. ](?:Episode)(?:[-_. ]+(?<absoluteepisode>(?<!\\d{1,50})\\d{2,3}(\\.\\d{1,2})?(?!\\d+)))+(?:_|-|\\s|\\.)*?(?<hash>\\[.{8}\\\\])?(?:\$|\\.)?",
         RegexOption.IGNORE_CASE
     ),
 
     // Anime Range - Title Absolute Episode Number (1 or 2 digit absolute episode numbers in a range, 1-10)
     Regex(
-        "^(?:\\[(?<subgroup>.+?)\\][-_. ]?)?(?<title>.+?)[_. ]+(?<absoluteepisode>(?<!\\d+)\\d{1,2}(\\.\\d{1,2})?(?!\\d+))-(?<absoluteepisode1>(?<!\\d+)\\d{1,2}(\\.\\d{1,2})?(?!\\d+|-))(?:_|\\s|\\.)*?(?<hash>\\[.{8}\\])?(?:$|\\.)?",
+        "^(?:\\[(?<subgroup>.+?)\\][-_. ]?)?(?<title>.+?)[_. ]+(?<absoluteepisode>(?<!\\d{1,50})\\d{1,2}(\\.\\d{1,2})?(?!\\d+))-(?<absoluteepisode1>(?<!\\d{1,50})\\d{1,2}(\\.\\d{1,2})?(?!\\d+|-))(?:_|\\s|\\.)*?(?<hash>\\[.{8}\\])?(?:$|\\.)?",
         RegexOption.IGNORE_CASE
     ),
 
     // Anime - Title Absolute Episode Number
     Regex(
-        "^(?:\\[(?<subgroup>.+?)\\][-_. ]?)?(?<title>.+?)(?:[-_. ]+(?<absoluteepisode>(?<!\\d+)\\d{2,3}(\\.\\d{1,2})?(?!\\d+)))+(?:_|-|\\s|\\.)*?(?<hash>\\[.{8}\\])?(?:$|\\.)?",
+        "^(?:\\[(?<subgroup>.+?)\\][-_. ]?)?(?<title>.+?)(?:[-_. ]+(?<absoluteepisode>(?<!\\d{1,50})\\d{2,3}(\\.\\d{1,2})?(?!\\d+)))+(?:_|-|\\s|\\.)*?(?<hash>\\[.{8}\\])?(?:$|\\.)?",
         RegexOption.IGNORE_CASE
     ),
 
     // Anime - Title {Absolute Episode Number}
     Regex(
-        "^(?:\\[(?<subgroup>.+?)\\\\][-_. ]?)?(?<title>.+?)(?:(?:[-_\\W](?<![\\\\(\\[!]))+(?<absoluteepisode>(?<!\\d+)\\d{2,3}(\\.\\d{1,2})?(?!\\d+)))+(?:_|-|\\s|\\.)*?(?<hash>\\[.{8}\\\\])?(?:$|\\.)?",
+        "^(?:\\[(?<subgroup>.+?)\\\\][-_. ]?)?(?<title>.+?)(?:(?:[-_\\W](?<![\\\\(\\[!]))+(?<absoluteepisode>(?<!\\d{1,50})\\d{2,3}(\\.\\d{1,2})?(?!\\d+)))+(?:_|-|\\s|\\.)*?(?<hash>\\[.{8}\\\\])?(?:$|\\.)?",
         RegexOption.IGNORE_CASE
     ),
 
