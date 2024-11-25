@@ -56,7 +56,7 @@ fun main() {
                 exitApplication()
             }
         ) {
-            window.minimumSize = Dimension(800, 600)
+            window.minimumSize = Dimension(400, 200)
             Surface(modifier = Modifier.fillMaxSize()) {
                 AppTheme {
                     Column {
