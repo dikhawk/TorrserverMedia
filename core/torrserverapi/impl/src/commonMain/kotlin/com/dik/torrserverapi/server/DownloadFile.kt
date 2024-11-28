@@ -82,8 +82,6 @@ internal class DownloadFile(
                             if (totalBytes > 0L) {
                                 val progress = calculateProgress(fileSize!!, totalBytes)
 
-                                Logger.i("$tag Downloading files progress: $progress")
-
                                 emit(
                                     ResultProgress.Loading(
                                         Progress(
