@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -40,13 +41,13 @@ import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.draganddrop.DragData
 import androidx.compose.ui.draganddrop.dragData
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrserverapi.model.Torrent
 import com.dik.uikit.utils.currentWindowSize
-import com.dik.uikit.widgets.AppActionButton
 import com.dik.uikit.widgets.AppAsyncImage
 import com.dik.uikit.widgets.AppNormalBoldText
 import com.dik.uikit.widgets.AppNormalText
@@ -194,10 +195,12 @@ private fun TorrentItem(
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
 
-    Card(modifier = modifier
-        .padding(4.dp)
-        .clickable { onClickItem(torrent) }
-        .fillMaxSize()
+    Card(
+        modifier = modifier
+            .padding(4.dp)
+            .clip(RoundedCornerShape(15.dp, 15.dp, 15.dp, 15.dp))
+            .clickable { onClickItem(torrent) }
+            .fillMaxSize()
     ) {
         Box(
             modifier = Modifier
@@ -219,9 +222,12 @@ private fun TorrentItem(
                     enter = scaleIn() + fadeIn(),
                     exit = scaleOut() + fadeOut()
                 ) {
-                    AppActionButton(
+                    Image(
                         imageVector = vectorResource(Res.drawable.ic_cross),
-                        onClick = { onClickDelete(torrent) })
+                        modifier = Modifier.size(48.dp).clickable { onClickDelete(torrent) }
+                            .padding(4.dp),
+                        contentDescription = null
+                    )
                 }
             }
         }
