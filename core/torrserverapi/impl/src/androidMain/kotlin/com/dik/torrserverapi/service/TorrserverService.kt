@@ -80,12 +80,6 @@ class TorrserverService : Service() {
 
     private fun starTorrServer() {
         coroutineScope.launch {
-            val isServerInstalled = torrserverCommands.isServerInstalled().successResult() ?: false
-            if (!isServerInstalled) {
-                stopForeground(notificationId)
-                return@launch
-            }
-
             torrserverCommands.startServer()
             val isServerStarted = torrserverCommands.isServerStarted().successResult() ?: false
             if (!isServerStarted) {
