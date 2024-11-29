@@ -76,19 +76,26 @@ class TorrentApiImpl(
 
     override suspend fun addTorrent(filePath: String): Result<Torrent, TorrserverError> {
         try {
-            val byteArray = fileToByteArray(filePath)
+            val byteArray = fileToByteArray(filePath, dispatchers.ioDispatcher())
 
             val request = withContext(dispatchers.ioDispatcher()) {
                 client.post("$LOCAL_TORRENT_SERVER/torrent/upload") {
-                    setBody(MultiPartFormDataContent(
-                        formData {
-                            append("save", true)
-                            append("file", byteArray, Headers.build {
-                                append(HttpHeaders.ContentType, "application/x-bittorrent")
-                                append(HttpHeaders.ContentDisposition, "filename=new.torrent")
-                            })
-                        }
-                    ))
+                    setBody(
+                        MultiPartFormDataContent(
+                            formData {
+                                append("save", true)
+                                append(
+                                    "file", byteArray, Headers.build {
+                                        append(HttpHeaders.ContentType, "application/x-bittorrent")
+                                        append(
+                                            HttpHeaders.ContentDisposition,
+                                            "filename=new.torrent"
+                                        )
+                                    }
+                                )
+                            }
+                        )
+                    )
                 }
             }
 
