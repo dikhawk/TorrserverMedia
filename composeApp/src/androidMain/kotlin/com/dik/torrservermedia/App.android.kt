@@ -1,5 +1,6 @@
 package com.dik.torrservermedia
 
+import android.app.Activity
 import android.app.Application
 import android.os.Build
 import android.os.Bundle
@@ -10,6 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.lifecycle.lifecycleScope
 import com.arkivanov.decompose.defaultComponentContext
+import com.dik.common.CurrentActivityProvider
 import com.dik.torrserverapi.di.TorrserverApi
 import com.dik.torrserverapi.model.TorrserverServiceManager
 import com.dik.torrservermedia.di.KoinModules
@@ -20,19 +22,57 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
+import java.lang.ref.WeakReference
 
-class AndroidApp : Application() {
+class AndroidApp : Application(), CurrentActivityProvider {
     companion object {
         lateinit var INSTANCE: AndroidApp
     }
+
+    private var currentActivity: WeakReference<Activity>? = null
 
     override fun onCreate() {
         super.onCreate()
         INSTANCE = this
 
+        registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+                currentActivity = WeakReference(activity)
+            }
+
+            override fun onActivityStarted(activity: Activity) {
+                currentActivity = WeakReference(activity)
+            }
+
+            override fun onActivityResumed(activity: Activity) {
+                currentActivity = WeakReference(activity)
+            }
+
+            override fun onActivityPaused(activity: Activity) {
+                currentActivity = WeakReference(activity)
+            }
+
+            override fun onActivityStopped(activity: Activity) {
+                currentActivity = WeakReference(activity)
+            }
+
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
+                currentActivity = WeakReference(activity)
+            }
+
+            override fun onActivityDestroyed(activity: Activity) {
+                currentActivity = WeakReference(activity)
+            }
+
+        })
+
         KoinModules.init {
             androidContext(INSTANCE)
         }
+    }
+
+    override fun getActiveActivity(): Activity? {
+        return currentActivity?.get()
     }
 }
 
@@ -42,8 +82,7 @@ class AppActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val torrserverApi: TorrserverApi = inject()
-        val torrserverService: TorrserverServiceManager = torrserverApi.torrserverServiceManager()
+        val torrserverService: TorrserverServiceManager = inject()
         val root = DefaultRootComponent(
             componentContext = defaultComponentContext(),
             featureTorrentListApi = inject(),
