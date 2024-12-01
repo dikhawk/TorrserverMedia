@@ -12,7 +12,6 @@ interface TorrserverStuffApi {
      * return String server version
      */
     suspend fun echo(): Result<String, TorrserverError>
-    fun observerServerStatus(): SharedFlow<Result<String, TorrserverError>>
     suspend fun stopServer(): Result<Unit, TorrserverError>
     suspend fun checkLatestRelease(): Result<Release, TorrserverError>
 }

@@ -13,25 +13,13 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.ConnectException
 
 class TorrserverStuffApiImpl(
     private val client: HttpClient,
     private val appDispatchers: AppDispatchers,
-    private val scope: CoroutineScope
 ) : TorrserverStuffApi {
-
-    private val serverStatus = MutableSharedFlow<Result<String, TorrserverError>>()
-
-    init {
-        scope.launch { startObservationServerStatus(1000) }
-    }
 
     override suspend fun echo(): Result<String, TorrserverError> {
         try {
@@ -50,19 +38,6 @@ class TorrserverStuffApiImpl(
             return Result.Error(TorrserverError.Unknown(e.message ?: e.toString()))
         }
     }
-
-    private suspend fun startObservationServerStatus(delay: Long): Result<Unit, TorrserverError> {
-        while (true) {
-            val echo = echo()
-
-            serverStatus.emit(echo)
-
-            delay(delay)
-        }
-    }
-
-    override fun observerServerStatus(): SharedFlow<Result<String, TorrserverError>> =
-        serverStatus.asSharedFlow()
 
     override suspend fun stopServer(): Result<Unit, TorrserverError> {
         try {
