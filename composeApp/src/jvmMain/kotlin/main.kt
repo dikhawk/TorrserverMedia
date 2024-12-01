@@ -43,8 +43,7 @@ fun main() {
     }
 
     scope.launch {
-        val isInstalledServer = commands.isServerInstalled().successResult() ?: false
-        if (isInstalledServer) commands.startServer()
+        commands.startServer()
     }
 
     application {

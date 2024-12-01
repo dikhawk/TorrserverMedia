@@ -67,6 +67,7 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.kstore)
             implementation(libs.filekit.core)
+            implementation(libs.okio)
         }
 
         androidMain.dependencies {

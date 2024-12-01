@@ -11,12 +11,14 @@ import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.ic_add_24
 import torrservermedia.features.torrentlist.impl.generated.resources.ic_link_24
 import torrservermedia.features.torrentlist.impl.generated.resources.ic_settings_24
+import torrservermedia.features.torrentlist.impl.generated.resources.main_app_bar_title
 
 @Composable
 internal fun MainAppBarUi(component: MainAppBarComponent, modifier: Modifier = Modifier) {
     val uiState = component.uiState.collectAsState()
 
     AppTopBar(
+        title = stringResource(Res.string.main_app_bar_title),
         modifier = modifier,
         actions = {
             AppActionButton(

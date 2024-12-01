@@ -10,8 +10,6 @@ internal interface TorrserverBarComponent {
     fun onClickInstallServer()
 
     fun onClickStartServer()
-
-    fun onClickStopServer()
 }
 
 

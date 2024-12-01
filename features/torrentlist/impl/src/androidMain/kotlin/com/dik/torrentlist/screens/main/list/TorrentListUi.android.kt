@@ -32,16 +32,18 @@ internal actual fun TorrentListUi(
     val uiState = component.uiState.collectAsState()
     val windowSize = currentWindowSize()
 
-    when {
-        uiState.value.torrents.isEmpty() -> EmptyListStub(
-            modifier = modifier
-        )
+    Box(modifier = Modifier.fillMaxSize()) {
+        when {
+            uiState.value.torrents.isEmpty() -> EmptyListStub(
+                modifier = modifier.align(Alignment.Center)
+            )
 
-        else -> Torrents(
-            torrents = uiState.value.torrents,
-            modifier = modifier,
-            onClickItem = { component.onClickItem(it, windowSize) }
-        )
+            else -> Torrents(
+                torrents = uiState.value.torrents,
+                modifier = modifier,
+                onClickItem = { component.onClickItem(it, windowSize) }
+            )
+        }
     }
 }
 

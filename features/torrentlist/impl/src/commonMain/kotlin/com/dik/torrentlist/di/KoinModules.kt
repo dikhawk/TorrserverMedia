@@ -55,7 +55,7 @@ object KoinModules {
         modules(
             torrentListModule(dependencies),
             useCasesModule(),
-            platformModule()
+            platformModule(dependencies)
         )
     }
 }

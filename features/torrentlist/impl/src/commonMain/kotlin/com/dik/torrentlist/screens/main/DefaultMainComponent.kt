@@ -4,7 +4,6 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.common.AppDispatchers
-import com.dik.common.utils.successResult
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
 import com.dik.torrentlist.di.inject
@@ -63,7 +62,7 @@ internal class DefaultMainComponent(
         dispatchers = dispatchers,
         componentScope = componentScope,
         openSettingsScreen = openSettingsScreen,
-        torrserverStuffApi = torrserverStuffApi,
+        torrserverCommands = torrserverCommands,
         addTorrentFile = addTorrentFile,
         addMagnetLink = addMagnetLink
     )
@@ -71,7 +70,6 @@ internal class DefaultMainComponent(
     override val torrserverBarComponent: TorrserverBarComponent =
         DefaultTorrserverBarComponent(
             context = childContext("torrserver_bar"),
-            torrserverStuffApi = torrserverStuffApi,
             torrserverCommands = torrserverCommands,
             dispatchers = dispatchers,
             componentScope = componentScope
@@ -143,10 +141,8 @@ internal class DefaultMainComponent(
 
     private fun observeServerStatus() {
         componentScope.launch {
-            torrserverStuffApi.observerServerStatus().collect { result ->
-                val isServerStarted = result.successResult()?.isNotEmpty() ?: false
-
-                _uiState.update { it.copy(isServerStarted = isServerStarted) }
+            torrserverCommands.serverStatus().collect { status ->
+                _uiState.update { it.copy(serverStatus = status) }
             }
         }
     }

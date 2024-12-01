@@ -1,5 +1,6 @@
 package com.dik.torrentlist.screens.main
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -9,16 +10,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dik.torrentlist.screens.details.DetailsPaneUi
+import com.dik.torrentlist.screens.main.appbar.MainAppBarUi
 import com.dik.torrentlist.screens.main.list.TorrentListUi
+import com.dik.torrentlist.screens.main.torrserverbar.TorrserverBarUi
+import com.dik.torrserverapi.model.TorrserverStatus
 import com.dik.uikit.utils.WindowSize
 import com.dik.uikit.utils.currentWindowSize
-import com.dik.uikit.widgets.AppTopBar
-import org.jetbrains.compose.resources.stringResource
-import torrservermedia.features.torrentlist.impl.generated.resources.Res
-import torrservermedia.features.torrentlist.impl.generated.resources.main_app_bar_title
 
 @Composable
 internal fun MainAdaptiveUi(
@@ -26,20 +28,30 @@ internal fun MainAdaptiveUi(
     modifier: Modifier = Modifier,
 ) {
     val windowSize = currentWindowSize()
+    val uiState by component.uiState.collectAsState()
 
     Scaffold(
-        topBar = { AppTopBar(title = stringResource(Res.string.main_app_bar_title)) }
+        topBar = { MainAppBarUi(component = component.mainAppBarComponent) }
     ) { paddings ->
-        when {
-            windowSize.windowWidthSizeClass == WindowSize.Width.COMPACT -> {
-                TorrentListUi(
-                    component = component.torrentListComponent,
-                    modifier = Modifier.padding(paddings)
-                )
-            }
+        Box(modifier = modifier.padding(paddings).fillMaxSize()) {
+            when {
+                uiState.serverStatus != TorrserverStatus.STARTED -> {
+                    TorrserverBarUi(
+                        component = component.torrserverBarComponent,
+                        torrserverStatus = uiState.serverStatus,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
 
-            else -> {
-                MainTwoPaneUi(component = component, modifier = modifier.padding(paddings))
+                windowSize.windowWidthSizeClass == WindowSize.Width.COMPACT -> {
+                    TorrentListUi(
+                        component = component.torrentListComponent
+                    )
+                }
+
+                else -> {
+                    MainTwoPaneUi(component = component)
+                }
             }
         }
     }

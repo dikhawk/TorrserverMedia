@@ -22,7 +22,6 @@ import torrservermedia.features.torrentlist.impl.generated.resources.main_torrse
 
 internal class DefaultTorrserverBarComponent(
     context: ComponentContext,
-    private val torrserverStuffApi: TorrserverStuffApi,
     private val torrserverCommands: TorrserverCommands,
     private val dispatchers: AppDispatchers,
     private val componentScope: CoroutineScope,
@@ -31,10 +30,6 @@ internal class DefaultTorrserverBarComponent(
     private val _uiState = MutableStateFlow(TorrserverBarState())
     override val uiState: StateFlow<TorrserverBarState> = _uiState.asStateFlow()
 
-    init {
-        checkServerIsInstalled()
-        observeServerStatus()
-    }
 
     override fun onClickInstallServer() {
         _uiState.update { it.copy(isShowProgress = true) }
@@ -44,7 +39,7 @@ internal class DefaultTorrserverBarComponent(
                     is ResultProgress.Loading -> _uiState.update {
                         it.copy(
                             isShowProgress = true,
-                            progressValue = res.progress.progress.toFloat() / 100.0f,
+                            progressValue = res.progress.progress.toFloat(),
                             serverStatusText = getString(Res.string.main_torrserver_bar_msg_installing_torrserver),
                         )
                     }
@@ -60,7 +55,8 @@ internal class DefaultTorrserverBarComponent(
                                 isServerInstalled = true
                             )
                         }
-                        torrserverCommands.startServer()
+//                        torrserverCommands.startServer()
+                        startTorserver()
                     }
                 }
             }
@@ -69,47 +65,14 @@ internal class DefaultTorrserverBarComponent(
 
     override fun onClickStartServer() {
         componentScope.launch(dispatchers.defaultDispatcher()) {
-            val result = torrserverCommands.startServer()
+            startTorserver()
+/*            val result = torrserverCommands.startServer()
             _uiState.update { it.copy(isServerStarted = result is Result.Success) }
-            checkServerIsInstalled()
+            checkServerIsInstalled()*/
         }
     }
 
-    override fun onClickStopServer() {
-        componentScope.launch(dispatchers.defaultDispatcher()) {
-            torrserverCommands.stopServer()
-            _uiState.update { it.copy(isServerStarted = false) }
-        }
-    }
-
-    private fun observeServerStatus() {
-        componentScope.launch {
-            torrserverStuffApi.observerServerStatus().collect { result ->
-                when (val res = result) {
-                    is Result.Error -> {
-                        if (!uiState.value.isServerInstalled) return@collect
-                        _uiState.update {
-                            it.copy(
-                                serverStatusText = res.error.toMessage(),
-                                isServerStarted = false
-                            )
-                        }
-                    }
-
-                    is Result.Success -> {
-                        _uiState.update {
-                            it.copy(
-                                serverStatusText = res.data,
-                                isServerStarted = true
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun checkServerIsInstalled() {
+/*    private fun checkServerIsInstalled() {
         componentScope.launch {
             val isInstalled = isServerInstalled()
             val isStarted = isServerStarted()
@@ -121,9 +84,9 @@ internal class DefaultTorrserverBarComponent(
                 )
             }
         }
-    }
+    }*/
 
-    private suspend fun isServerInstalled(): Boolean {
+/*    private suspend fun isServerInstalled(): Boolean {
         val result = torrserverCommands.isServerInstalled()
 
         return result.successResult(::showError) ?: false
@@ -133,9 +96,11 @@ internal class DefaultTorrserverBarComponent(
         val result = torrserverCommands.isServerStarted()
 
         return result.successResult(::showError) ?: false
-    }
+    }*/
 
     private fun showError(error: TorrserverError) {
         _uiState.update { it.copy(serverStatusText = error.toString()) }
     }
 }
+
+internal expect suspend fun startTorserver()

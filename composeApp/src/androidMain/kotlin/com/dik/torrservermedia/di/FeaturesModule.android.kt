@@ -7,6 +7,7 @@ import com.dik.settings.SettingsFeatureApi
 import com.dik.themoviedb.di.TheMovieDbApi
 import com.dik.torrentlist.di.TorrentListDependencies
 import com.dik.torrserverapi.di.TorrserverApi
+import com.dik.torrserverapi.model.TorrserverServiceManager
 
 internal actual fun torrentListDependencies() = object : TorrentListDependencies {
     override fun torrServerApi(): TorrserverApi = inject()
@@ -15,4 +16,5 @@ internal actual fun torrentListDependencies() = object : TorrentListDependencies
     override fun appSettings(): AppSettings = inject()
     override fun theMovieDbApi(): TheMovieDbApi = inject()
     override fun context(): Context = inject()
+    override fun torrserverServiceManager(): TorrserverServiceManager = inject()
 }

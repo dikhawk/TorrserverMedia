@@ -3,23 +3,18 @@ package com.dik.torrentlist.screens.main.appbar
 import com.arkivanov.decompose.ComponentContext
 import com.dik.common.AppDispatchers
 import com.dik.common.utils.successResult
-import com.dik.themoviedb.SearchTheMovieDbApi
-import com.dik.themoviedb.model.Movie
-import com.dik.themoviedb.model.TvShow
 import com.dik.torrentlist.screens.main.AddMagnetLink
 import com.dik.torrentlist.screens.main.AddTorrentFile
 import com.dik.torrentlist.screens.main.appbar.utils.defaultFilePickerDirectory
-import com.dik.torrentlist.utils.fileName
-import com.dik.torrserverapi.model.Torrent
-import com.dik.torrserverapi.server.MagnetApi
-import com.dik.torrserverapi.server.TorrentApi
-import com.dik.torrserverapi.server.TorrserverStuffApi
-import com.dik.videofilenameparser.parseFileNameBase
-import com.dik.videofilenameparser.parseFileNameTvShow
+import com.dik.torrserverapi.model.TorrserverStatus
+import com.dik.torrserverapi.server.TorrserverCommands
 import io.github.vinceglb.filekit.core.FileKit
 import io.github.vinceglb.filekit.core.PickerMode
 import io.github.vinceglb.filekit.core.PickerType
+import io.github.vinceglb.filekit.core.PlatformFile
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,7 +23,6 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.add_torrent_dialog_title
-import torrservermedia.features.torrentlist.impl.generated.resources.main_add_dialog_error_invalid_magnet
 
 internal class DefaultMainAppBarComponent(
     context: ComponentContext,
@@ -36,7 +30,7 @@ internal class DefaultMainAppBarComponent(
     private val componentScope: CoroutineScope,
     private val addTorrentFile: AddTorrentFile,
     private val addMagnetLink: AddMagnetLink,
-    private val torrserverStuffApi: TorrserverStuffApi,
+    private val torrserverCommands: TorrserverCommands,
     private val openSettingsScreen: () -> Unit,
 ) : MainAppBarComponent, ComponentContext by context {
 
@@ -59,7 +53,7 @@ internal class DefaultMainAppBarComponent(
                 title = getString(Res.string.add_torrent_dialog_title),
                 initialDirectory = defaultFilePickerDirectory()
             )
-            val filePath = file?.path
+            val filePath = file?.absolutePath(dispatchers.ioDispatcher())
 
             if (filePath != null) {
                 addTorrentFile.invoke(filePath)
@@ -106,10 +100,12 @@ internal class DefaultMainAppBarComponent(
 
     private fun observeServerStatus() {
         componentScope.launch {
-            torrserverStuffApi.observerServerStatus().collect { result ->
-                val isStarted = !result.successResult().isNullOrEmpty()
-                _uiState.update { it.copy(isServerStarted = isStarted) }
+            torrserverCommands.serverStatus().collect { status ->
+
+                _uiState.update { it.copy(isServerStarted = status == TorrserverStatus.STARTED) }
             }
         }
     }
 }
+
+internal expect suspend fun PlatformFile.absolutePath(dispatcher: CoroutineDispatcher = Dispatchers.IO): String?

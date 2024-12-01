@@ -38,7 +38,7 @@ internal class DefaultRootComponent(
 
     override fun mainComponent(componentContext: ComponentContext): MainComponent {
         return DefaultMainComponent(
-            context = childContext("main_component"),
+            context = componentContext,
             openSettingsScreen = { navigation.push(ChildConfig.Settings) },
             onClickPlayFile = { playFile(it) },
             navigateToDetails = { hash -> navigation.push(ChildConfig.Details(hash)) }

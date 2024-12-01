@@ -23,6 +23,7 @@
     <string name="main_torrserver_bar_msg_server_is_installed">Сервер установлен</string>
     <string name="main_torrserver_bar_button_start_server">Запустить TorrServer</string>
     <string name="main_torrserver_bar_msg_installing_torrserver">Установка сервера</string>
+    <string name="main_torrserver_bar_msg_running">Запуск TorrServer</string>
     <string name="main_stub_server_not_started">TorrServer не запущен</string>
     <string name="main_error_msg_response_return_null">Запрос вернул null</string>
     <string name="main_error_msg_server_file_not_exist">TorrServer не установлен</string>

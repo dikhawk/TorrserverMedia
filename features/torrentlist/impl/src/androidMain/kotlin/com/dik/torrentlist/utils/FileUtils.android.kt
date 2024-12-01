@@ -1,9 +1,12 @@
 package com.dik.torrentlist.utils
 
+import okio.FileSystem
+import okio.Path.Companion.toPath
+
 actual fun String.uriToPath(): String {
-    TODO("Not yet implemented")
+    return FileSystem.SYSTEM.canonicalize(this.toPath()).toString()
 }
 
 actual fun String.isFileExist(): Boolean {
-    TODO("Not yet implemented")
+    return FileSystem.SYSTEM.exists(toPath())
 }
