@@ -109,8 +109,7 @@ class AppActivity : ComponentActivity() {
             }
 
             LaunchedEffect(Unit) {
-                if (!notificationPermission.allPermissionsGranted)
-                    notificationPermission.launchMultiplePermissionRequest()
+                notificationPermission.launchMultiplePermissionRequest()
             }
         }
     }
