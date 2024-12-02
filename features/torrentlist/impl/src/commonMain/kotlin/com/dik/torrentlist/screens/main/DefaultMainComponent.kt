@@ -20,7 +20,6 @@ import com.dik.torrserverapi.ContentFile
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.TorrentApi
 import com.dik.torrserverapi.server.TorrserverCommands
-import com.dik.torrserverapi.server.TorrserverStuffApi
 import com.dik.uikit.utils.WindowSize
 import com.dik.uikit.utils.WindowSizeClass
 import kotlinx.coroutines.CoroutineScope
@@ -37,12 +36,11 @@ internal class DefaultMainComponent(
     private val torrentApi: TorrentApi = inject(),
     private val dispatchers: AppDispatchers = inject(),
     private val openSettingsScreen: () -> Unit = {},
-    private val torrserverStuffApi: TorrserverStuffApi = inject(),
     private val torrserverCommands: TorrserverCommands = inject(),
-    private val searchTheMovieDbApi: SearchTheMovieDbApi = inject(),
+    private val searchingTmdb: SearchTheMovieDbApi = inject(),
     private val addTorrentFile: AddTorrentFile = inject(),
     private val addMagnetLink: AddMagnetLink = inject(),
-    private val tvEpisodesTheMovieDbApi: TvEpisodesTheMovieDbApi = inject(),
+    private val tvEpisodesTmdb: TvEpisodesTheMovieDbApi = inject(),
     private val onClickPlayFile: suspend (contentFile: ContentFile) -> Unit,
     private val navigateToDetails: (torrentHash: String) -> Unit
 ) : MainComponent, ComponentContext by context {
@@ -89,23 +87,23 @@ internal class DefaultMainComponent(
         if (windowSizeClass.windowWidthSizeClass == WindowSize.Width.COMPACT) {
             navigateToDetails(torrent.hash)
             return
-        }
-
-        if (torrent.files.size == 1) {
-            bufferizationComponent.startBufferezation(
-                torrent = torrent,
-                contentFile = torrent.files.first(),
-                runAferBuferazation = {
-                    if (torrent.files.size == 1) {
-                        val contentFile = torrent.files.first()
-                        playFile(contentFile)
+        } else {
+            if (torrent.files.size == 1) {
+                bufferizationComponent.startBufferezation(
+                    torrent = torrent,
+                    contentFile = torrent.files.first(),
+                    runAferBuferazation = {
+                        if (torrent.files.size == 1) {
+                            val contentFile = torrent.files.first()
+                            playFile(contentFile)
+                        }
                     }
-                }
-            )
-        }
-        detailsComponent.showDetails(torrent.hash)
-        _uiState.update {
-            it.copy(isShowDetails = true, isShowBufferization = torrent.files.size == 1)
+                )
+            }
+            detailsComponent.showDetails(torrent.hash)
+            _uiState.update {
+                it.copy(isShowDetails = true, isShowBufferization = torrent.files.size == 1)
+            }
         }
     }
 
@@ -134,8 +132,8 @@ internal class DefaultMainComponent(
             dispatchers = dispatchers,
             componentScope = componentScope,
             torrentApi = torrentApi,
-            searchTheMovieDbApi = searchTheMovieDbApi,
-            tvEpisodesTheMovieDbApi = tvEpisodesTheMovieDbApi,
+            searchTheMovieDbApi = searchingTmdb,
+            tvEpisodesTheMovieDbApi = tvEpisodesTmdb,
             onClickDismiss = { _uiState.update { it.copy(isShowBufferization = false) } }
         )
 

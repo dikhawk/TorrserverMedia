@@ -2,16 +2,18 @@ package com.dik.torrentlist.screens.details
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.arkivanov.essenty.lifecycle.doOnResume
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.utils.successResult
 import com.dik.themoviedb.SearchTheMovieDbApi
+import com.dik.themoviedb.TvEpisodesTheMovieDbApi
 import com.dik.themoviedb.TvSeasonsTheMovieDbApi
 import com.dik.themoviedb.model.Movie
 import com.dik.themoviedb.model.TvShow
 import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrentlist.di.inject
+import com.dik.torrentlist.screens.components.bufferization.BufferizationComponent
+import com.dik.torrentlist.screens.components.bufferization.DefaultBufferizationComponent
 import com.dik.torrentlist.screens.details.files.DefaultContentFilesComponent
 import com.dik.torrentlist.screens.details.torrentstatistics.DefaultTorrentStatisticsComponent
 import com.dik.torrentlist.utils.fileName
@@ -38,6 +40,7 @@ internal class DefaultDetailsComponent(
     private val appSettings: AppSettings = inject(),
     private val searchingTmdb: SearchTheMovieDbApi = inject(),
     private val tvSeasonTmdb: TvSeasonsTheMovieDbApi = inject(),
+    private val tvEpisodesTmdb: TvEpisodesTheMovieDbApi = inject(),
     private val onClickPlayFile: suspend (torrent: Torrent, contentFile: ContentFile) -> Unit,
     private val onClickBack: () -> Unit = {}
 ) : ComponentContext by componentContext, DetailsComponent {
@@ -52,16 +55,38 @@ internal class DefaultDetailsComponent(
         dispatchers = dispatchers,
         appSettings = appSettings,
         componentScope = componentScope,
-        onClickPlayFile = {
+        onClickPlayFile = { contentFile ->
             val torrent = this.selectedTorrent
-            if (torrent != null) onClickPlayFile.invoke(torrent, it)
+            if (torrent != null) {
+                bufferizationComponent.startBufferezation(
+                    torrent = torrent,
+                    contentFile = contentFile,
+                    runAferBuferazation = {
+                        componentScope.launch { onClickPlayFile.invoke(torrent, contentFile) }
+                    }
+                )
+                _uiState.update { it.copy(isShowBufferization = true) }
+            } else {
+                TODO("Eroor for torrent is null")
+            }
         }
     )
+
     override val torrentStatisticsComponent = DefaultTorrentStatisticsComponent(
         componentContext = childContext("torrent_statistics"),
         dispatchers = dispatchers,
         componentScope = componentScope,
         torrrentApi = torrentApi
+    )
+
+    override val bufferizationComponent: BufferizationComponent = DefaultBufferizationComponent(
+        componentContext = childContext("bufferization"),
+        dispatchers = dispatchers,
+        componentScope = componentScope,
+        torrentApi = torrentApi,
+        searchTheMovieDbApi = searchingTmdb,
+        tvEpisodesTheMovieDbApi = tvEpisodesTmdb,
+        onClickDismiss = { _uiState.update { it.copy(isShowBufferization = false) } }
     )
 
     override fun onClickBack() = onClickBack.invoke()
@@ -82,6 +107,30 @@ internal class DefaultDetailsComponent(
                 )
             }
             loadTmdbDetails(torrent)
+        }
+    }
+
+    override fun showDetailsAndStartBufferization(hash: String) {
+        componentScope.launch {
+            val torrent = torrentApi.getTorrent(hash).successResult() ?: return@launch
+
+            showDetails(hash)
+            runBufferizationIfOnFile(torrent)
+        }
+    }
+
+    private fun runBufferizationIfOnFile(torrent: Torrent) {
+        if(torrent.files.size == 1) {
+            val contentFile = torrent.files.first()
+
+            bufferizationComponent.startBufferezation(
+                torrent = torrent,
+                contentFile = contentFile,
+                runAferBuferazation = {
+                    componentScope.launch { onClickPlayFile.invoke(torrent, contentFile) }
+                }
+            )
+            _uiState.update { it.copy(isShowBufferization = true) }
         }
     }
 

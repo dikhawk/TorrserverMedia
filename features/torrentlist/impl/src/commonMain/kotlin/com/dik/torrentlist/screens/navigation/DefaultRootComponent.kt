@@ -52,7 +52,7 @@ internal class DefaultRootComponent(
             onClickBack = { navigation.pop() }
         ).apply {
             if (torrentHash != null) {
-                showDetails(torrentHash)
+                showDetailsAndStartBufferization(torrentHash)
             }
         }
     }

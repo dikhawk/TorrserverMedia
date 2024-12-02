@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import com.dik.torrentlist.screens.components.bufferization.BufferizationUi
 import com.dik.torrentlist.screens.details.files.ContentFilesUi
 import com.dik.torrentlist.screens.details.torrentstatistics.TorrentStatisticsUI
 import com.dik.uikit.widgets.AppAsyncImage
@@ -32,7 +34,7 @@ import torrservermedia.features.torrentlist.impl.generated.resources.main_detail
 
 @Composable
 internal fun DetailsUi(component: DetailsComponent, modifier: Modifier = Modifier) {
-    val uiState = component.uiState.collectAsState()
+    val uiState by component.uiState.collectAsState()
 
     Scaffold(
         topBar = {
@@ -46,33 +48,37 @@ internal fun DetailsUi(component: DetailsComponent, modifier: Modifier = Modifie
         Column(modifier = modifier.fillMaxSize().padding(paddings)) {
             Row {
                 Box(modifier = Modifier.height(180.dp).width(120.dp)) {
-                    if (uiState.value.poster.isEmpty()) {
+                    if (uiState.poster.isEmpty()) {
                         AppStubVideo()
                     } else {
                         AppAsyncImage(
-                            url = uiState.value.poster,
+                            url = uiState.poster,
                             contentScale = ContentScale.Fit,
                         )
                     }
                 }
                 Column(modifier = Modifier.padding(8.dp)) {
-                    AppNormalText(text = uiState.value.filePath)
+                    AppNormalText(text = uiState.filePath)
                     Row {
                         AppNormalItalicText(text = stringResource(Res.string.main_details_torrent_size))
                         Spacer(modifier = Modifier.width(8.dp))
-                        AppNormalBoldText(text = uiState.value.size)
+                        AppNormalBoldText(text = uiState.size)
                     }
                     TorrentStatisticsUI(component = component.torrentStatisticsComponent)
                 }
             }
 
             ContentFilesUi(
-                title = uiState.value.title,
-                overview = uiState.value.overview,
-                season = uiState.value.seasonNumber,
+                title = uiState.title,
+                overview = uiState.overview,
+                season = uiState.seasonNumber,
                 component = component.contentFilesComponent,
                 modifier = Modifier.padding(8.dp)
             )
         }
+    }
+
+    if (uiState.isShowBufferization) {
+        BufferizationUi(component = component.bufferizationComponent)
     }
 }
