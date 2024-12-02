@@ -130,7 +130,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
             TextFieldItem(
                 header = stringResource(Res.string.main_settings_cache_size_header),
                 hint = "${uiState.value.cacheSize} " +
-                        "${stringResource(Res.string.main_settings_cache_size_hint)}",
+                        stringResource(Res.string.main_settings_cache_size_hint),
                 value = uiState.value.cacheSize.toString(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeCacheSize(it) }
@@ -139,7 +139,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
             TextFieldItem(
                 header = stringResource(Res.string.main_settings_reader_read_a_head_header),
                 hint = "${uiState.value.readerReadAHead} " +
-                        "${stringResource(Res.string.main_settings_reader_read_a_head_hint)}",
+                        stringResource(Res.string.main_settings_reader_read_a_head_hint),
                 value = uiState.value.readerReadAHead.toString(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeReaderReadAHead(it) }
@@ -148,7 +148,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
             TextFieldItem(
                 header = stringResource(Res.string.main_settings_preload_cache_header),
                 hint = "${uiState.value.preloadCache} " +
-                        "${stringResource(Res.string.main_settings_preload_cache_hint)}",
+                        stringResource(Res.string.main_settings_preload_cache_hint),
                 value = uiState.value.preloadCache.toString(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangePreloadCache(it) }
@@ -192,7 +192,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
             TextFieldItem(
                 header = stringResource(Res.string.main_settings_timeout_connection_header),
                 hint = "${uiState.value.timeoutConnection} " +
-                        "${stringResource(Res.string.main_settings_timeout_connection_hint)}",
+                        stringResource(Res.string.main_settings_timeout_connection_hint),
                 value = uiState.value.timeoutConnection.toString(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeTimeoutConnection(it) }
@@ -201,7 +201,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
             TextFieldItem(
                 header = stringResource(Res.string.main_settings_torrent_connections_header),
                 hint = "${uiState.value.torrentConnections}, " +
-                        "${stringResource(Res.string.main_settings_torrent_connections_hint)}",
+                        stringResource(Res.string.main_settings_torrent_connections_hint),
                 value = uiState.value.torrentConnections.toString(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeTorrentConnections(it) }
@@ -217,7 +217,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
             TextFieldItem(
                 header = stringResource(Res.string.main_settings_limit_speed_download_header),
                 hint = "${uiState.value.limitSpeedDownload} " +
-                        "${stringResource(Res.string.main_settings_limit_speed_download_hint)}",
+                        stringResource(Res.string.main_settings_limit_speed_download_hint),
                 value = uiState.value.limitSpeedDownload.toString(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeLimitSpeedDownload(it) }
@@ -233,7 +233,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
             TextFieldItem(
                 header = stringResource(Res.string.main_settings_limit_speed_distribution_header),
                 hint = "${uiState.value.limitSpeedDistribution} " +
-                        "${stringResource(Res.string.main_settings_limit_speed_distribution_hint)}",
+                        stringResource(Res.string.main_settings_limit_speed_distribution_hint),
                 value = uiState.value.limitSpeedDistribution.toString(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeLimitSpeedDistribution(it) }
@@ -242,7 +242,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
             TextFieldItem(
                 header = stringResource(Res.string.main_settings_port_incoming_connection_header),
                 hint = "${uiState.value.incomingConnection} " +
-                        "${stringResource(Res.string.main_settings_port_incoming_connection_hint)}",
+                        stringResource(Res.string.main_settings_port_incoming_connection_hint),
                 value = uiState.value.incomingConnection.toString(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeIncomingConnection(it) }

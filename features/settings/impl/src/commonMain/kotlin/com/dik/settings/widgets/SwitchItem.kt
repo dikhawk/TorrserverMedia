@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,11 +33,11 @@ internal fun SwitchItem(
             .padding(8.dp),
     ) {
         Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
-            Column(modifier = Modifier.fillMaxHeight()) {
+            Column(modifier = Modifier.weight(1f)) {
                 AppNormalText(header)
-                if (!hint.isNullOrEmpty()) AppSmallText(hint)
+                if (hint.isNotEmpty()) AppSmallText(hint)
             }
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.width(8.dp))
             Switch(checked = checked, onCheckedChange = onCheckedChange)
         }
     }
