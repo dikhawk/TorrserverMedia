@@ -4,10 +4,12 @@ import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
+import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -15,14 +17,15 @@ import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import co.touchlab.kermit.Logger
 import com.dik.common.AppDispatchers
-import com.dik.common.ResultProgress
 import com.dik.common.utils.successResult
 import com.dik.torrserverapi.di.inject
+import com.dik.torrserverapi.impl.R
 import com.dik.torrserverapi.server.TorrserverCommands
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlin.system.exitProcess
 
 class TorrserverService : Service() {
 
@@ -61,6 +64,7 @@ class TorrserverService : Service() {
         when (intent?.action) {
             TorrserverServiceAction.START_SERVICE.asString -> starTorrServer()
             TorrserverServiceAction.STOP_SERVICE.asString -> stopTorrServer()
+            TorrserverServiceAction.STOP_SERVICE_AND_CLOSE_APP.asString -> stopTorrServerAndCloseApp()
             else -> {
                 Logger.e("$tag Invalid TorrserverServiceAction")
             }
@@ -92,11 +96,73 @@ class TorrserverService : Service() {
         }
     }
 
+
+    /**
+     * To enable the deeplink functionality in your application, follow these steps:
+     *
+     * 1. Define the deeplink configuration in the AndroidManifest.xml file for the target activity:
+     *
+     * <activity android:name=".MainActivity">
+     *     <intent-filter>
+     *         <action android:name="android.intent.action.VIEW" />
+     *
+     *         <category android:name="android.intent.category.DEFAULT" />
+     *         <category android:name="android.intent.category.BROWSABLE" />
+     *
+     *         <!-- Specify the scheme and host for the deeplink -->
+     *         <data android:scheme="app" android:host="torrserver" />
+     *     </intent-filter>
+     * </activity>
+     *
+     * 2. Handle the deeplink in the target activity (e.g., MainActivity):
+     *
+     * override fun onCreate(savedInstanceState: Bundle?) {
+     *     super.onCreate(savedInstanceState)
+     *     handleDeeplink(intent)
+     * }
+     *
+     * override fun onNewIntent(intent: Intent?) {
+     *     super.onNewIntent(intent)
+     *     handleDeeplink(intent)
+     * }
+     *
+     * private fun handleDeeplink(intent: Intent?) {
+     *     intent?.data?.let { uri ->
+     *         // Parse and handle the URI parameters, for example:
+     *         val action = uri.getQueryParameter("action")
+     *         // Perform specific actions based on the "action" parameter
+     *     }
+     * }
+     *
+     * After completing these steps, the deeplink "app://torrserver?action=open_home"
+     * will correctly launch MainActivity and allow handling of any associated parameters.
+     */
     private fun createNotification(text: String): Notification {
+        val openHomeUri = Uri.parse(TorrserverServiceDeepLink.URL +
+                "?${TorrserverServiceDeepLink.ACTION}=${TorrserverServiceDeepLink.OPEN_HOME_ACTION}")
+        val openAppIntent = Intent(Intent.ACTION_VIEW, openHomeUri).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) // Для запуска Activity из Service
+        }
+        val exitIntent = Intent(this, TorrserverService::class.java)
+        exitIntent.action = TorrserverServiceAction.STOP_SERVICE_AND_CLOSE_APP.asString
+
         val notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle("TorrServer")
             .setContentText(text)
+            .setAutoCancel(false)
+            .setOngoing(true)
             .setSmallIcon(android.R.drawable.ic_media_play)
+            .setContentIntent(
+                PendingIntent.getActivity(this, 0, openAppIntent, PendingIntent.FLAG_IMMUTABLE)
+            )
+            .addAction(
+                android.R.drawable.ic_media_play,
+                getString(R.string.torserver_stop_service),
+                PendingIntent.getService(
+                    this, 0, exitIntent,
+                    PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+                )
+            )
             .setOngoing(true)
             .build()
         return notification
@@ -135,9 +201,22 @@ class TorrserverService : Service() {
         coroutineScope.cancel()
         stopSelf()
     }
+
+    private fun stopTorrServerAndCloseApp() {
+        stopTorrServer()
+        exitProcess(0)
+    }
 }
 
 enum class TorrserverServiceAction(val asString: String) {
     START_SERVICE("start_service"),
-    STOP_SERVICE("stop_service")
+    STOP_SERVICE("stop_service"),
+    STOP_SERVICE_AND_CLOSE_APP("stop_service_and_close_app")
+}
+
+object TorrserverServiceDeepLink {
+    const val URL = "app://torrserver?"
+    const val ACTION = "action"
+
+    const val OPEN_HOME_ACTION = "open_home"
 }
