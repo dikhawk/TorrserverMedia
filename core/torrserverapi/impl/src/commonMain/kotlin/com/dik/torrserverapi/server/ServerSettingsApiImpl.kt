@@ -23,7 +23,7 @@ class ServerSettingsApiImpl(
     private val dispatchers: AppDispatchers
 ) : ServerSettingsApi {
 
-    suspend override fun saveSettings(settings: ServerSettings): Result<ServerSettings, TorrserverError> {
+    override suspend fun saveSettings(settings: ServerSettings): Result<ServerSettings, TorrserverError> {
         try {
             val body = Body(action = TorrentsAction.SET.asString, settings = settings.mapToSettings())
             val request = withContext(dispatchers.ioDispatcher()) {
@@ -43,7 +43,7 @@ class ServerSettingsApiImpl(
         }
     }
 
-    suspend override fun getSettings(): Result<ServerSettings, TorrserverError> {
+    override suspend fun getSettings(): Result<ServerSettings, TorrserverError> {
         try {
             val body = Body(action = TorrentsAction.GET.asString)
             val request = withContext(dispatchers.ioDispatcher()) {
@@ -61,7 +61,7 @@ class ServerSettingsApiImpl(
         }
     }
 
-    suspend override fun defaultSettings(): Result<ServerSettings, TorrserverError> {
+    override suspend fun defaultSettings(): Result<ServerSettings, TorrserverError> {
         try {
             val body = Body(action = TorrentsAction.DEFAULT.asString)
             val request = withContext(dispatchers.ioDispatcher()) {
