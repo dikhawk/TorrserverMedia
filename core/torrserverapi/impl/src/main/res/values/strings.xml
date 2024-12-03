@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="torserver_stop_service">Остановить</string>
+    <string name="torserver_running_server">Запуск TorrServer</string>
+    <string name="torserver_server_is_working">TorrServer Запущен</string>
+    <string name="torserver_title_notification">TorrServerMedia</string>
 </resources>

@@ -48,7 +48,7 @@ class TorrserverService : Service() {
 
         Logger.i("$tag Run Service")
         createServiceChannel()
-        val notification = createNotification("$tag Running TorrServer")
+        val notification = createServerNotification(getString(R.string.torserver_running_server))
         startForeground(notification)
     }
 
@@ -92,7 +92,7 @@ class TorrserverService : Service() {
             }
 
             Logger.i("$tag Service is working")
-            startForeground(createNotification("Service is working"))
+            startForeground(createServerNotification(getString(R.string.torserver_server_is_working), true))
         }
     }
 
@@ -137,32 +137,35 @@ class TorrserverService : Service() {
      * After completing these steps, the deeplink "app://torrserver?action=open_home"
      * will correctly launch MainActivity and allow handling of any associated parameters.
      */
-    private fun createNotification(text: String): Notification {
+    private fun createServerNotification(text: String, isShowActions: Boolean = false): Notification {
         val openHomeUri = Uri.parse(TorrserverServiceDeepLink.URL +
                 "?${TorrserverServiceDeepLink.ACTION}=${TorrserverServiceDeepLink.OPEN_HOME_ACTION}")
         val openAppIntent = Intent(Intent.ACTION_VIEW, openHomeUri).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) // Для запуска Activity из Service
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         val exitIntent = Intent(this, TorrserverService::class.java)
         exitIntent.action = TorrserverServiceAction.STOP_SERVICE_AND_CLOSE_APP.asString
 
         val notification = NotificationCompat.Builder(this, channelId)
-            .setContentTitle("TorrServer")
+            .setContentTitle(getString(R.string.torserver_title_notification))
             .setContentText(text)
             .setAutoCancel(false)
             .setOngoing(true)
-            .setSmallIcon(android.R.drawable.ic_media_play)
+            .setSmallIcon(R.drawable.ic_pears)
             .setContentIntent(
                 PendingIntent.getActivity(this, 0, openAppIntent, PendingIntent.FLAG_IMMUTABLE)
-            )
-            .addAction(
-                android.R.drawable.ic_media_play,
-                getString(R.string.torserver_stop_service),
-                PendingIntent.getService(
-                    this, 0, exitIntent,
-                    PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
-                )
-            )
+            ).apply {
+                if (isShowActions) {
+                    addAction(
+                        R.drawable.ic_pears,
+                        getString(R.string.torserver_stop_service),
+                        PendingIntent.getService(
+                            this@TorrserverService, 0, exitIntent,
+                            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+                        )
+                    )
+                }
+            }
             .setOngoing(true)
             .build()
         return notification
