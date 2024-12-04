@@ -1,7 +1,9 @@
 package com.dik.themoviedb.mapper
 
 import com.dik.themoviedb.MediaType
+import com.dik.themoviedb.constants.MOVIEDB_PIC_ORIGINAL_URL
 import com.dik.themoviedb.constants.MOVIEDB_PIC_W300_URL
+import com.dik.themoviedb.constants.MOVIEDB_PIC_W500_URL
 import com.dik.themoviedb.model.Content
 import com.dik.themoviedb.model.Movie
 import com.dik.themoviedb.model.Person
@@ -19,7 +21,6 @@ import com.dik.themoviedb.response.TvShowPolymorphResponse
 import com.dik.themoviedb.response.TvShowResponse
 import com.dik.themoviedb.toMediaType
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format.DateTimeFormat
 
 internal fun MoviePolymorphResponse.mapToMovie(): Movie {
@@ -29,7 +30,9 @@ internal fun MoviePolymorphResponse.mapToMovie(): Movie {
         title = this.title ?: "",
         originalTitle = this.originalTitle ?: "",
         overview = this.overview ?: "",
-        posterPath = MOVIEDB_PIC_W300_URL + this.posterPath,
+        poster300 = MOVIEDB_PIC_W300_URL + this.posterPath,
+        poster500 = MOVIEDB_PIC_W500_URL + this.posterPath,
+        posterOriginal = MOVIEDB_PIC_ORIGINAL_URL + this.posterPath,
         mediaType = this.mediaType.toMediaType(),
         adult = this.adult ?: false,
         originalLanguage = this.originalLanguage ?: "",
@@ -63,7 +66,9 @@ internal fun TvShowPolymorphResponse.mapToTvShow(): TvShow {
         name = this.name ?: "",
         originalName = this.originalName ?: "",
         overview = this.overview ?: "",
-        posterPath = MOVIEDB_PIC_W300_URL + this.posterPath,
+        poster300 = MOVIEDB_PIC_W300_URL + this.posterPath,
+        poster500 = MOVIEDB_PIC_W500_URL + this.posterPath,
+        posterOriginal = MOVIEDB_PIC_ORIGINAL_URL + this.posterPath,
         mediaType = this.mediaType.toMediaType(),
         adult = this.adult ?: false,
         originalLanguage = this.originalLanguage ?: "",
@@ -101,7 +106,9 @@ internal fun MovieResponse.mapToMovie(): Movie {
         title = this.title ?: "",
         originalTitle = this.originalTitle ?: "",
         overview = this.overview ?: "",
-        posterPath = MOVIEDB_PIC_W300_URL + this.posterPath,
+        poster300 = MOVIEDB_PIC_W300_URL + this.posterPath,
+        poster500 = MOVIEDB_PIC_W500_URL + this.posterPath,
+        posterOriginal = MOVIEDB_PIC_ORIGINAL_URL + this.posterPath,
         mediaType = MediaType.Movie,
         adult = this.adult ?: false,
         originalLanguage = this.originalLanguage ?: "",
@@ -143,7 +150,9 @@ internal fun TvShowResponse.mapToTvShow(): TvShow {
         name = this.name ?: "",
         originalName = this.originalName ?: "",
         overview = this.overview ?: "",
-        posterPath = MOVIEDB_PIC_W300_URL + this.posterPath,
+        poster300 = MOVIEDB_PIC_W300_URL + this.posterPath,
+        poster500 = MOVIEDB_PIC_W500_URL + this.posterPath,
+        posterOriginal = MOVIEDB_PIC_ORIGINAL_URL + this.posterPath,
         mediaType = MediaType.TV,
         adult = this.adult ?: false,
         originalLanguage = this.originalLanguage ?: "",
@@ -163,7 +172,9 @@ internal fun TvSeasonResponse.mapToTvSeason(): TvSeason {
         airDate = this.airDate,
         episodeCount = this.episodeCount,
         overview = this.overview,
-        posterPath = this.posterPath,
+        poster300 = MOVIEDB_PIC_W300_URL + this.posterPath,
+        poster500 = MOVIEDB_PIC_W500_URL + this.posterPath,
+        posterOriginal = MOVIEDB_PIC_ORIGINAL_URL + this.posterPath,
         seasonNumber = this.seasonNumber,
         voteAverage = this.voteAverage,
         episodes = this.episodes?.mapToListTvEpisode() ?: emptyList()

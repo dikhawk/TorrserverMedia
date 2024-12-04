@@ -1,6 +1,7 @@
 package com.dik.torrentlist.screens.main
 
 import com.dik.common.Result
+import com.dik.common.utils.successResult
 import com.dik.torrentlist.error.toMessage
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.MagnetApi
@@ -12,7 +13,7 @@ import torrservermedia.features.torrentlist.impl.generated.resources.main_add_di
 internal class AddMagnetLink(
     private val magnetApi: MagnetApi,
     private val torrentApi: TorrentApi,
-    private val findThumbnailForTorrent: FindThumbnailForTorrent,
+    private val findThumbnailForTorrent: FindPosterForTorrent,
 ) {
     suspend operator fun invoke(magnetLink: String): AddMagnetLinkResult {
         if (!magnetLink.isValidMagnetLink())
@@ -22,10 +23,10 @@ internal class AddMagnetLink(
             is Result.Error -> AddMagnetLinkResult(error = result.error.toMessage())
             is Result.Success -> {
                 var torrent = result.data
-                val thumbnailResult = findThumbnailForTorrent.invoke(result.data)
+                val poster = findThumbnailForTorrent.invoke(result.data).successResult()
 
-                if (!thumbnailResult.thumbnail.isNullOrEmpty()) {
-                    torrent = torrent.copy(poster = thumbnailResult.thumbnail)
+                if (!poster?.poster300.isNullOrEmpty()) {
+                    torrent = torrent.copy(poster = poster?.poster300!!)
                     torrentApi.updateTorrent(torrent)
                 }
                 AddMagnetLinkResult(torrent = torrent)

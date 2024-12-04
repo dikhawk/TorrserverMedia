@@ -6,7 +6,9 @@ data class TvSeason(
     val airDate: String?,
     val episodeCount: Int,
     val overview: String,
-    val posterPath: String?,
+    val poster300: String?,
+    val poster500: String?,
+    val posterOriginal: String?,
     val seasonNumber: Int,
     val voteAverage: Double,
     val episodes: List<TvEpisode>

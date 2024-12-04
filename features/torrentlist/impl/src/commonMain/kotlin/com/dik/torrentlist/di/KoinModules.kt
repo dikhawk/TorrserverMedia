@@ -4,9 +4,6 @@ import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.cmd.CmdRunner
 import com.dik.common.cmd.KmpCmdRunner
-import com.dik.common.player.PlayersCommands
-import com.dik.common.player.platformPlayersCommands
-import com.dik.common.utils.playersForPlatform
 import com.dik.settings.SettingsFeatureApi
 import com.dik.themoviedb.MoviesTheMovieDbApi
 import com.dik.themoviedb.SearchTheMovieDbApi
@@ -14,7 +11,7 @@ import com.dik.themoviedb.TvEpisodesTheMovieDbApi
 import com.dik.themoviedb.TvSeasonsTheMovieDbApi
 import com.dik.torrentlist.screens.main.AddMagnetLink
 import com.dik.torrentlist.screens.main.AddTorrentFile
-import com.dik.torrentlist.screens.main.FindThumbnailForTorrent
+import com.dik.torrentlist.screens.main.FindPosterForTorrent
 import com.dik.torrserverapi.di.TorrserverApi
 import com.dik.torrserverapi.server.MagnetApi
 import com.dik.torrserverapi.server.TorrentApi
@@ -62,7 +59,7 @@ object KoinModules {
 
 private fun useCasesModule() = module {
     factoryOf(::AddTorrentFile).bind<AddTorrentFile>()
-    factoryOf(::FindThumbnailForTorrent).bind<FindThumbnailForTorrent>()
+    factoryOf(::FindPosterForTorrent).bind<FindPosterForTorrent>()
     factoryOf(::AddMagnetLink).bind<AddMagnetLink>()
 }
 
