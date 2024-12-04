@@ -6,7 +6,7 @@
 
     <application
         android:name=".AndroidApp"
-        android:icon="@drawable/ic_app"
+        android:icon="@mipmap/ic_launcher"
         android:label="TorrServerMedia"
         android:theme="@android:style/Theme.Material.NoActionBar">
         <activity
