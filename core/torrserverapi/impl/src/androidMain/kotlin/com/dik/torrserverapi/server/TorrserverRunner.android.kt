@@ -13,7 +13,7 @@ internal actual class TorrserverRunnerImpl(
         try {
             val torrserver = File(config.pathToServerFile)
             val makeExecutableCommand = "chmod +x ${torrserver.absolutePath}"
-            val startServerCommand = "cd ${torrserver.parent} && ./${torrserver.name} --dontkill"
+            val startServerCommand = "cd ${torrserver.parent} && ./${torrserver.name} -k"
 
             KmpCmdRunner.run("$makeExecutableCommand && $startServerCommand")
             return Result.Success(Unit)

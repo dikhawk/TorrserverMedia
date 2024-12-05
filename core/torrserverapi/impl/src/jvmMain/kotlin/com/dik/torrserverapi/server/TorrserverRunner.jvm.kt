@@ -42,7 +42,7 @@ internal actual class TorrserverRunnerImpl(
             if (!serverFile.exists()) throw RuntimeException("Server file not found")
 
             val makeExecutableCommand = "chmod +x $pathToServerFile"
-            val startServerCommand = "cd ${serverFile.parent} && ./${serverFile.name} --dontkill"
+            val startServerCommand = "cd ${serverFile.parent} && ./${serverFile.name} -k"
 
             KmpCmdRunner.run("$makeExecutableCommand && $startServerCommand")
         }
