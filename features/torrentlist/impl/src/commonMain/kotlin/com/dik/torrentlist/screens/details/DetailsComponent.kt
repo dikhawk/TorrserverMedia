@@ -22,7 +22,7 @@ internal interface DetailsComponent {
 @Stable
 data class DetailsState(
     val poster: String = "",
-    val filePath: String = "",
+    val torrentName: String = "",
     val title: String = "",
     val seasonNumber: String = "",
     val size: String = "",

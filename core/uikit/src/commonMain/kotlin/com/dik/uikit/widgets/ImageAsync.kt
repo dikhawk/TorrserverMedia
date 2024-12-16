@@ -33,7 +33,7 @@ fun AppAsyncImage(
         url.isNullOrEmpty() -> ImageStub(modifier = modifier, image = Res.drawable.ic_movie)
         isError.value -> ImageStub(modifier = modifier, image = Res.drawable.ic_movie)
         else -> AsyncImage(
-            modifier = modifier.background(Color.Gray),
+            modifier = modifier,
             model = url,
             contentDescription = contentDescription,
             contentScale = contentScale,

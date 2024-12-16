@@ -5,71 +5,49 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dik.uikit.widgets.AppNormaBoldlItalicText
 import com.dik.uikit.widgets.AppNormalBoldText
-import com.dik.uikit.widgets.AppNormalItalicText
+import com.dik.uikit.widgets.AppNormalHorizontalSpacer
 import com.dik.uikit.widgets.AppNormalText
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
+import torrservermedia.features.torrentlist.impl.generated.resources.ic_folder_24
 import torrservermedia.features.torrentlist.impl.generated.resources.is_eye_24
 import torrservermedia.features.torrentlist.impl.generated.resources.main_content_files_files_list
 
 @Composable
 internal fun ContentFilesUi(
-    title: String,
-    overview: String,
-    season: String,
     component: ContentFilesComponent,
     modifier: Modifier = Modifier
 ) {
-    val uiState = component.uiState.collectAsState()
+    val uiState by component.uiState.collectAsState()
 
-    Column {
-        LazyColumn(modifier = modifier.fillMaxWidth()) {
-            if (title.isNotEmpty()) {
-                item {
-                    AppNormalBoldText(text = title, modifier = Modifier.padding(8.dp))
-                }
-            }
-            if (season.isNotEmpty()) {
-                item {
-                    AppNormalItalicText(text = season, modifier = Modifier.padding(8.dp))
-                }
-            }
-            if (overview.isNotEmpty()) {
-                item {
-                    AppNormalItalicText(text = overview, modifier = Modifier.padding(8.dp))
-                }
-            }
-            item {
-                AppNormalBoldText(
-                    text = stringResource(Res.string.main_content_files_files_list),
-                    modifier = Modifier.padding(8.dp)
+    Column(modifier = modifier.fillMaxWidth()) {
+        AppNormalBoldText(
+            text = stringResource(Res.string.main_content_files_files_list),
+        )
+
+        uiState.files.forEach { (directoryName, files) ->
+            if (directoryName.isNotEmpty()) DirectoryItem(name = directoryName)
+
+            files.forEach { file ->
+                FileItem(
+                    file = file,
+                    directoryName = directoryName,
+                    onClickItem = { component.onClickItem(file.contentFile) }
                 )
-            }
-            uiState.value.files.forEach { (directoryName, files) ->
-                if (directoryName.isNotEmpty()) {
-                    item { DirectoryItem(name = directoryName) }
-                }
-
-                items(items = files, key = { it.contentFile.id }) { file ->
-                    FileItem(
-                        file = file,
-                        directoryName = directoryName,
-                        onClickItem = { component.onClickItem(file.contentFile) }
-                    )
-                }
             }
         }
     }
@@ -77,7 +55,16 @@ internal fun ContentFilesUi(
 
 @Composable
 private fun DirectoryItem(name: String, modifier: Modifier = Modifier) {
-    AppNormalBoldText(text = name, modifier = modifier.padding(8.dp))
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(painter = painterResource(Res.drawable.ic_folder_24), contentDescription = null)
+        AppNormalHorizontalSpacer()
+        AppNormalBoldText(
+            text = name,
+            modifier = modifier.padding(top = 8.dp, bottom = 8.dp),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
 }
 
 @Composable

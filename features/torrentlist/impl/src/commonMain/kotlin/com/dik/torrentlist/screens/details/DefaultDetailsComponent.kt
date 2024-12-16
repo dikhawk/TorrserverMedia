@@ -101,7 +101,7 @@ internal class DefaultDetailsComponent(
             torrentStatisticsComponent.showStatistics(torrent.hash)
             _uiState.update {
                 it.copy(
-                    filePath = torrent.title,
+                    torrentName = torrent.title,
                     poster = torrent.poster,
                     size = torrent.size.toReadableSize()
                 )
@@ -159,7 +159,8 @@ internal class DefaultDetailsComponent(
         _uiState.update {
             it.copy(
                 title = "${movie.title} (${movie.originalTitle})",
-                overview = movie.overview
+                overview = movie.overview,
+                poster = if (movie.poster500.isNullOrEmpty()) it.poster else movie.poster500!!
             )
         }
     }
