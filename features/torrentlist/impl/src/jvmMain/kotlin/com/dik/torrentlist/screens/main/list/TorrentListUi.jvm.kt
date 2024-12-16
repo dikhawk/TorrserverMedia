@@ -7,6 +7,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.hoverable
@@ -42,11 +43,13 @@ import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.draganddrop.DragData
 import androidx.compose.ui.draganddrop.dragData
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrserverapi.model.Torrent
+import com.dik.uikit.theme.AppTheme
 import com.dik.uikit.utils.currentWindowSize
 import com.dik.uikit.widgets.AppAsyncImage
 import com.dik.uikit.widgets.AppNormalBoldText
@@ -230,16 +233,26 @@ private fun TorrentItem(
                     )
                 }
             }
-        }
 
-        Column(modifier = Modifier.padding(start = 4.dp, end = 4.dp, bottom = 4.dp)) {
-            AppNormalText(torrent.title, maxLines = 2, overflow = TextOverflow.Ellipsis)
-            Row {
-                AppNormalText(stringResource(Res.string.main_torrent_list_files_count))
-                Spacer(modifier = Modifier.width(4.dp))
-                AppNormalBoldText(torrent.files.size.toString())
+            Column(
+                modifier = Modifier.height(72.dp).background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            AppTheme.colors.surface.copy(alpha = 0.7f),
+                            AppTheme.colors.surface.copy(alpha = 1.0f)
+                        ),
+                    ),
+                ).padding(start = 8.dp, end = 8.dp, bottom = 8.dp).align(Alignment.BottomCenter)
+            ) {
+                AppNormalText(torrent.title, maxLines = 2, overflow = TextOverflow.Ellipsis)
                 Spacer(modifier = Modifier.weight(1f))
-                AppNormalBoldText(torrentSize)
+                Row {
+                    AppNormalText(stringResource(Res.string.main_torrent_list_files_count))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    AppNormalBoldText(torrent.files.size.toString())
+                    Spacer(modifier = Modifier.weight(1f))
+                    AppNormalBoldText(torrentSize)
+                }
             }
         }
     }
