@@ -43,6 +43,7 @@ kotlin {
                 api(compose.material3)
                 api(compose.components.uiToolingPreview)
                 api(compose.preview)
+                api(compose.uiTooling)
                 implementation(compose.components.resources)
                 implementation(libs.coil.compose.core)
                 implementation(libs.coil.compose)
