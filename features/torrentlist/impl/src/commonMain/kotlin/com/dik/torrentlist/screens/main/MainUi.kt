@@ -14,6 +14,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.dik.common.Platform
+import com.dik.common.utils.platformName
 import com.dik.torrentlist.screens.components.bufferization.BufferizationState
 import com.dik.torrentlist.screens.components.bufferization.BufferizationUi
 import com.dik.torrentlist.screens.details.DetailsPaneUi
@@ -61,7 +63,12 @@ internal fun MainAdaptiveUi(
     if (uiState.isShowBufferization) {
         BufferizationUi(component = component.bufferizationComponent)
     }
+
+    CloseApp()
 }
+
+@Composable
+internal expect fun CloseApp()
 
 @Composable
 internal fun MainTwoPaneUi(component: MainComponent, modifier: Modifier = Modifier) {

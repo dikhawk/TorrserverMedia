@@ -33,4 +33,5 @@
     <string name="main_bufferization_button_cancel">Отмена</string>
     <string name="main_bufferization_downloading_speed">Загрузка</string>
     <string name="main_bufferization_season_and_episode">Сезон: %s; Эпизод %s</string>
+    <string name="main_close_app_message">Закрыть приложение?</string>
 </resources>
