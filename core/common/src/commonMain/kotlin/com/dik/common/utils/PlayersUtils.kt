@@ -4,5 +4,5 @@ import com.dik.common.Platform
 import com.dik.common.player.Player
 
 fun playersForPlatform(platform: Platform = platformName()): List<Player> {
-    return Player.values().filter { it.platforms.contains(platform) && it != Player.DEFAULT_PLAYER }
+    return Player.entries.filter { it.platforms.contains(platform) && it != Player.DEFAULT_PLAYER }
 }
