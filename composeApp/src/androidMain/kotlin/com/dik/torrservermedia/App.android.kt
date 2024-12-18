@@ -2,7 +2,6 @@ package com.dik.torrservermedia
 
 import android.app.Activity
 import android.app.Application
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,9 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.lifecycleScope
 import com.arkivanov.decompose.defaultComponentContext
 import com.dik.common.CurrentActivityProvider
-import com.dik.torrserverapi.di.TorrserverApi
 import com.dik.torrserverapi.model.TorrserverServiceManager
-import com.dik.torrserverapi.service.TorrserverServiceDeepLink
 import com.dik.torrservermedia.di.KoinModules
 import com.dik.torrservermedia.di.inject
 import com.dik.torrservermedia.nanigation.DefaultRootComponent
