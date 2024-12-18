@@ -20,10 +20,12 @@ import com.dik.common.AppDispatchers
 import com.dik.common.utils.successResult
 import com.dik.torrserverapi.di.inject
 import com.dik.torrserverapi.impl.R
+import com.dik.torrserverapi.model.TorrserverStatus
 import com.dik.torrserverapi.server.TorrserverCommands
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.system.exitProcess
 
@@ -92,8 +94,17 @@ class TorrserverService : Service() {
             }
 
             Logger.i("$tag Service is working")
-            startForeground(createServerNotification(getString(R.string.torserver_server_is_working), true))
+
+            torrserverCommands.serverStatus().collect { status: TorrserverStatus ->
+                startForeground(createServerNotification(status.asString(), true))
+            }
         }
+    }
+
+    private fun TorrserverStatus.asString(): String = when (this) {
+        TorrserverStatus.STARTED -> getString(R.string.torserver_server_is_working)
+        TorrserverStatus.RUNNING -> getString(R.string.torserver_running_server)
+        else -> this.toString()
     }
 
 
