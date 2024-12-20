@@ -13,9 +13,11 @@ import com.dik.settings.SettingsFeatureApi
 import com.dik.torrentlist.di.inject
 import com.dik.torrentlist.screens.details.DefaultDetailsComponent
 import com.dik.torrentlist.screens.details.DetailsComponent
+import com.dik.torrentlist.screens.details.DetailsComponentScreenFormat
 import com.dik.torrentlist.screens.main.DefaultMainComponent
 import com.dik.torrentlist.screens.main.MainComponent
 import com.dik.torrserverapi.ContentFile
+import com.dik.torrserverapi.model.Torrent
 
 internal class DefaultRootComponent(
     componentContext: ComponentContext,
@@ -52,10 +54,12 @@ internal class DefaultRootComponent(
         return DefaultDetailsComponent(
             componentContext = componentContext,
             onClickPlayFile = { _, contentFile -> playFile(contentFile) },
+            screenFormat = DetailsComponentScreenFormat.SCREEN,
             onClickBack = { navigation.pop() }
         ).apply {
             if (torrentHash != null) {
-                showDetailsAndStartBufferization(torrentHash)
+                showDetails(torrentHash)
+//                showDetailsAndStartBufferization(torrentHash)
             }
         }
     }

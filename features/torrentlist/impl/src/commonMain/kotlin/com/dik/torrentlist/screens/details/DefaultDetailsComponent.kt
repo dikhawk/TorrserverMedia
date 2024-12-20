@@ -41,6 +41,7 @@ internal class DefaultDetailsComponent(
     private val searchingTmdb: SearchTheMovieDbApi = inject(),
     private val tvSeasonTmdb: TvSeasonsTheMovieDbApi = inject(),
     private val tvEpisodesTmdb: TvEpisodesTheMovieDbApi = inject(),
+    private val screenFormat: DetailsComponentScreenFormat,
     private val onClickPlayFile: suspend (torrent: Torrent, contentFile: ContentFile) -> Unit,
     private val onClickBack: () -> Unit = {}
 ) : ComponentContext by componentContext, DetailsComponent {
@@ -57,17 +58,18 @@ internal class DefaultDetailsComponent(
         componentScope = componentScope,
         onClickPlayFile = { contentFile ->
             val torrent = this.selectedTorrent
-            if (torrent != null) {
-                bufferizationComponent.startBufferezation(
-                    torrent = torrent,
-                    contentFile = contentFile,
-                    runAferBuferazation = {
-                        componentScope.launch { onClickPlayFile.invoke(torrent, contentFile) }
-                    }
-                )
-                _uiState.update { it.copy(isShowBufferization = true) }
-            } else {
-                TODO("Eroor for torrent is null")
+                ?: throw IllegalArgumentException("torrent can't be null")
+
+            when (screenFormat) {
+                DetailsComponentScreenFormat.PANE ->
+                    componentScope.launch { onClickPlayFile.invoke(torrent, contentFile) }
+
+                DetailsComponentScreenFormat.SCREEN ->
+                    runBufferization(
+                        torrent,
+                        contentFile,
+                        { componentScope.launch { onClickPlayFile.invoke(torrent, contentFile) } }
+                    )
             }
         }
     )
@@ -110,28 +112,17 @@ internal class DefaultDetailsComponent(
         }
     }
 
-    override fun showDetailsAndStartBufferization(hash: String) {
-        componentScope.launch {
-            val torrent = torrentApi.getTorrent(hash).successResult() ?: return@launch
-
-            showDetails(hash)
-            runBufferizationIfOnFile(torrent)
-        }
-    }
-
-    private fun runBufferizationIfOnFile(torrent: Torrent) {
-        if(torrent.files.size == 1) {
-            val contentFile = torrent.files.first()
-
-            bufferizationComponent.startBufferezation(
-                torrent = torrent,
-                contentFile = contentFile,
-                runAferBuferazation = {
-                    componentScope.launch { onClickPlayFile.invoke(torrent, contentFile) }
-                }
-            )
-            _uiState.update { it.copy(isShowBufferization = true) }
-        }
+    override fun runBufferization(
+        torrent: Torrent,
+        contentFile: ContentFile,
+        runAferBuferazation: () -> Unit
+    ) {
+        bufferizationComponent.startBufferezation(
+            torrent = torrent,
+            contentFile = contentFile,
+            runAferBuferazation = runAferBuferazation
+        )
+        _uiState.update { it.copy(isShowBufferization = true) }
     }
 
     private suspend fun loadTmdbDetails(torrent: Torrent) {

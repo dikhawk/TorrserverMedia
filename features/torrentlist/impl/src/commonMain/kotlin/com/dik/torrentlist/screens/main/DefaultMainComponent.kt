@@ -10,6 +10,7 @@ import com.dik.torrentlist.di.inject
 import com.dik.torrentlist.screens.components.bufferization.BufferizationComponent
 import com.dik.torrentlist.screens.components.bufferization.DefaultBufferizationComponent
 import com.dik.torrentlist.screens.details.DefaultDetailsComponent
+import com.dik.torrentlist.screens.details.DetailsComponentScreenFormat
 import com.dik.torrentlist.screens.main.appbar.DefaultMainAppBarComponent
 import com.dik.torrentlist.screens.main.appbar.MainAppBarComponent
 import com.dik.torrentlist.screens.main.list.DefaultTorrentListComponent
@@ -116,6 +117,7 @@ internal class DefaultMainComponent(
     override val detailsComponent =
         DefaultDetailsComponent(
             componentContext = childContext(("details")),
+            screenFormat = DetailsComponentScreenFormat.PANE,
             onClickPlayFile = { torrent, contentFile ->
                 _uiState.update { it.copy(isShowDetails = true, isShowBufferization = true) }
                 bufferizationComponent.startBufferezation(
