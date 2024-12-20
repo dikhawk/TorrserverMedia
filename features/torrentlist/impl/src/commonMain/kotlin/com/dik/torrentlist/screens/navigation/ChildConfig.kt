@@ -9,7 +9,7 @@ sealed interface ChildConfig {
     data object Main : ChildConfig
 
     @Serializable
-    data class Details(var torrentHash: String) : ChildConfig
+    data class Details(val torrentHash: String, val poster: String) : ChildConfig
 
     @Serializable
     data object Settings : ChildConfig

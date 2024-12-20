@@ -1,7 +1,6 @@
 package com.dik.torrentlist.screens.navigation
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
@@ -10,7 +9,6 @@ import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.player.PlayersCommands
-import com.dik.common.player.platformPlayersCommands
 import com.dik.settings.SettingsFeatureApi
 import com.dik.torrentlist.di.inject
 import com.dik.torrentlist.screens.details.DefaultDetailsComponent
@@ -41,11 +39,16 @@ internal class DefaultRootComponent(
             context = componentContext,
             openSettingsScreen = { navigation.push(ChildConfig.Settings) },
             onClickPlayFile = { playFile(it) },
-            navigateToDetails = { hash -> navigation.push(ChildConfig.Details(hash)) }
+            navigateToDetails = { hash, poster ->
+                navigation.push(ChildConfig.Details(hash, poster))
+            }
         )
     }
 
-    override fun detailsComponent(componentContext: ComponentContext, torrentHash: String?): DetailsComponent {
+    override fun detailsComponent(
+        componentContext: ComponentContext,
+        torrentHash: String?
+    ): DetailsComponent {
         return DefaultDetailsComponent(
             componentContext = componentContext,
             onClickPlayFile = { _, contentFile -> playFile(contentFile) },
@@ -69,7 +72,11 @@ internal class DefaultRootComponent(
         config: ChildConfig,
         componentContext: ComponentContext
     ): RootComponent.Child = when (config) {
-        is ChildConfig.Details -> RootComponent.Child.Details(detailsComponent(componentContext, config.torrentHash))
+        is ChildConfig.Details -> RootComponent.Child.Details(
+            component = detailsComponent(componentContext, config.torrentHash),
+            torrentHash = config.torrentHash,
+            poster = config.poster
+        )
 
         ChildConfig.Main -> RootComponent.Child.Main(mainComponent(componentContext))
         ChildConfig.Settings -> RootComponent.Child.Settings(

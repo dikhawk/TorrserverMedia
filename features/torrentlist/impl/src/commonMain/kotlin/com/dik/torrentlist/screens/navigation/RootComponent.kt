@@ -13,11 +13,19 @@ internal interface RootComponent {
 
     fun mainComponent(componentContext: ComponentContext): MainComponent
 
-    fun detailsComponent(componentContext: ComponentContext, torrentHash: String? = null): DetailsComponent
+    fun detailsComponent(
+        componentContext: ComponentContext,
+        torrentHash: String? = null
+    ): DetailsComponent
 
     sealed interface Child {
         class Main(val component: MainComponent) : Child
-        class Details(val component: DetailsComponent) : Child
+        class Details(
+            val component: DetailsComponent,
+            val torrentHash: String,
+            val poster: String
+        ) : Child
+
         class Settings(val composable: @Composable () -> Unit) : Child
     }
 }

@@ -1,5 +1,7 @@
 package com.dik.torrentlist.screens.main
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,9 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.dik.common.Platform
-import com.dik.common.utils.platformName
-import com.dik.torrentlist.screens.components.bufferization.BufferizationState
 import com.dik.torrentlist.screens.components.bufferization.BufferizationUi
 import com.dik.torrentlist.screens.details.DetailsPaneUi
 import com.dik.torrentlist.screens.main.appbar.MainAppBarUi
@@ -26,9 +25,11 @@ import com.dik.torrserverapi.model.TorrserverStatus
 import com.dik.uikit.utils.WindowSize
 import com.dik.uikit.utils.currentWindowSize
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun MainAdaptiveUi(
+internal fun SharedTransitionScope.MainAdaptiveUi(
     component: MainComponent,
+    isVisible: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val windowSize = currentWindowSize()
@@ -49,12 +50,13 @@ internal fun MainAdaptiveUi(
 
                 windowSize.windowWidthSizeClass == WindowSize.Width.COMPACT -> {
                     TorrentListUi(
-                        component = component.torrentListComponent
+                        component = component.torrentListComponent,
+                        isVisible = isVisible
                     )
                 }
 
                 else -> {
-                    MainTwoPaneUi(component = component)
+                    MainTwoPaneUi(component = component, isVisible = isVisible)
                 }
             }
         }
@@ -70,8 +72,13 @@ internal fun MainAdaptiveUi(
 @Composable
 internal expect fun CloseApp()
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun MainTwoPaneUi(component: MainComponent, modifier: Modifier = Modifier) {
+internal fun SharedTransitionScope.MainTwoPaneUi(
+    component: MainComponent,
+    isVisible: Boolean,
+    modifier: Modifier = Modifier
+) {
     val uiState = component.uiState.collectAsState()
     val windowSize = currentWindowSize()
 
@@ -90,7 +97,7 @@ internal fun MainTwoPaneUi(component: MainComponent, modifier: Modifier = Modifi
 
         Row(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.weight(1f).fillMaxHeight().padding(4.dp)) {
-                TorrentListUi(component.torrentListComponent)
+                TorrentListUi(component = component.torrentListComponent, isVisible = isVisible)
             }
 
             if (uiState.value.isShowDetails) {

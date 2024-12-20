@@ -42,7 +42,7 @@ internal class DefaultMainComponent(
     private val addMagnetLink: AddMagnetLink = inject(),
     private val tvEpisodesTmdb: TvEpisodesTheMovieDbApi = inject(),
     private val onClickPlayFile: suspend (contentFile: ContentFile) -> Unit,
-    private val navigateToDetails: (torrentHash: String) -> Unit
+    private val navigateToDetails: (torrentHash: String, poster: String) -> Unit
 ) : MainComponent, ComponentContext by context {
 
     private val _uiState = MutableStateFlow(MainComponentState())
@@ -85,7 +85,7 @@ internal class DefaultMainComponent(
 
     private fun showDetails(torrent: Torrent, windowSizeClass: WindowSizeClass) {
         if (windowSizeClass.windowWidthSizeClass == WindowSize.Width.COMPACT) {
-            navigateToDetails(torrent.hash)
+            navigateToDetails(torrent.hash, torrent.poster)
             return
         } else {
             if (torrent.files.size == 1) {

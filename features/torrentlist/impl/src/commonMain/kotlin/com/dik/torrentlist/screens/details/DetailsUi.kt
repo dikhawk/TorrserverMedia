@@ -1,5 +1,7 @@
 package com.dik.torrentlist.screens.details
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,12 +36,18 @@ import com.dik.uikit.widgets.AppAsyncImage
 import com.dik.uikit.widgets.AppIconButtonArrowBack
 import com.dik.uikit.widgets.AppMiddleVerticalSpacer
 import com.dik.uikit.widgets.AppNormalBoldText
-import com.dik.uikit.widgets.AppStubVideo
 import com.dik.uikit.widgets.AppTopBar
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun DetailsUi(component: DetailsComponent, modifier: Modifier = Modifier) {
+internal fun SharedTransitionScope.DetailsUi(
+    component: DetailsComponent,
+    torrentHash: String,
+    poster: String,
+    isVisible: Boolean,
+    modifier: Modifier = Modifier,
+) {
     val uiState by component.uiState.collectAsState()
     var isVisibleAppBar by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
@@ -72,28 +80,24 @@ internal fun DetailsUi(component: DetailsComponent, modifier: Modifier = Modifie
                     .heightIn(max = 800.dp)
                     .onGloballyPositioned { layoutCoordinates ->
                         isVisibleAppBar = layoutCoordinates.size.height <= scrollState.value
-                    }
+                    }.sharedElementWithCallerManagedVisibility(
+                        sharedContentState = rememberSharedContentState(key = torrentHash),
+                        visible = isVisible
+                    )
             ) {
-                if (uiState.poster.isEmpty()) {
-                    AppStubVideo(
-                        modifier = Modifier.fillMaxWidth()
-                            .align(Alignment.BottomCenter)
-                    )
-                } else {
-                    AppAsyncImage(
-                        modifier = Modifier.fillMaxWidth()
-                            .align(Alignment.BottomCenter).blur(radius = 56.dp),
-                        url = uiState.poster,
-                        contentScale = ContentScale.FillWidth,
-                    )
+                AppAsyncImage(
+                    modifier = Modifier.fillMaxWidth()
+                        .align(Alignment.BottomCenter).blur(radius = 56.dp),
+                    url = poster,
+                    contentScale = ContentScale.FillWidth,
+                )
 
-                    AppAsyncImage(
-                        modifier = Modifier.widthIn(max = 800.dp).fillMaxWidth()
-                            .align(Alignment.BottomCenter),
-                        url = uiState.poster,
-                        contentScale = ContentScale.Fit,
-                    )
-                }
+                AppAsyncImage(
+                    modifier = Modifier.widthIn(max = 800.dp).fillMaxWidth()
+                        .align(Alignment.BottomCenter),
+                    url = poster,
+                    contentScale = ContentScale.Fit,
+                )
 
                 Column(
                     modifier = Modifier.align(Alignment.BottomCenter)
