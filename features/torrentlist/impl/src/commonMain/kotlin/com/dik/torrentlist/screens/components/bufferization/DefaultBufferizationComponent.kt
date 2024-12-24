@@ -30,6 +30,7 @@ import org.jetbrains.compose.resources.getString
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.main_bufferization_season_and_episode
 
+
 internal class DefaultBufferizationComponent(
     componentContext: ComponentContext,
     private val dispatchers: AppDispatchers,
@@ -105,7 +106,7 @@ internal class DefaultBufferizationComponent(
             it.copy(
                 downloadSpeed = torrent.statistics?.downloadSpeed?.bytesToBits() ?: "-",
                 downloadProgress = progress,
-                downloadProgressText = "${preloadedBytes.toReadableSize()}/${preloadSize.toReadableSize()}"
+                downloadProgressText = getProgressMessage(preloadedBytes, preloadSize)
             )
         }
     }
@@ -116,6 +117,14 @@ internal class DefaultBufferizationComponent(
         val percent = (preloadedBytes.toFloat() / preloadSize.toFloat())
 
         return percent
+    }
+
+    private fun getProgressMessage(preloadedBytes: Long, preloadSize: Long): String {
+        return if (preloadedBytes <= preloadSize) {
+            "${preloadedBytes.toReadableSize()}/${preloadSize.toReadableSize()}"
+        } else {
+            preloadedBytes.toReadableSize()
+        }
     }
 
     override fun onClickCancel() {
@@ -176,8 +185,7 @@ internal class DefaultBufferizationComponent(
 
     private suspend fun prepareTitleSecond(seasonNumber: Int, episodeNumber: Int): String {
         return getString(Res.string.main_bufferization_season_and_episode).format(
-            seasonNumber,
-            episodeNumber
+            seasonNumber, episodeNumber
         )
     }
 }
