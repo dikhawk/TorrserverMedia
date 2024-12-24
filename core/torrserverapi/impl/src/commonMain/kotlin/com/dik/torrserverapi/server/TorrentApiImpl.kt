@@ -184,7 +184,6 @@ class TorrentApiImpl(
     override suspend fun removeTorrent(hash: String): Result<Unit, TorrserverError> {
         try {
             try {
-                val viewedList = getViewedList(hash).successResult() ?: emptyList()
                 val body = Body(action = TorrentsAction.REM.asString, hash = hash)
                 val request = withContext(dispatchers.ioDispatcher()) {
                     client.post("$LOCAL_TORRENT_SERVER/torrents") {
