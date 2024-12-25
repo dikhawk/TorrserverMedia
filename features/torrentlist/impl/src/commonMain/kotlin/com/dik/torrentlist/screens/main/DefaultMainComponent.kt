@@ -76,9 +76,7 @@ internal class DefaultMainComponent(
 
     override val torrentListComponent: TorrentListComponent = DefaultTorrentListComponent(
         context = childContext("torrserverbar"),
-        onTorrentClick = { torrent, windowSize ->
-            showDetails(torrent, windowSize)
-        },
+        onTorrentClick = { torrent, windowSize -> showDetails(torrent, windowSize) },
         torrentApi = torrentApi,
         componentScope = componentScope,
         addTorrentFile = addTorrentFile
@@ -89,22 +87,8 @@ internal class DefaultMainComponent(
             navigateToDetails(torrent.hash, torrent.poster)
             return
         } else {
-            if (torrent.files.size == 1) {
-                bufferizationComponent.startBufferezation(
-                    torrent = torrent,
-                    contentFile = torrent.files.first(),
-                    runAferBuferazation = {
-                        if (torrent.files.size == 1) {
-                            val contentFile = torrent.files.first()
-                            playFile(contentFile)
-                        }
-                    }
-                )
-            }
             detailsComponent.showDetails(torrent.hash)
-            _uiState.update {
-                it.copy(isShowDetails = true, isShowBufferization = torrent.files.size == 1)
-            }
+            _uiState.update { it.copy(isShowDetails = true) }
         }
     }
 
