@@ -37,7 +37,8 @@ object KoinModules {
             featuresModule,
             torrserverModule,
             theMovieDbApiModule,
-            platformModule()
+            platformModule(),
+            platformEventsModule()
         )
     }
 }
