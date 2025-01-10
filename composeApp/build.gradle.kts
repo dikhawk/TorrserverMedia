@@ -83,6 +83,7 @@ kotlin {
             implementation(libs.kstore)
             implementation(libs.decompose.core)
             implementation(libs.decompose.compose.ext)
+            implementation(libs.compose.adaptive)
         }
 
         commonTest.dependencies {

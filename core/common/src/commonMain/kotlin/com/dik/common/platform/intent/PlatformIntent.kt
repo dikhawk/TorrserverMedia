@@ -6,5 +6,5 @@ data class PlatformIntent(
 )
 
 enum class PlatformAction {
-    ADD_TORRENT,
+    CLIPBOARD,
 }

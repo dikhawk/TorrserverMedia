@@ -4,6 +4,8 @@ import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.cmd.CmdRunner
 import com.dik.common.cmd.KmpCmdRunner
+import com.dik.common.platform.PlatformEvents
+import com.dik.common.platform.WindowAdaptiveClient
 import com.dik.settings.SettingsFeatureApi
 import com.dik.themoviedb.MoviesTheMovieDbApi
 import com.dik.themoviedb.SearchTheMovieDbApi
@@ -77,6 +79,8 @@ private fun torrentListModule(dependencies: TorrentListDependencies) = module {
     single<MoviesTheMovieDbApi> { dependencies.theMovieDbApi().movieApi() }
     single<TvEpisodesTheMovieDbApi> { dependencies.theMovieDbApi().tvEpisodesApi() }
     single<TvSeasonsTheMovieDbApi> { dependencies.theMovieDbApi().tvSeasonsApi() }
+    single<PlatformEvents> { dependencies.platformEvents() }
+    single<WindowAdaptiveClient> { dependencies.windowAdaptive() }
 }
 
 internal expect fun koinConfiguration(dependencies: TorrentListDependencies): KoinAppDeclaration

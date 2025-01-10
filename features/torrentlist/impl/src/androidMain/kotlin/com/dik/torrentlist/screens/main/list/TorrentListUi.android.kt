@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrserverapi.model.Torrent
 import com.dik.uikit.theme.AppTheme
-import com.dik.uikit.utils.currentWindowSize
 import com.dik.uikit.widgets.AppAsyncImage
 import com.dik.uikit.widgets.AppNormalBoldText
 import com.dik.uikit.widgets.AppNormalText
@@ -47,20 +47,19 @@ internal actual fun SharedTransitionScope.TorrentListUi(
     modifier: Modifier,
     isVisible: Boolean
 ) {
-    val uiState = component.uiState.collectAsState()
-    val windowSize = currentWindowSize()
+    val uiState by component.uiState.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         when {
-            uiState.value.torrents.isEmpty() -> EmptyListStub(
+            uiState.torrents.isEmpty() -> EmptyListStub(
                 modifier = modifier.align(Alignment.Center)
             )
 
             else -> Torrents(
-                torrents = uiState.value.torrents,
+                torrents = uiState.torrents,
                 modifier = modifier,
                 isVisible = isVisible,
-                onClickItem = { component.onClickItem(it, windowSize) }
+                onClickItem = { component.onClickItem(it) }
             )
         }
     }

@@ -1,15 +1,16 @@
 package com.dik.torrentlist.screens.main.list
 
+import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
 import com.dik.torrserverapi.model.Torrent
-import com.dik.uikit.utils.WindowSizeClass
 import kotlinx.coroutines.flow.StateFlow
+
 
 interface TorrentListComponent {
 
     val uiState: StateFlow<TorrentListState>
-    fun onClickItem(torrent: Torrent, windowSizeClass: WindowSizeClass)
+    fun onClickItem(torrent: Torrent)
     fun onClickDeleteItem(torrent: Torrent)
     fun addTorrents(paths: List<String>)
 }

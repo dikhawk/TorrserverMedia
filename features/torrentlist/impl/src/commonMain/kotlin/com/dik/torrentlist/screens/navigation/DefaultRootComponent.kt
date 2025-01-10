@@ -17,10 +17,10 @@ import com.dik.torrentlist.screens.details.DetailsComponentScreenFormat
 import com.dik.torrentlist.screens.main.DefaultMainComponent
 import com.dik.torrentlist.screens.main.MainComponent
 import com.dik.torrserverapi.ContentFile
-import com.dik.torrserverapi.model.Torrent
 
 internal class DefaultRootComponent(
     componentContext: ComponentContext,
+    private val initialConfiguration: ChildConfig = ChildConfig.Main(),
     private val settingsFeatureApi: SettingsFeatureApi = inject(),
     private val appSettings: AppSettings = inject(),
     private val playersCommands: PlayersCommands = inject(),
@@ -31,12 +31,15 @@ internal class DefaultRootComponent(
     override val childStack: Value<ChildStack<*, RootComponent.Child>> = childStack(
         source = navigation,
         serializer = ChildConfig.serializer(),
-        initialConfiguration = ChildConfig.Main,
+        initialConfiguration = initialConfiguration,
         handleBackButton = true,
         childFactory = ::childFactory
     )
 
-    override fun mainComponent(componentContext: ComponentContext): MainComponent {
+    override fun mainComponent(
+        componentContext: ComponentContext,
+        pathToTorrent: String?
+    ): MainComponent {
         return DefaultMainComponent(
             context = componentContext,
             openSettingsScreen = { navigation.push(ChildConfig.Settings) },
@@ -44,7 +47,11 @@ internal class DefaultRootComponent(
             navigateToDetails = { hash, poster ->
                 navigation.push(ChildConfig.Details(hash, poster))
             }
-        )
+        ).apply {
+            if (pathToTorrent != null) {
+                addTorrentAndShowDetails(pathToTorrent)
+            }
+        }
     }
 
     override fun detailsComponent(
@@ -76,16 +83,19 @@ internal class DefaultRootComponent(
         config: ChildConfig,
         componentContext: ComponentContext
     ): RootComponent.Child = when (config) {
+        is ChildConfig.Main -> RootComponent.Child.Main(
+            mainComponent(componentContext, config.pathToTorrent)
+        )
+
         is ChildConfig.Details -> RootComponent.Child.Details(
             component = detailsComponent(componentContext, config.torrentHash),
             torrentHash = config.torrentHash,
             poster = config.poster
         )
 
-        ChildConfig.Main -> RootComponent.Child.Main(mainComponent(componentContext))
         ChildConfig.Settings -> RootComponent.Child.Settings(
             settingsFeatureApi.start()
-                .composableMain(context = componentContext, onFinish = { navigation.pop() })
+                .root(context = componentContext, onFinish = { navigation.pop() })
         )
     }
 }

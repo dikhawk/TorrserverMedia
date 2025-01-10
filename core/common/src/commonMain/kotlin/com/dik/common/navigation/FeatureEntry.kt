@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.ComponentContext
 
 interface FeatureEntry {
-    fun composableMain(
+    fun root(
         context: ComponentContext,
         onFinish: () -> Unit = {}
     ): @Composable () -> Unit

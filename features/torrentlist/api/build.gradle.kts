@@ -1,4 +1,6 @@
 plugins {
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.compose)
     alias(libs.plugins.multiplatform)
 }
 
@@ -10,6 +12,8 @@ kotlin {
             dependencies {
                 implementation(projects.core.moduleinjector)
                 implementation(projects.core.common)
+                implementation(compose.runtime)
+                implementation(libs.bundles.decompose)
             }
         }
     }

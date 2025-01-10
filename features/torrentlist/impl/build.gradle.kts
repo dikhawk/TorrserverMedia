@@ -58,6 +58,7 @@ kotlin {
             implementation(projects.modules.videoFileNameparser)
 
             implementation(compose.components.resources)
+            implementation(libs.compose.adaptive)
             implementation(libs.bundles.decompose)
             implementation(libs.coil.network.ktor)
             implementation(libs.kotlinx.coroutines.core)

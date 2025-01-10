@@ -2,6 +2,8 @@ package com.dik.torrentlist.di
 
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
+import com.dik.common.platform.PlatformEvents
+import com.dik.common.platform.WindowAdaptiveClient
 import com.dik.moduleinjector.BaseDependencies
 import com.dik.settings.SettingsFeatureApi
 import com.dik.themoviedb.di.TheMovieDbApi
@@ -19,4 +21,8 @@ expect interface TorrentListDependencies : BaseDependencies {
     fun appSettings(): AppSettings
 
     fun theMovieDbApi(): TheMovieDbApi
+
+    fun platformEvents(): PlatformEvents
+
+    fun windowAdaptive(): WindowAdaptiveClient
 }

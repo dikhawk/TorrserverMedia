@@ -1,14 +1,14 @@
 package com.dik.torrentlist.screens.main.list
 
+import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import com.arkivanov.decompose.ComponentContext
 import com.dik.common.Result
+import com.dik.common.platform.WindowAdaptiveClient
 import com.dik.torrentlist.screens.main.AddTorrentFile
 import com.dik.torrentlist.screens.main.AddTorrentResult
 import com.dik.torrentlist.utils.uriToPath
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.TorrentApi
-import com.dik.uikit.utils.WindowSize
-import com.dik.uikit.utils.WindowSizeClass
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 
 internal class DefaultTorrentListComponent(
     context: ComponentContext,
-    private val onTorrentClick: (Torrent, WindowSizeClass) -> Unit,
+    private val onTorrentClick: (Torrent) -> Unit,
     private val torrentApi: TorrentApi,
     private val addTorrentFile: AddTorrentFile,
     private val componentScope: CoroutineScope,
@@ -37,8 +37,8 @@ internal class DefaultTorrentListComponent(
         }
     }
 
-    override fun onClickItem(torrent: Torrent, windowSizeClass: WindowSizeClass) {
-        onTorrentClick(torrent, windowSizeClass)
+    override fun onClickItem(torrent: Torrent) {
+        onTorrentClick(torrent)
     }
 
     override fun onClickDeleteItem(torrent: Torrent) {

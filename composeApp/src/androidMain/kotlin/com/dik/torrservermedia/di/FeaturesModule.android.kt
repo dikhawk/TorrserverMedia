@@ -3,6 +3,8 @@ package com.dik.torrservermedia.di
 import android.content.Context
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
+import com.dik.common.platform.PlatformEvents
+import com.dik.common.platform.WindowAdaptiveClient
 import com.dik.settings.SettingsFeatureApi
 import com.dik.themoviedb.di.TheMovieDbApi
 import com.dik.torrentlist.di.TorrentListDependencies
@@ -17,4 +19,6 @@ internal actual fun torrentListDependencies() = object : TorrentListDependencies
     override fun theMovieDbApi(): TheMovieDbApi = inject()
     override fun context(): Context = inject()
     override fun torrserverServiceManager(): TorrserverServiceManager = inject()
+    override fun platformEvents(): PlatformEvents = inject()
+    override fun windowAdaptive(): WindowAdaptiveClient = inject()
 }

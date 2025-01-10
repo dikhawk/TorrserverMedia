@@ -13,6 +13,7 @@ import kotlinx.serialization.Serializable
 
 class DefaultRootComponent(
     componentContext: ComponentContext,
+    private val initialConfiguration: ChildConfig = ChildConfig.TorrentList,
     private val featureTorrentListApi: TorrentListFeatureApi,
     private val featureSettingsApi: SettingsFeatureApi
 ) : RootComponent, ComponentContext by componentContext {
@@ -22,7 +23,7 @@ class DefaultRootComponent(
     override val stack: Value<ChildStack<*, Child>> = childStack(
         source = navigation,
         serializer = ChildConfig.serializer(),
-        initialConfiguration = ChildConfig.TorrentList,
+        initialConfiguration = initialConfiguration,
         handleBackButton = true,
         childFactory = ::childFactory
     )
@@ -35,18 +36,18 @@ class DefaultRootComponent(
         config: ChildConfig, componentContext: ComponentContext
     ): Child = when (config) {
         ChildConfig.TorrentList -> Child.TorrentList(
-            composable = featureTorrentListApi.start().composableMain(componentContext)
+            composable = featureTorrentListApi.start().root(componentContext)
         )
 
         ChildConfig.Settings -> Child.Settings(
             composable = featureSettingsApi.start()
-                .composableMain(context = componentContext, onFinish = ::onBackClicked)
+                .root(context = componentContext, onFinish = ::onBackClicked)
         )
     }
 }
 
 @Serializable
-private sealed interface ChildConfig {
+sealed interface ChildConfig {
     @Serializable
     data object TorrentList : ChildConfig
 

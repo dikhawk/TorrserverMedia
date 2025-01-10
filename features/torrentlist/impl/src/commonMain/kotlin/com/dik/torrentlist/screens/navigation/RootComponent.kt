@@ -11,7 +11,7 @@ internal interface RootComponent {
 
     val childStack: Value<ChildStack<*, Child>>
 
-    fun mainComponent(componentContext: ComponentContext): MainComponent
+    fun mainComponent(componentContext: ComponentContext, pathToTorrent: String? = null): MainComponent
 
     fun detailsComponent(
         componentContext: ComponentContext,

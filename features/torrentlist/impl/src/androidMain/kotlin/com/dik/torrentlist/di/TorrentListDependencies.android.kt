@@ -3,6 +3,8 @@ package com.dik.torrentlist.di
 import android.content.Context
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
+import com.dik.common.platform.PlatformEvents
+import com.dik.common.platform.WindowAdaptiveClient
 import com.dik.moduleinjector.BaseDependencies
 import com.dik.settings.SettingsFeatureApi
 import com.dik.themoviedb.di.TheMovieDbApi
@@ -16,6 +18,8 @@ actual interface TorrentListDependencies : BaseDependencies {
     actual fun settingsFeatureApi(): SettingsFeatureApi
     actual fun appSettings(): AppSettings
     actual fun theMovieDbApi(): TheMovieDbApi
+    actual fun platformEvents(): PlatformEvents
+    actual fun windowAdaptive(): WindowAdaptiveClient
     fun context(): Context
     fun torrserverServiceManager(): TorrserverServiceManager
 }

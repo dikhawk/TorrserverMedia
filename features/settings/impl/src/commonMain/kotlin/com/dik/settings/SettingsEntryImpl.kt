@@ -7,7 +7,7 @@ import com.dik.settings.navigation.RootUi
 
 class SettingsEntryImpl : SettingsEntry {
 
-    override fun composableMain(context: ComponentContext, onFinish: () -> Unit): @Composable () -> Unit = {
+    override fun root(context: ComponentContext, onFinish: () -> Unit): @Composable () -> Unit = {
         RootUi(component = DefaultRootComponent(context = context, onFinish = onFinish))
     }
 }

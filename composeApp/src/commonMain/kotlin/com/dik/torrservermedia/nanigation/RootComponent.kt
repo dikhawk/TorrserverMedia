@@ -13,6 +13,7 @@ interface RootComponent : BackHandlerOwner {
 
     sealed interface Child {
         class TorrentList(val composable: @Composable () -> Unit) : Child
+        class Details(val composable: @Composable () -> Unit) : Child
         class Settings(val composable: @Composable () -> Unit) : Child
     }
 }

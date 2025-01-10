@@ -5,7 +5,6 @@ import com.dik.common.AppDispatchers
 import com.dik.settings.SettingsFeatureApi
 import com.dik.settings.di.SettingsComponentHolder
 import com.dik.settings.di.SettingsDependencies
-import com.dik.themoviedb.di.TheMovieDbApi
 import com.dik.torrentlist.TorrentListFeatureApi
 import com.dik.torrentlist.di.TorrentListComponentHolder
 import com.dik.torrentlist.di.TorrentListDependencies
@@ -28,4 +27,4 @@ val featuresModule = module {
     }
 }
 
-internal expect fun  torrentListDependencies(): TorrentListDependencies
+internal expect fun torrentListDependencies(): TorrentListDependencies

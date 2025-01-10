@@ -1,9 +1,15 @@
 package com.dik.torrentlist.screens.main
 
+import androidx.compose.material3.adaptive.WindowAdaptiveInfo
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.common.AppDispatchers
+import com.dik.common.platform.PlatformEvents
+import com.dik.common.platform.WindowAdaptiveClient
+import com.dik.common.platform.intent.PlatformAction
+import com.dik.common.platform.intent.PlatformIntent
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
 import com.dik.torrentlist.di.inject
@@ -21,8 +27,6 @@ import com.dik.torrserverapi.ContentFile
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.TorrentApi
 import com.dik.torrserverapi.server.TorrserverCommands
-import com.dik.uikit.utils.WindowSize
-import com.dik.uikit.utils.WindowSizeClass
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
@@ -36,12 +40,13 @@ internal class DefaultMainComponent(
     context: ComponentContext,
     private val torrentApi: TorrentApi = inject(),
     private val dispatchers: AppDispatchers = inject(),
-    private val openSettingsScreen: () -> Unit = {},
     private val torrserverCommands: TorrserverCommands = inject(),
     private val searchingTmdb: SearchTheMovieDbApi = inject(),
     private val addTorrentFile: AddTorrentFile = inject(),
     private val addMagnetLink: AddMagnetLink = inject(),
     private val tvEpisodesTmdb: TvEpisodesTheMovieDbApi = inject(),
+    private val windowAdaptiveClient: WindowAdaptiveClient = inject(),
+    private val openSettingsScreen: () -> Unit = {},
     private val onClickPlayFile: suspend (contentFile: ContentFile) -> Unit,
     private val navigateToDetails: (torrentHash: String, poster: String) -> Unit
 ) : MainComponent, ComponentContext by context {
@@ -76,19 +81,25 @@ internal class DefaultMainComponent(
 
     override val torrentListComponent: TorrentListComponent = DefaultTorrentListComponent(
         context = childContext("torrserverbar"),
-        onTorrentClick = { torrent, windowSize -> showDetails(torrent, windowSize) },
+        onTorrentClick = { torrent -> showDetails(torrent) },
         torrentApi = torrentApi,
         componentScope = componentScope,
         addTorrentFile = addTorrentFile
     )
 
-    private fun showDetails(torrent: Torrent, windowSizeClass: WindowSizeClass) {
-        if (windowSizeClass.windowWidthSizeClass == WindowSize.Width.COMPACT) {
-            navigateToDetails(torrent.hash, torrent.poster)
-            return
-        } else {
-            detailsComponent.showDetails(torrent.hash)
-            _uiState.update { it.copy(isShowDetails = true) }
+    private fun showDetails(torrent: Torrent) {
+        val windowAdaptiveFlow = windowAdaptiveClient.windowAdaptiveFlow()
+        val windowWidthSizeClass = windowAdaptiveFlow.value
+            ?.windowSizeClass?.windowWidthSizeClass ?: return
+
+        when(windowWidthSizeClass) {
+            WindowWidthSizeClass.COMPACT -> {
+                navigateToDetails(torrent.hash, torrent.poster)
+            }
+            else -> {
+                detailsComponent.showDetails(torrent.hash)
+                _uiState.update { it.copy(isShowDetails = true) }
+            }
         }
     }
 
@@ -127,6 +138,15 @@ internal class DefaultMainComponent(
         componentScope.launch {
             torrserverCommands.serverStatus().collect { status ->
                 _uiState.update { it.copy(serverStatus = status) }
+            }
+        }
+    }
+
+    fun addTorrentAndShowDetails(pathToTorrent: String) {
+        componentScope.launch {
+            val result = addTorrentFile.invoke(pathToTorrent)
+            if (result.torrent != null) {
+                showDetails(result.torrent)
             }
         }
     }

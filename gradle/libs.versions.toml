@@ -27,6 +27,7 @@ kermit = "2.0.4"
 accompanist = "0.36.0"
 libsu = "6.0.0"
 android-lifecycle = "2.8.7"
+commpose-adaptive = "1.0.1"
 
 [libraries]
 
@@ -68,6 +69,9 @@ okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit" }
 filekit-compose = { module = "io.github.vinceglb:filekit-compose", version.ref = "filekit" }
 kermit-core = { module = "co.touchlab:kermit", version.ref = "kermit" }
+compose-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "commpose-adaptive" }
+compose-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "commpose-adaptive" }
+compose-adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation", version.ref = "commpose-adaptive" }
 
 #Android
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }

@@ -10,20 +10,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.dik.torrentlist.screens.components.bufferization.BufferizationUi
 import com.dik.torrentlist.screens.details.DetailsPaneUi
 import com.dik.torrentlist.screens.main.appbar.MainAppBarUi
 import com.dik.torrentlist.screens.main.list.TorrentListUi
 import com.dik.torrentlist.screens.main.torrserverbar.TorrserverBarUi
 import com.dik.torrserverapi.model.TorrserverStatus
-import com.dik.uikit.utils.WindowSize
-import com.dik.uikit.utils.currentWindowSize
+import com.dik.uikit.utils.currentWindowSizeWidth
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -32,7 +33,7 @@ internal fun SharedTransitionScope.MainAdaptiveUi(
     isVisible: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val windowSize = currentWindowSize()
+    val windowSize = currentWindowAdaptiveInfo()
     val uiState by component.uiState.collectAsState()
 
     Scaffold(
@@ -48,7 +49,7 @@ internal fun SharedTransitionScope.MainAdaptiveUi(
                     )
                 }
 
-                windowSize.windowWidthSizeClass == WindowSize.Width.COMPACT -> {
+                windowSize.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT -> {
                     TorrentListUi(
                         component = component.torrentListComponent,
                         isVisible = isVisible
@@ -80,14 +81,13 @@ internal fun SharedTransitionScope.MainTwoPaneUi(
     modifier: Modifier = Modifier
 ) {
     val uiState = component.uiState.collectAsState()
-    val windowSize = currentWindowSize()
+    val windowWidthDp = currentWindowSizeWidth()
 
     Column(modifier = modifier) {
         val minRightColumnWidth = 400.dp
         val maxRightColumnWidth = 500.dp
 
-        val screenWidth = windowSize.windowWidthDp
-        val calculatedWidth = screenWidth / 3
+        val calculatedWidth = windowWidthDp / 3
 
         val rightColumnWidth = when {
             calculatedWidth < minRightColumnWidth -> minRightColumnWidth

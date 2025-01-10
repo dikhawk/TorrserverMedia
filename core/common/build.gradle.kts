@@ -40,6 +40,7 @@ kotlin {
                 implementation(compose.runtime)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.decompose.core)
+                implementation(libs.compose.adaptive)
             }
         }
 

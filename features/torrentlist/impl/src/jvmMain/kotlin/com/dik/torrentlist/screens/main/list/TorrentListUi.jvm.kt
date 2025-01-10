@@ -52,7 +52,6 @@ import androidx.compose.ui.unit.dp
 import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrserverapi.model.Torrent
 import com.dik.uikit.theme.AppTheme
-import com.dik.uikit.utils.currentWindowSize
 import com.dik.uikit.widgets.AppAsyncImage
 import com.dik.uikit.widgets.AppNormalBoldText
 import com.dik.uikit.widgets.AppNormalText
@@ -178,8 +177,6 @@ private fun SharedTransitionScope.Torrents(
     isVisible: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val windowSize = currentWindowSize()
-
     LazyVerticalGrid(
         modifier = modifier.fillMaxSize(),
         columns = GridCells.Adaptive(minSize = 180.dp)
@@ -188,7 +185,7 @@ private fun SharedTransitionScope.Torrents(
             TorrentItem(
                 torrent = torrent,
                 isVisible = isVisible,
-                onClickItem = { component.onClickItem(torrent, windowSize) },
+                onClickItem = { component.onClickItem(torrent) },
                 onClickDelete = { component.onClickDeleteItem(torrent) })
         }
     }

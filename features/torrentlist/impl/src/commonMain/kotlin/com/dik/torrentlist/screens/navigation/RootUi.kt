@@ -11,6 +11,8 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.plus
 import com.arkivanov.decompose.extensions.compose.stack.animation.scale
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.dik.common.platform.WindowAdaptiveObserver
+import com.dik.torrentlist.di.inject
 import com.dik.torrentlist.screens.details.DetailsUi
 import com.dik.torrentlist.screens.main.MainAdaptiveUi
 
@@ -18,7 +20,7 @@ import com.dik.torrentlist.screens.main.MainAdaptiveUi
 @Composable
 internal fun RootUi(
     component: RootComponent,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val stack by component.childStack.subscribeAsState()
 
