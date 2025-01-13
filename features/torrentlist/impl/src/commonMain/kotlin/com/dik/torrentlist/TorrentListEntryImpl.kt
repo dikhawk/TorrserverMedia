@@ -1,9 +1,8 @@
 package com.dik.torrentlist
 
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import com.arkivanov.decompose.ComponentContext
+import com.dik.torrentlist.screens.navigation.ChildConfig
 import com.dik.torrentlist.screens.navigation.DefaultRootComponent
 import com.dik.torrentlist.screens.navigation.RootUi
 
@@ -14,7 +13,10 @@ class TorrentListEntryImpl() : TorrentListEntry() {
         context: ComponentContext,
         onFinish: () -> Unit
     ): @Composable () -> Unit = {
-        val rootComponent = DefaultRootComponent(componentContext = context)
+        val rootComponent = DefaultRootComponent(
+            componentContext = context,
+            initialConfiguration = ChildConfig.Main(pathToTorrent)
+        )
 
         RootUi(rootComponent)
 

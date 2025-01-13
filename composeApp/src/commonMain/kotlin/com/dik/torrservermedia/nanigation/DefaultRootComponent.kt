@@ -13,7 +13,7 @@ import kotlinx.serialization.Serializable
 
 class DefaultRootComponent(
     componentContext: ComponentContext,
-    private val initialConfiguration: ChildConfig = ChildConfig.TorrentList,
+    private val initialConfiguration: ChildConfig = ChildConfig.TorrentList(),
     private val featureTorrentListApi: TorrentListFeatureApi,
     private val featureSettingsApi: SettingsFeatureApi
 ) : RootComponent, ComponentContext by componentContext {
@@ -35,8 +35,9 @@ class DefaultRootComponent(
     private fun childFactory(
         config: ChildConfig, componentContext: ComponentContext
     ): Child = when (config) {
-        ChildConfig.TorrentList -> Child.TorrentList(
-            composable = featureTorrentListApi.start().root(componentContext)
+        is ChildConfig.TorrentList -> Child.TorrentList(
+            composable = featureTorrentListApi.start()
+                .root(context = componentContext, pathToTorrent = config.pathToTorrent)
         )
 
         ChildConfig.Settings -> Child.Settings(
@@ -49,7 +50,7 @@ class DefaultRootComponent(
 @Serializable
 sealed interface ChildConfig {
     @Serializable
-    data object TorrentList : ChildConfig
+    data class TorrentList(val pathToTorrent: String? = null) : ChildConfig
 
     @Serializable
     data object Settings : ChildConfig

@@ -66,7 +66,6 @@ internal class DefaultRootComponent(
         ).apply {
             if (torrentHash != null) {
                 showDetails(torrentHash)
-//                showDetailsAndStartBufferization(torrentHash)
             }
         }
     }

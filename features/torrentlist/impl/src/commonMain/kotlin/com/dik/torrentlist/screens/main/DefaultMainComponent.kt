@@ -1,15 +1,11 @@
 package com.dik.torrentlist.screens.main
 
-import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.common.AppDispatchers
-import com.dik.common.platform.PlatformEvents
 import com.dik.common.platform.WindowAdaptiveClient
-import com.dik.common.platform.intent.PlatformAction
-import com.dik.common.platform.intent.PlatformIntent
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
 import com.dik.torrentlist.di.inject
@@ -25,11 +21,13 @@ import com.dik.torrentlist.screens.main.torrserverbar.DefaultTorrserverBarCompon
 import com.dik.torrentlist.screens.main.torrserverbar.TorrserverBarComponent
 import com.dik.torrserverapi.ContentFile
 import com.dik.torrserverapi.model.Torrent
+import com.dik.torrserverapi.model.TorrserverStatus
 import com.dik.torrserverapi.server.TorrentApi
 import com.dik.torrserverapi.server.TorrserverCommands
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -144,9 +142,24 @@ internal class DefaultMainComponent(
 
     fun addTorrentAndShowDetails(pathToTorrent: String) {
         componentScope.launch {
-            val result = addTorrentFile.invoke(pathToTorrent)
-            if (result.torrent != null) {
-                showDetails(result.torrent)
+            var tries = 0
+            val maxTries = 100
+            val delay = 100L
+
+            while (tries < maxTries) {
+                tries++
+
+                if (_uiState.value.serverStatus == TorrserverStatus.STARTED) {
+                    println("Tries Server Status Success")
+                    val result = addTorrentFile.invoke(pathToTorrent)
+                    if (result.torrent != null) {
+                        showDetails(result.torrent)
+                    }
+
+                    break
+                }
+
+                delay(delay)
             }
         }
     }

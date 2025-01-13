@@ -2,6 +2,8 @@ package com.dik.torrservermedia
 
 import android.app.Activity
 import android.app.Application
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -15,7 +17,9 @@ import com.dik.common.CurrentActivityProvider
 import com.dik.torrserverapi.model.TorrserverServiceManager
 import com.dik.torrservermedia.di.KoinModules
 import com.dik.torrservermedia.di.inject
+import com.dik.torrservermedia.nanigation.ChildConfig
 import com.dik.torrservermedia.nanigation.DefaultRootComponent
+import com.dik.torrservermedia.utils.pathToFile
 import com.dik.uikit.theme.AppTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -88,6 +92,7 @@ class AppActivity : ComponentActivity() {
         }
 
         val root = DefaultRootComponent(
+            initialConfiguration = ChildConfig.TorrentList(pathToTorrent(intent)),
             componentContext = defaultComponentContext(),
             featureTorrentListApi = inject(),
             featureSettingsApi = inject(),
@@ -112,5 +117,20 @@ class AppActivity : ComponentActivity() {
                 notificationPermission.launchMultiplePermissionRequest()
             }
         }
+    }
+
+    private fun pathToTorrent(intent: Intent): String? {
+        val action = intent.action
+        val data: Uri? = intent.data
+        val type = intent.type
+        val torrentType = "application/x-bittorrent"
+
+        if (action != Intent.ACTION_VIEW || data == null) return null
+
+        if (type == torrentType) {
+            return data.pathToFile(this)
+        }
+
+        return null
     }
 }
