@@ -106,7 +106,9 @@ internal class DefaultBufferizationComponent(
             it.copy(
                 downloadSpeed = torrent.statistics?.downloadSpeed?.bytesToBits() ?: "-",
                 downloadProgress = progress,
-                downloadProgressText = getProgressMessage(preloadedBytes, preloadSize)
+                downloadProgressText = getProgressMessage(preloadedBytes, preloadSize),
+                activePeers = torrent.statistics?.activePeers.toString(),
+                totalPeers = torrent.statistics?.totalPeers.toString()
             )
         }
     }

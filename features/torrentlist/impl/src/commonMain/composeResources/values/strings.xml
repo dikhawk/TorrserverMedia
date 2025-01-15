@@ -34,4 +34,8 @@
     <string name="main_bufferization_downloading_speed">Загрузка</string>
     <string name="main_bufferization_season_and_episode">Сезон: %s; Эпизод %s</string>
     <string name="main_close_app_message">Закрыть приложение?</string>
+    <string name="main_bufferization_active_pears">Пиры:</string>
+    <string name="main_bufferization_pears_mask">%s/%s</string>
+    <string name="main_bufferization_file_size">Размер:</string>
+    <string name="main_bufferization_buffer_size">Буфер:</string>
 </resources>
