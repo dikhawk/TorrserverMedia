@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -37,6 +39,9 @@ import com.dik.uikit.widgets.AppIconButtonArrowBack
 import com.dik.uikit.widgets.AppMiddleVerticalSpacer
 import com.dik.uikit.widgets.AppNormalBoldText
 import com.dik.uikit.widgets.AppTopBar
+import org.jetbrains.compose.resources.vectorResource
+import torrservermedia.features.torrentlist.impl.generated.resources.Res
+import torrservermedia.features.torrentlist.impl.generated.resources.ic_delete_24
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -67,7 +72,12 @@ internal fun SharedTransitionScope.DetailsUi(
                 ),
                 navigationIcon = { AppIconButtonArrowBack { component.onClickBack() } }
             ) {
-
+                IconButton(onClick = { component.onClickDeleteTorrent() }, modifier = modifier) {
+                    Icon(
+                        imageVector = vectorResource(Res.drawable.ic_delete_24),
+                        contentDescription = null,
+                    )
+                }
             }
         }
     ) {

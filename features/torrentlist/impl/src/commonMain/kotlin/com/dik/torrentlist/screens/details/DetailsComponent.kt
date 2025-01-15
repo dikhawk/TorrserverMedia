@@ -17,6 +17,7 @@ internal interface DetailsComponent {
     val bufferizationComponent: BufferizationComponent
 
     fun onClickBack()
+    fun onClickDeleteTorrent()
     fun showDetails(hash: String)
     fun runBufferization(torrent: Torrent, contentFile: ContentFile, runAferBuferazation: () -> Unit)
 }

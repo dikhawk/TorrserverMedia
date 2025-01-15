@@ -4,6 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
+import com.dik.common.Result
 import com.dik.common.utils.successResult
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
@@ -92,6 +93,18 @@ internal class DefaultDetailsComponent(
     )
 
     override fun onClickBack() = onClickBack.invoke()
+
+    override fun onClickDeleteTorrent() {
+        componentScope.launch {
+            val hash = selectedTorrent?.hash ?: return@launch
+
+            val result = torrentApi.removeTorrent(hash)
+
+            if (result is Result.Success) {
+                onClickBack()
+            }
+        }
+    }
 
     override fun showDetails(hash: String) {
         _uiState.update { DetailsState() }
