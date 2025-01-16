@@ -5,7 +5,7 @@ android-targetSdk = "28"
 
 kotlin = "2.0.21"
 compose = "1.7.1"
-agp = "8.7.3"
+agp = "8.8.0"
 androidx-activityCompose = "1.9.3"
 androidx-uiTest = "1.7.6"
 coil = "3.0.4"
