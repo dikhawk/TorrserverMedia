@@ -6,6 +6,8 @@ import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
 import com.dik.common.ResultProgress
+import com.dik.common.i18n.AppLanguage
+import com.dik.common.i18n.setLocalization
 import com.dik.common.player.Player
 import com.dik.common.utils.cpuArch
 import com.dik.common.utils.platformName
@@ -16,7 +18,6 @@ import com.dik.torrserverapi.server.TorrserverStuffApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -97,7 +98,7 @@ internal class DefaultMainComponent(
     }
 
     override fun onChangeDefaultPlayer(value: Player) {
-        _uiState.update { it.copy(deafaultPlayer = value) }
+        _uiState.update { it.copy(defaultPlayer = value) }
     }
 
     override fun onChangeCacheSize(value: String) {
@@ -181,6 +182,13 @@ internal class DefaultMainComponent(
         _uiState.update { it.copy(dlnaName = value) }
     }
 
+    override fun onChangeLanguage(value: AppLanguage) {
+        componentScope.launch {
+            _uiState.update { it.copy(language = value) }
+            setLocalization(value)
+        }
+    }
+
     override fun onClickSave() {
         if (_uiState.value.isShowProgressBar) return
 
@@ -194,9 +202,10 @@ internal class DefaultMainComponent(
         }
     }
 
-    private suspend fun saveAppSettings() {
+    private fun saveAppSettings() {
         componentScope.launch {
-            appSettings.defaultPlayer = _uiState.value.deafaultPlayer
+            appSettings.defaultPlayer = _uiState.value.defaultPlayer
+            appSettings.language = _uiState.value.language
         }
     }
 
@@ -304,7 +313,8 @@ internal class DefaultMainComponent(
         _uiState.update {
             it.copy(
                 operationSystem = "${platform.osname} $cpu",
-                deafaultPlayer = appSettings.defaultPlayer,
+                defaultPlayer = appSettings.defaultPlayer,
+                language = appSettings.language,
                 playersList = getPlayersLists(),
                 cacheSize = settings.cacheSize.bytesToMb().toString(), //to Mb
                 readerReadAHead = settings.readerReadAHead.toString(),

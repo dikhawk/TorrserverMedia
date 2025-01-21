@@ -1,7 +1,5 @@
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -9,7 +7,9 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
+import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
+import com.dik.common.i18n.setLocalization
 import com.dik.torrserverapi.di.TorrserverApi
 import com.dik.torrservermedia.RootUi
 import com.dik.torrservermedia.di.KoinModules
@@ -36,6 +36,7 @@ fun main(args: Array<String>) {
     val pathToFile = args.firstOrNull()
     val torrServerApi: TorrserverApi = inject()
     val dispatchers: AppDispatchers = inject()
+    val appSettings: AppSettings = inject()
     val commands = torrServerApi.torrserverCommands()
     val scope = CoroutineScope(dispatchers.defaultDispatcher() + SupervisorJob())
     val root = runOnUiThread {
@@ -49,7 +50,9 @@ fun main(args: Array<String>) {
 
     scope.launch {
         commands.startServer()
+        setLocalization(appSettings.language)
     }
+
 
     application {
         Window(

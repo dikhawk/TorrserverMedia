@@ -37,7 +37,6 @@ import org.jetbrains.compose.resources.vectorResource
 import torrservermedia.features.settings.impl.generated.resources.Res
 import torrservermedia.features.settings.impl.generated.resources.ic_save_24
 import torrservermedia.features.settings.impl.generated.resources.main_app_bar_title
-import torrservermedia.features.settings.impl.generated.resources.main_settings_available_new_version
 import torrservermedia.features.settings.impl.generated.resources.main_settings_cache_size_header
 import torrservermedia.features.settings.impl.generated.resources.main_settings_cache_size_hint
 import torrservermedia.features.settings.impl.generated.resources.main_settings_default_player_header
@@ -53,6 +52,7 @@ import torrservermedia.features.settings.impl.generated.resources.main_settings_
 import torrservermedia.features.settings.impl.generated.resources.main_settings_encryption_hint
 import torrservermedia.features.settings.impl.generated.resources.main_settings_ipv6_header
 import torrservermedia.features.settings.impl.generated.resources.main_settings_ipv6_hint
+import torrservermedia.features.settings.impl.generated.resources.main_settings_language_header
 import torrservermedia.features.settings.impl.generated.resources.main_settings_limit_speed_distribution_header
 import torrservermedia.features.settings.impl.generated.resources.main_settings_limit_speed_distribution_hint
 import torrservermedia.features.settings.impl.generated.resources.main_settings_limit_speed_download_header
@@ -100,10 +100,11 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
                 }
             )
         }
-    ) {
-        Column(modifier = Modifier.fillMaxWidth().padding(8.dp).verticalScroll(scrollstate)) {
-            Spacer(modifier = Modifier.height(64.dp))
-
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(paddingValues).padding(8.dp)
+                .verticalScroll(scrollstate)
+        ) {
             if (uiState.value.isAvailableNewVersion) {
                 Column(
                     modifier = modifier.fillMaxWidth()
@@ -121,8 +122,15 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
             }
 
             DropDownListItem(
+                header = stringResource(Res.string.main_settings_language_header),
+                selectedItem = uiState.value.language,
+                items = uiState.value.languages,
+                title = { it.title },
+                onClickItem = { component.onChangeLanguage(it) })
+
+            DropDownListItem(
                 header = stringResource(Res.string.main_settings_default_player_header),
-                selectedItem = uiState.value.deafaultPlayer,
+                selectedItem = uiState.value.defaultPlayer,
                 items = uiState.value.playersList,
                 title = { it.title },
                 onClickItem = { component.onChangeDefaultPlayer(it) })

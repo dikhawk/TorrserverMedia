@@ -40,9 +40,9 @@ internal class DefaultRootComponent(
         navigation.pop()
     }
 
-    override fun mainComponent(): MainComponent =
+    override fun mainComponent(componentContext: ComponentContext): MainComponent =
         DefaultMainComponent(
-            childContext("main_component"),
+            componentContext,
             onFinish = onFinish,
             serverSettingsApi = serverSettingsApi,
             dispatchers = dispatchers,
@@ -55,6 +55,6 @@ internal class DefaultRootComponent(
         config: ChildConfig,
         componentContext: ComponentContext
     ): RootComponent.Child = when (config) {
-        ChildConfig.Main -> RootComponent.Child.Main(mainComponent())
+        ChildConfig.Main -> RootComponent.Child.Main(mainComponent(componentContext))
     }
 }

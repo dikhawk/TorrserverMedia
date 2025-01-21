@@ -13,7 +13,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.lifecycle.lifecycleScope
 import com.arkivanov.decompose.defaultComponentContext
+import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.CurrentActivityProvider
+import com.dik.common.i18n.setLocalization
 import com.dik.torrserverapi.model.TorrserverServiceManager
 import com.dik.torrservermedia.di.KoinModules
 import com.dik.torrservermedia.di.inject
@@ -83,12 +85,14 @@ class AndroidApp : Application(), CurrentActivityProvider {
 class AppActivity : ComponentActivity() {
 
     private val torrserverService: TorrserverServiceManager = inject()
+    private val appSettings: AppSettings = inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         lifecycleScope.launch {
             torrserverService.startService()
+            setLocalization(appSettings.language)
         }
 
         val root = DefaultRootComponent(
