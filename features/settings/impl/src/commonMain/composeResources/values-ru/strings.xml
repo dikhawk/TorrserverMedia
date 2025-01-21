@@ -45,4 +45,5 @@
     <string name="main_settings_available_new_version_update_success">Сервер обновлен</string>
     <string name="main_settings_available_new_version_update_error">Сервер не удалось обновить</string>
     <string name="main_settings_available_new_version_update_loading">Загрузка обновления</string>
+    <string name="main_settings_language_header">Язык</string>
 </resources>
