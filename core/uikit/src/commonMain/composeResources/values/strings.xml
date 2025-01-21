@@ -1,4 +1,4 @@
 <resources>
-    <string name="uikit_simple_dialog_button_ok">Ок</string>
-    <string name="uikit_simple_dialog_button_cancel">Отмена</string>
+    <string name="uikit_simple_dialog_button_ok">OK</string>
+    <string name="uikit_simple_dialog_button_cancel">Cancel</string>
 </resources>
