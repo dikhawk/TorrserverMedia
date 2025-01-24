@@ -39,8 +39,8 @@ import torrservermedia.features.torrentlist.impl.generated.resources.main_buffer
 import torrservermedia.features.torrentlist.impl.generated.resources.main_bufferization_buffer_size
 import torrservermedia.features.torrentlist.impl.generated.resources.main_bufferization_button_cancel
 import torrservermedia.features.torrentlist.impl.generated.resources.main_bufferization_downloading_speed
-import torrservermedia.features.torrentlist.impl.generated.resources.main_bufferization_pears_mask
 import torrservermedia.features.torrentlist.impl.generated.resources.main_bufferization_file_size
+import torrservermedia.features.torrentlist.impl.generated.resources.main_bufferization_pears_mask
 
 @Composable
 internal fun BufferizationUi(component: BufferizationComponent, modifier: Modifier = Modifier) {
@@ -53,11 +53,14 @@ internal fun BufferizationUi(component: BufferizationComponent, modifier: Modifi
             val maxHeight = maxHeight
 
             Card(modifier = modifier) {
-                Box(modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 8.dp)
+                ) {
                     Column(
                         modifier = Modifier.heightIn(max = maxHeight - 100.dp)
                             .align(Alignment.TopCenter)
-                            .padding(top = 8.dp, start = 8.dp, end = 8.dp)
                     ) {
                         AppNormalText(text = uiState.value.fileName)
                         if (uiState.value.title.isNotEmpty())
@@ -104,6 +107,7 @@ internal fun BufferizationUi(component: BufferizationComponent, modifier: Modifi
                                 modifier = Modifier.fillMaxWidth().padding(bottom = bottomPadding)
                                     .verticalScroll(rememberScrollState())
                             ) {
+                                AppNormalVerticalSpacer()
                                 AppNormalItalicText(text = uiState.value.overview)
                             }
                         } else {
@@ -118,6 +122,7 @@ internal fun BufferizationUi(component: BufferizationComponent, modifier: Modifi
                             .onSizeChanged { size ->
                                 bottomPadding = with(localDensity) { size.height.toDp() }
                             }
+                            .padding(top = 16.dp)
                     ) {
                         Spacer(modifier = Modifier.weight(1f))
                         AppTextButton(

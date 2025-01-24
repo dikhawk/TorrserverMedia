@@ -51,6 +51,7 @@ internal fun SharedTransitionScope.MainAdaptiveUi(
 
                 windowSize.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT -> {
                     TorrentListUi(
+                        modifier = Modifier.padding(4.dp),
                         component = component.torrentListComponent,
                         isVisible = isVisible
                     )
@@ -96,9 +97,11 @@ internal fun SharedTransitionScope.MainTwoPaneUi(
         }
 
         Row(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.weight(1f).fillMaxHeight().padding(4.dp)) {
-                TorrentListUi(component = component.torrentListComponent, isVisible = isVisible)
-            }
+            TorrentListUi(
+                modifier = Modifier.weight(1f).fillMaxHeight().padding(4.dp),
+                component = component.torrentListComponent,
+                isVisible = isVisible
+            )
 
             if (uiState.value.isShowDetails) {
                 Column(

@@ -100,9 +100,9 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
                 }
             )
         }
-    ) { paddingValues ->
+    ) { paddings ->
         Column(
-            modifier = Modifier.fillMaxWidth().padding(paddingValues).padding(8.dp)
+            modifier = Modifier.fillMaxWidth().padding(paddings).padding(8.dp)
                 .verticalScroll(scrollstate)
         ) {
             if (uiState.value.isAvailableNewVersion) {

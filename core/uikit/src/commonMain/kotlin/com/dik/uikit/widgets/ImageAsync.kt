@@ -1,5 +1,6 @@
 package com.dik.uikit.widgets
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,13 +26,14 @@ fun AppAsyncImage(
     url: String?,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
-    contentScale: ContentScale = ContentScale.None
+    contentScale: ContentScale = ContentScale.None,
+    errorStub: @Composable () -> Unit = { ImageStub(modifier = modifier, image = Res.drawable.ic_movie) }
 ) {
     val isError = remember { mutableStateOf(false) }
 
     when {
-        url.isNullOrEmpty() -> ImageStub(modifier = modifier, image = Res.drawable.ic_movie)
-        isError.value -> ImageStub(modifier = modifier, image = Res.drawable.ic_movie)
+        url.isNullOrEmpty() -> errorStub.invoke()
+        isError.value -> errorStub.invoke()
         else -> AsyncImage(
             modifier = modifier,
             model = url,
@@ -46,8 +48,8 @@ fun AppAsyncImage(
 
 @Composable
 private fun ImageStub(modifier: Modifier = Modifier, image: DrawableResource) {
-    Box(modifier = modifier.fillMaxSize().background(Color.Gray)) {
-        Icon(
+    Box(modifier = modifier.background(Color.Gray)) {
+        Image(
             imageVector = vectorResource(image),
             modifier = Modifier.height(100.dp).width(100.dp).align(alignment = Alignment.Center),
             contentDescription = null

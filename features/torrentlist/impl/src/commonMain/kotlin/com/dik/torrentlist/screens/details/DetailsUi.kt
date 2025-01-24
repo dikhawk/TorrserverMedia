@@ -96,14 +96,14 @@ internal fun SharedTransitionScope.DetailsUi(
                     )
             ) {
                 AppAsyncImage(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.widthIn(max = 800.dp).heightIn(min = 500.dp).fillMaxWidth()
                         .align(Alignment.BottomCenter).blur(radius = 56.dp),
                     url = poster,
                     contentScale = ContentScale.FillWidth,
                 )
 
                 AppAsyncImage(
-                    modifier = Modifier.widthIn(max = 800.dp).fillMaxWidth()
+                    modifier = Modifier.widthIn(max = 800.dp).heightIn(min = 500.dp).fillMaxWidth()
                         .align(Alignment.BottomCenter),
                     url = poster,
                     contentScale = ContentScale.Fit,
