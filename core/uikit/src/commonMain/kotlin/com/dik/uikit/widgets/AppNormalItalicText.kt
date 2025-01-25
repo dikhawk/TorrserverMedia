@@ -2,10 +2,8 @@ package com.dik.uikit.widgets
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import com.dik.uikit.theme.AppTheme
-import com.dik.uikit.theme.LocalAppTypography
 
 @Composable
 fun AppNormalItalicText(

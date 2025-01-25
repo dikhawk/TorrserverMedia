@@ -2,10 +2,8 @@ package com.dik.torrentlist.screens.details
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.dik.uikit.widgets.AppNormalBoldText
 import com.dik.uikit.widgets.AppNormalItalicText
 import com.dik.uikit.widgets.AppNormalVerticalSpacer

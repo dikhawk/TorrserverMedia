@@ -1,6 +1,5 @@
 package com.dik.torrentlist.screens.main.list
 
-import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
 import com.dik.torrserverapi.model.Torrent

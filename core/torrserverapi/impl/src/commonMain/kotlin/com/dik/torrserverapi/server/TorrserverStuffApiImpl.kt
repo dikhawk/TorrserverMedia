@@ -12,7 +12,6 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.http.HttpStatusCode
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import java.net.ConnectException
 

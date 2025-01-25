@@ -1,7 +1,5 @@
 package com.dik.videofilenameparser
 
-import kotlin.text.Regex
-
 enum class Language(val value: String) {
     English("English"),
     French("French"),

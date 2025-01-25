@@ -11,6 +11,7 @@ import com.dik.common.i18n.setLocalization
 import com.dik.common.player.Player
 import com.dik.common.utils.cpuArch
 import com.dik.common.utils.platformName
+import com.dik.common.utils.successResult
 import com.dik.torrserverapi.model.ServerSettings
 import com.dik.torrserverapi.server.ServerSettingsApi
 import com.dik.torrserverapi.server.TorrserverCommands
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
-import com.dik.common.utils.successResult
 import torrservermedia.features.settings.impl.generated.resources.Res
 import torrservermedia.features.settings.impl.generated.resources.main_settings_available_new_version
 import torrservermedia.features.settings.impl.generated.resources.main_settings_available_new_version_update_error

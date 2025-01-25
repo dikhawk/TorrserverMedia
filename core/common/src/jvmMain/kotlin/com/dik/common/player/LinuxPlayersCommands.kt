@@ -2,7 +2,6 @@ package com.dik.common.player
 
 import com.dik.common.Platform
 import com.dik.common.cmd.KmpCmdRunner
-import kotlinx.coroutines.runBlocking
 
 
 class LinuxPlayersCommands : PlayersCommands {

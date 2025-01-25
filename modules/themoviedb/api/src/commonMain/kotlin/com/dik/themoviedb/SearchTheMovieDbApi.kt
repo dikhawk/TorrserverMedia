@@ -1,11 +1,11 @@
 package com.dik.themoviedb
 
+import com.dik.common.Result
+import com.dik.themoviedb.errors.TheMovieDbError
 import com.dik.themoviedb.model.Content
 import com.dik.themoviedb.model.Movie
 import com.dik.themoviedb.model.Person
 import com.dik.themoviedb.model.TvShow
-import com.dik.common.Result
-import com.dik.themoviedb.errors.TheMovieDbError
 
 interface SearchTheMovieDbApi {
 

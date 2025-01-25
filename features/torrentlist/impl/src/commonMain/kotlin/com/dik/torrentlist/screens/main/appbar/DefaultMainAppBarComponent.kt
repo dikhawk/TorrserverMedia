@@ -2,7 +2,6 @@ package com.dik.torrentlist.screens.main.appbar
 
 import com.arkivanov.decompose.ComponentContext
 import com.dik.common.AppDispatchers
-import com.dik.common.utils.successResult
 import com.dik.torrentlist.screens.main.AddMagnetLink
 import com.dik.torrentlist.screens.main.AddTorrentFile
 import com.dik.torrentlist.screens.main.appbar.utils.defaultFilePickerDirectory

@@ -2,7 +2,6 @@ package com.dik.appsettings.impl.di
 
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.appsettings.impl.AppSettingsImpl
-import com.dik.common.AppDispatchers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.Koin

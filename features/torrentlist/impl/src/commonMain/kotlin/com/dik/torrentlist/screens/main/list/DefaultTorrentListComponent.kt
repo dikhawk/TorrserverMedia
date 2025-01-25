@@ -1,9 +1,7 @@
 package com.dik.torrentlist.screens.main.list
 
-import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import com.arkivanov.decompose.ComponentContext
 import com.dik.common.Result
-import com.dik.common.platform.WindowAdaptiveClient
 import com.dik.torrentlist.screens.main.AddTorrentFile
 import com.dik.torrentlist.screens.main.AddTorrentResult
 import com.dik.torrentlist.utils.uriToPath

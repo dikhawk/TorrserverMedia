@@ -2,13 +2,10 @@ package com.dik.torrentlist.screens.main.torrserverbar
 
 import com.arkivanov.decompose.ComponentContext
 import com.dik.common.AppDispatchers
-import com.dik.common.Result
 import com.dik.common.ResultProgress
-import com.dik.common.utils.successResult
 import com.dik.torrentlist.error.toMessage
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.server.TorrserverCommands
-import com.dik.torrserverapi.server.TorrserverStuffApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +15,6 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.main_torrserver_bar_msg_installing_torrserver
-import torrservermedia.features.torrentlist.impl.generated.resources.main_torrserver_bar_msg_server_not_installed
 
 internal class DefaultTorrserverBarComponent(
     context: ComponentContext,

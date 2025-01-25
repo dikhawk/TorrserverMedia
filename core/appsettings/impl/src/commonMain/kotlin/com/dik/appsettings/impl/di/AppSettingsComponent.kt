@@ -2,7 +2,6 @@ package com.dik.appsettings.impl.di
 
 import com.dik.appsettings.api.di.AppSettingsApi
 import com.dik.appsettings.api.model.AppSettings
-import com.dik.common.AppDispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

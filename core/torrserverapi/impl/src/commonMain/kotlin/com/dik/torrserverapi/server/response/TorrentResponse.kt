@@ -2,7 +2,6 @@ package com.dik.torrserverapi.server.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.io.File
 
 @Serializable
 data class TorrentResponse(

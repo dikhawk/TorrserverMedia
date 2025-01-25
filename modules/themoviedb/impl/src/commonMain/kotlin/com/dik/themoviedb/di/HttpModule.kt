@@ -2,9 +2,9 @@ package com.dik.themoviedb.di
 
 import com.dik.themoviedb.constants.MOVIEDB_API_URL
 import com.dik.themoviedb.impl.BuildKonfig
-import com.dik.themoviedb.response.PolymorphContentResponse
 import com.dik.themoviedb.response.MoviePolymorphResponse
 import com.dik.themoviedb.response.PersonPolymorphResponse
+import com.dik.themoviedb.response.PolymorphContentResponse
 import com.dik.themoviedb.response.TvShowPolymorphResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout

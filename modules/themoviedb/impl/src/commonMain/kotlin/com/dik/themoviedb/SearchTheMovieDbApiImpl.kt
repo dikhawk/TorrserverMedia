@@ -10,11 +10,10 @@ import com.dik.themoviedb.model.Content
 import com.dik.themoviedb.model.Movie
 import com.dik.themoviedb.model.Person
 import com.dik.themoviedb.model.TvShow
-import com.dik.themoviedb.response.PolymorphContentResponse
-import com.dik.themoviedb.response.MoviePolymorphResponse
 import com.dik.themoviedb.response.MovieResponse
 import com.dik.themoviedb.response.PageResponse
 import com.dik.themoviedb.response.PersonResponse
+import com.dik.themoviedb.response.PolymorphContentResponse
 import com.dik.themoviedb.response.TvShowResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body

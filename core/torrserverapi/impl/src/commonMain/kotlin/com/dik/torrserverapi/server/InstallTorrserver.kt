@@ -1,7 +1,6 @@
 package com.dik.torrserverapi.server
 
 import co.touchlab.kermit.Logger
-import co.touchlab.kermit.Logger.Companion.tag
 import com.dik.common.AppDispatchers
 import com.dik.common.Platform
 import com.dik.common.Result

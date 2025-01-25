@@ -1,7 +1,6 @@
 package com.dik.torrentlist.screens.details.torrentstatistics
 
 import androidx.compose.runtime.Stable
-import com.dik.torrentlist.screens.main.torrserverbar.TorrserverBarState
 import kotlinx.coroutines.flow.StateFlow
 
 interface TorrentStatisticsComponent {
