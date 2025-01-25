@@ -1,0 +1,15 @@
+build_desktop:
+    name: Build Desktop App
+    strategy:
+       matrix:
+          os: [ ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+       - name: Checkout Repository
+         uses: actions/checkout@v4
+
+       - name: Build Desktop App
+         uses: openMF/kmp-build-desktop-app-action@v1.0.0
+         with:
+           desktop_package_name: 'myapp'
+           build_type: 'Release'
