@@ -29,6 +29,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Create Local properties
+        run: |
+          echo "MOVIEDB_API=${{ secrets.MOVIEDB_API }}" > local.properties
+
+      - name: Generate BuildKonfig
+        run: ./gradlew generateBuildKonfig
+
       - name: Build AppImage
         run: ./gradlew packageAppImage
 
