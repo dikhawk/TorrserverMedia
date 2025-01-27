@@ -126,8 +126,8 @@ fun AppTextField(
             Spacer(
                 modifier = Modifier
                     .background(
-                        if (textFieldIsFocused) MaterialTheme.colorScheme.onPrimary
-                        else MaterialTheme.colorScheme.outline
+                        if (textFieldIsFocused) AppTheme.colors.primary
+                        else AppTheme.colors.outline
                     )
                     .height(2.dp)
                     .fillMaxWidth()
