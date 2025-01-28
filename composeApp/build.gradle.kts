@@ -166,6 +166,9 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Exe, TargetFormat.AppImage)
             packageName = "com.dik.torrservermedia.desktopApp"
             packageVersion = "1.0.0"
+            linux {
+                modules("jdk.security.auth")
+            }
         }
     }
 }
