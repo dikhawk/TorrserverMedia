@@ -1,5 +1,6 @@
 package com.dik.torrserverapi.server
 
+import co.touchlab.kermit.Logger
 import com.dik.common.Result
 import com.dik.common.cmd.KmpCmdRunner
 import com.dik.torrserverapi.TorrserverError
@@ -12,12 +13,13 @@ internal actual class TorrserverRunnerImpl(
     override suspend fun run(): Result<Unit, TorrserverError> {
         try {
             val torrserver = File(config.pathToServerFile)
-            val makeExecutableCommand = "chmod +x ${torrserver.absolutePath}"
-            val startServerCommand = "cd ${torrserver.parent} && ./${torrserver.name} -k"
+            val makeExecutableCommand = "chmod +x '${torrserver.absolutePath}'"
+            val startServerCommand = "cd '${torrserver.parent}' && ./${torrserver.name} -k"
 
             KmpCmdRunner.run("$makeExecutableCommand && $startServerCommand")
             return Result.Success(Unit)
         } catch (e: Exception) {
+            Logger.e(e.toString())
             return Result.Error(TorrserverError.Unknown(e.toString()))
         }
     }
