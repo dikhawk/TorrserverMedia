@@ -6,7 +6,6 @@ import java.io.File
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 internal actual object TorrserverConfig : ServerConfig {
-
     private val configDirectory = getConfigDirectory() + File.separator + "TorrServerMedia"
 
     override val torrserverHost: String = "http://127.0.0.1:8090"
