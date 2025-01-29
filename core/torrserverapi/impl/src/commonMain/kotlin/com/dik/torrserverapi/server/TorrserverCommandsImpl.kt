@@ -46,10 +46,12 @@ internal class TorrserverCommandsImpl(
     override suspend fun startServer(): Result<Unit, TorrserverError> {
         try {
             torServerStatus.emit(TorrserverStatus.RUNNING)
+            Logger.i("Server is running")
             var isStartedServer = isServerStarted().successResult() ?: false
 
             if (isStartedServer) {
                 torServerStatus.emit(TorrserverStatus.STARTED)
+                Logger.i("Server is started")
                 startMonitorServerStatus()
                 return Result.Success(Unit)
             }
@@ -58,6 +60,7 @@ internal class TorrserverCommandsImpl(
             val isServerInstalled = isServerInstalledResult.successResult() ?: false
             if (!isServerInstalled || (isServerInstalledResult is Result.Error)) {
                 torServerStatus.emit(TorrserverStatus.NOT_INSTALLED)
+                Logger.i("Server file not exist")
                 return Result.Error(TorrserverError.Server.FileNotExist("Server file not exist"))
             }
 
@@ -66,11 +69,13 @@ internal class TorrserverCommandsImpl(
             isStartedServer = isServerStarted().successResult() ?: false
             if (isStartedServer) {
                 torServerStatus.emit(TorrserverStatus.STARTED)
+                Logger.i("Server is started")
                 startMonitorServerStatus()
                 return Result.Success(Unit)
             }
 
             torServerStatus.emit(TorrserverStatus.NOT_STARTED)
+            Logger.e("Server not started")
             return Result.Error(TorrserverError.Server.NotStarted)
         } catch (e: Exception) {
             torServerStatus.emit(TorrserverStatus.NOT_STARTED)
