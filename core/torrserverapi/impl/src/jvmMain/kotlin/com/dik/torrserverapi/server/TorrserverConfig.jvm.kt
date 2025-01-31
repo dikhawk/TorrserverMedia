@@ -37,8 +37,8 @@ internal actual object TorrserverConfig : ServerConfig {
     private fun backUpTorrServerFileName() = "old_${torrServerFileName}"
 
     private fun getConfigDirectory(): String = when (platformName()) {
-        Platform.LINUX -> System.getenv("XDG_CONFIG_HOME")
-        Platform.WINDOWS -> System.getenv("LOCALAPPDATA")
+        Platform.LINUX -> System.getenv("XDG_CONFIG_HOME") ?: System.getProperty("user.home")
+        Platform.WINDOWS -> System.getenv("LOCALAPPDATA") ?: System.getProperty("user.home")
         Platform.MAC -> "${System.getProperty("user.home")}/Library/Application Support"
         else -> throw UnsupportedOperationException("Platform not supported ${platformName()}")
     }
