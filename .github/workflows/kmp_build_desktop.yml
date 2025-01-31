@@ -37,7 +37,7 @@ jobs:
         run: ./gradlew generateBuildKonfig
 
       - name: Build AppImage
-        run: ./create_appImage.sh
+        run: sh create_appImage.sh
 
 #on:
 #  push:
