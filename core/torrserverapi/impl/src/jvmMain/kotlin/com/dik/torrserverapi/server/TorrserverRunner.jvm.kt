@@ -52,7 +52,12 @@ internal actual class TorrserverRunnerImpl(
         if (pathToServerFile.isEmpty()) return
 
         withContext(appDispatchers.defaultDispatcher()) {
-            KmpCmdRunner.run(pathToServerFile)
+            val serverFile = File(pathToServerFile)
+            if (!serverFile.exists()) throw RuntimeException("Server file not found")
+
+            val startServerCommand = "cd \"${serverFile.parent}\" && start /MIN .\\${serverFile.name} -k"
+
+            KmpCmdRunner.run(startServerCommand)
         }
     }
 }
