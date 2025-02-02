@@ -1,0 +1,64 @@
+name: KMP build for Windows
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Create Local properties
+        run: |
+          echo "MOVIEDB_API=${{ secrets.MOVIEDB_API }}" > local.properties
+
+      - name: Generate BuildKonfig
+        run: gradlew.bat generateBuildKonfig
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+      - name: Create Zip Archive
+        run: |
+          cd "\composeApp\build\compose\binaries\main\app\"
+          zip -r TorrServerMedia_windows_x86_64.zip com.dik.torrservermedia.desktopApp
+          
+
+      - name: Upload Release File
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: \composeApp\build\compose\binaries\main\app\TorrServerMedia_windows_x86_64.zip
+          asset_name: TorrServerMedia_windows_x86_64.zip
+          asset_content_type: application/octet-stream
