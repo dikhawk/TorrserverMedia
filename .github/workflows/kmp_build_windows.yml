@@ -58,7 +58,9 @@ jobs:
 
       - name: Get latest tag
         id: get_tag
-        run: echo "TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+        run: |
+          git fetch --tags --force
+          echo "TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
 
       - name: Upload Windows Artifact to Release
         uses: softprops/action-gh-release@v2

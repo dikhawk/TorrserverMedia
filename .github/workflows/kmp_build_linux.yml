@@ -2,7 +2,7 @@ name: KMP build for Linux
 
 on:
   workflow_run:
-    workflows: ["Create Release"]
+    workflows: [ "Create Release" ]
     types:
       - completed
 
@@ -42,7 +42,9 @@ jobs:
 
       - name: Get latest tag
         id: get_tag
-        run: echo "TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+        run: |
+          git fetch --tags --force
+          echo "TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
 
       - name: Upload Linux Artifact to Release
         uses: softprops/action-gh-release@v2
