@@ -34,7 +34,7 @@ jobs:
           echo "MOVIEDB_API=${{ secrets.MOVIEDB_API }}" > local.properties
 
       - name: Generate BuildKonfig
-        run: gradlew.bat generateBuildKonfig
+        run: ./gradlew generateBuildKonfig
 
       - name: Create Release
         id: create_release
