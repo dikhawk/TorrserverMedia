@@ -6,20 +6,25 @@ on:
       - 'v*'
 
 jobs:
-  create_release:
+  create-release:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
+          body: |
+            Release TorServerMedia.
+
+      - name: Set Release ID as output
+        id: set_release_id
+        run: echo "::set-output name=release_id::${{ steps.create_release.outputs.id }}"
+    outputs:
+      release_id: ${{ steps.set_release_id.outputs.release_id }}
