@@ -2,7 +2,7 @@ name: KMP build for Windows
 
 on:
   workflow_run:
-    workflows: ["Create Release"]
+    workflows: ["Create Release1"]
     types:
       - completed
 
@@ -57,7 +57,7 @@ jobs:
 #          prerelease: false
 
       - name: Upload Windows Artifact to Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: \composeApp\build\compose\binaries\main\app\TorrServerMedia_windows_x86_64.zip
           token: ${{ secrets.GH_TOKEN }}
