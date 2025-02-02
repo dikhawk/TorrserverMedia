@@ -36,6 +36,14 @@ jobs:
       - name: Generate BuildKonfig
         run: ./gradlew generateBuildKonfig
 
+      - name: Build Distributable
+        run: ./gradlew createDistributable
+
+      - name: Create Zip Archive
+        run: |
+          cd "\composeApp\build\compose\binaries\main\app\"
+          zip -r TorrServerMedia_windows_x86_64.zip com.dik.torrservermedia.desktopApp
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -46,12 +54,6 @@ jobs:
           release_name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
-
-      - name: Create Zip Archive
-        run: |
-          cd "\composeApp\build\compose\binaries\main\app\"
-          zip -r TorrServerMedia_windows_x86_64.zip com.dik.torrservermedia.desktopApp
-          
 
       - name: Upload Release File
         uses: actions/upload-release-asset@v1
