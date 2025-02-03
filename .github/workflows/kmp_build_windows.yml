@@ -42,7 +42,7 @@ jobs:
 
       - name: Create Zip Archive
         run: |
-          cd "\composeApp\build\compose\binaries\main\app\"
+          cd "composeApp/build/compose/binaries/main/app/"
           zip -r TorrServerMedia_windows_x86_64.zip com.dik.torrservermedia.desktopApp
 
       - name: Get Release Upload URL
@@ -63,16 +63,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           upload_url: ${{ steps.get_upload_url.outputs.upload_url }}
-          asset_path: \composeApp\build\compose\binaries\main\app\TorrServerMedia_windows_x86_64.zip
+          asset_path: composeApp/build/compose/binaries/main/app/TorrServerMedia_windows_x86_64.zip
           asset_name: TorrServerMedia_windows_x86_64.zip
           asset_content_type: application/octet-stream
-
-#      - name: Upload Release File
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.yml.outputs.upload_url }}
-#          asset_path: \composeApp\build\compose\binaries\main\app\TorrServerMedia_windows_x86_64.zip
-#          asset_name: TorrServerMedia_windows_x86_64.zip
-#          asset_content_type: application/octet-stream
