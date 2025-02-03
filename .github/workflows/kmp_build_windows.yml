@@ -43,7 +43,7 @@ jobs:
       - name: Create Zip Archive
         run: |
           cd "composeApp/build/compose/binaries/main/app/"
-          zip -r TorrServerMedia_windows_x86_64.zip com.dik.torrservermedia.desktopApp
+          powershell Compress-Archive -Path com.dik.torrservermedia.desktopApp -DestinationPath TorrServerMedia_windows_x86_64.zip
 
       - name: Get Release Upload URL
         id: get_upload_url
