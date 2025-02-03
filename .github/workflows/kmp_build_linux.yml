@@ -40,15 +40,11 @@ jobs:
       - name: Build AppImage
         run: sh create_appImage.sh
 
-      - name: Build
-        run: echo ${{ github.sha }} > Release.txt
-      - name: Test
-        run: cat Release.txt
       - name: Release
         uses: softprops/action-gh-release@v2
-#        if: startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: Release.txt
+          files: ./build/TorrServerMedia_x86_64.AppImage
 
 #      - name: Upload to Release
 #        uses: actions/upload-release-asset@v1
