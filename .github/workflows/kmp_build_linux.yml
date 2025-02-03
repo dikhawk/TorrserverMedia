@@ -49,4 +49,3 @@ jobs:
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          UPLOAD_URL: $(cat upload_url.txt)
