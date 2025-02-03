@@ -40,18 +40,6 @@ jobs:
       - name: Build AppImage
         run: sh create_appImage.sh
 
-      - name: Debug Release API Response
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const response = await github.rest.repos.getLatestRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo
-            });
-            console.log(response);
-
-
       - name: Get Release Upload URL
         id: get_upload_url
         uses: actions/github-script@v7
