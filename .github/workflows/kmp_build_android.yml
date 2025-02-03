@@ -38,7 +38,7 @@ jobs:
         run: ./gradlew generateBuildKonfig
 
       - name: Decode Keystore
-        run: echo "$KEYSTORE" | base64 --decode > my-release-key.keystore
+        run: echo "${{ secrets.KEYSTORE }}" | base64 --decode > composeApp/my-release-key.keystore
 
       - name: Generate Signed apk
         run: ./gradlew assembleRelease
