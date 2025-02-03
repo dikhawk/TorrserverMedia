@@ -139,8 +139,6 @@ android {
         create("release") {
             val properties = gradleLocalProperties(rootDir, providers)
 
-            println("KEYSTORE_FILE: ${properties.getProperty("KEYSTORE_FILE") as String}")
-
             storeFile = file(properties.getProperty("KEYSTORE_FILE") as String)
             storePassword = properties.getProperty("KEYSTORE_PASSWORD") as String
             keyAlias = properties.getProperty("KEY_ALIAS") as String
