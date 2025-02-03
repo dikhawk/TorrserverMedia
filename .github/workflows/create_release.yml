@@ -16,10 +16,11 @@ jobs:
         id: read_changelog
         run: |
           {
-            echo "CHANGELOG<<EOF"
+            echo 'CHANGELOG<<EOF'
             cat CHANGELOG.md
-            echo "EOF"
-          } >> $GITHUB_ENV
+            echo 'EOF'
+          } >> "$GITHUB_ENV"
+        shell: bash
 
       - name: Create Release
         id: create_release
