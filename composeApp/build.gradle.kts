@@ -1,4 +1,6 @@
+
 import com.android.build.api.dsl.ManagedVirtualDevice
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
@@ -132,6 +134,25 @@ android {
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+    signingConfigs {
+        create("release") {
+            val properties = gradleLocalProperties(rootDir, providers)
+
+            println("KEYSTORE_FILE: ${properties.getProperty("KEYSTORE_FILE") as String}")
+
+            storeFile = file(properties.getProperty("KEYSTORE_FILE") as String)
+            storePassword = properties.getProperty("KEYSTORE_PASSWORD") as String
+            keyAlias = properties.getProperty("KEY_ALIAS") as String
+            keyPassword = properties.getProperty("KEY_PASSWORD") as String
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("release")
+            isShrinkResources = true
+            isMinifyEnabled = true
+        }
     }
     sourceSets["main"].apply {
         manifest.srcFile("src/androidMain/AndroidManifest.xml")
