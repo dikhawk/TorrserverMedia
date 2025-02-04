@@ -89,14 +89,17 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
                 navigationIcon = { AppIconButtonArrowBack { component.onClickBack() } },
                 title = stringResource(Res.string.main_app_bar_title),
                 actions = {
-                    IconButton(onClick = { component.onClickSave() }, modifier = modifier) {
-                        Icon(
-                            imageVector = vectorResource(Res.drawable.ic_save_24),
-                            contentDescription = null,
-                        )
-                    }
-                    if (uiState.value.isShowProgressBar)
+                    if (uiState.value.isShowProgressBar) {
                         CircularProgressIndicator(modifier = modifier.height(24.dp).width(24.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                    } else {
+                        IconButton(onClick = { component.onClickSave() }, modifier = modifier) {
+                            Icon(
+                                imageVector = vectorResource(Res.drawable.ic_save_24),
+                                contentDescription = null,
+                            )
+                        }
+                    }
                 }
             )
         }
