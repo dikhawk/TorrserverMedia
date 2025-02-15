@@ -22,6 +22,7 @@ internal class DefaultTorrserverBarComponent(
     private val dispatchers: AppDispatchers,
     private val componentScope: CoroutineScope,
     private val localization: LocalizationResource,
+    private val torrServerStarter: TorrServerStarterPlatform
 ) : TorrserverBarComponent, ComponentContext by context {
 
     private val _uiState = MutableStateFlow(TorrserverBarState())
@@ -33,41 +34,36 @@ internal class DefaultTorrserverBarComponent(
         componentScope.launch(dispatchers.defaultDispatcher()) {
             torrserverCommands.installServer().collect { restult ->
                 when (val res = restult) {
-                    is ResultProgress.Loading -> _uiState.update {
-                        it.copy(
-                            isShowProgress = true,
-                            progressValue = res.progress.progress.toFloat(),
-                            serverStatusText = localization.getString(Res.string.main_torrserver_bar_msg_installing_torrserver),
-                        )
-                    }
-
-                    is ResultProgress.Error -> _uiState.update {
-                        it.copy(isShowProgress = false, error = res.error.toMessage())
-                    }
-
-                    is ResultProgress.Success -> {
-                        _uiState.update {
-                            it.copy(
-                                isShowProgress = false,
-                                isServerInstalled = true
-                            )
-                        }
-                        startTorserver()
-                    }
+                    is ResultProgress.Loading -> showProgress(res.progress.progress.toFloat())
+                    is ResultProgress.Error -> showError(res.error)
+                    is ResultProgress.Success -> serverInstalled()
                 }
             }
         }
     }
 
-    override fun onClickStartServer() {
-        componentScope.launch(dispatchers.defaultDispatcher()) {
-            startTorserver()
+    private suspend fun showProgress(progress: Float) {
+        _uiState.update {
+            it.copy(
+                isShowProgress = true,
+                progressValue = progress,
+                serverStatusText = localization.getString(Res.string.main_torrserver_bar_msg_installing_torrserver),
+            )
         }
     }
 
-    private fun showError(error: TorrserverError) {
-        _uiState.update { it.copy(serverStatusText = error.toString()) }
+    private suspend fun showError(error: TorrserverError) {
+        _uiState.update { it.copy(isShowProgress = false, error = error.toMessage(localization)) }
+    }
+
+    private suspend fun serverInstalled() {
+        _uiState.update { it.copy(isShowProgress = false, isServerInstalled = true) }
+        torrServerStarter.startTorrServer()
+    }
+
+    override fun onClickStartServer() {
+        componentScope.launch(dispatchers.defaultDispatcher()) {
+            torrServerStarter.startTorrServer()
+        }
     }
 }
-
-internal expect suspend fun startTorserver()
