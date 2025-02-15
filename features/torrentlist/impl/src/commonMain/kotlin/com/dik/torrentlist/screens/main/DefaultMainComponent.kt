@@ -21,6 +21,7 @@ import com.dik.torrentlist.screens.main.appbar.MainAppBarComponent
 import com.dik.torrentlist.screens.main.list.DefaultTorrentListComponent
 import com.dik.torrentlist.screens.main.list.TorrentListComponent
 import com.dik.torrentlist.screens.main.torrserverbar.DefaultTorrserverBarComponent
+import com.dik.torrentlist.screens.main.torrserverbar.TorrServerStarterPlatform
 import com.dik.torrentlist.screens.main.torrserverbar.TorrserverBarComponent
 import com.dik.torrserverapi.ContentFile
 import com.dik.torrserverapi.model.Torrent
@@ -50,6 +51,7 @@ internal class DefaultMainComponent(
     private val tvSeasonTmdb: TvSeasonsTheMovieDbApi = inject(),
     private val appSettings: AppSettings = inject(),
     private val localization: LocalizationResource = inject(),
+    private val torrServerStarter: TorrServerStarterPlatform = inject(),
     private val openSettingsScreen: () -> Unit = {},
     private val onClickPlayFile: suspend (contentFile: ContentFile) -> Unit,
     private val navigateToDetails: (torrentHash: String, poster: String) -> Unit
@@ -83,6 +85,7 @@ internal class DefaultMainComponent(
             dispatchers = dispatchers,
             componentScope = componentScope,
             localization = localization,
+            torrServerStarter = torrServerStarter
         )
 
     override val torrentListComponent: TorrentListComponent = DefaultTorrentListComponent(
