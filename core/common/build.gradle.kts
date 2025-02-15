@@ -38,6 +38,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(compose.runtime)
+                implementation(compose.components.resources)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.decompose.core)
                 implementation(libs.compose.adaptive)

@@ -3,6 +3,7 @@ package com.dik.torrservermedia.di
 import android.content.Context
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
+import com.dik.common.i18n.LocalizationResource
 import com.dik.common.platform.PlatformEvents
 import com.dik.common.platform.WindowAdaptiveClient
 import com.dik.settings.SettingsFeatureApi
@@ -21,4 +22,5 @@ internal actual fun torrentListDependencies() = object : TorrentListDependencies
     override fun torrserverServiceManager(): TorrserverServiceManager = inject()
     override fun platformEvents(): PlatformEvents = inject()
     override fun windowAdaptive(): WindowAdaptiveClient = inject()
+    override fun localizationResource(): LocalizationResource = inject()
 }

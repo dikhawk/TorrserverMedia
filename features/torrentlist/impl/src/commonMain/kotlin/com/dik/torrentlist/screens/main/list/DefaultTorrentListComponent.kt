@@ -9,6 +9,7 @@ import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.TorrentApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
@@ -28,10 +29,11 @@ internal class DefaultTorrentListComponent(
 
     private val _uiState: MutableStateFlow<TorrentListState> = MutableStateFlow(TorrentListState())
     override val uiState: StateFlow<TorrentListState> = _uiState.asStateFlow()
+    private var torrentListObserver: Job? = null
 
     init {
         componentScope.launch {
-            torrentsList()
+            observeTorrentList()
         }
     }
 
@@ -58,8 +60,9 @@ internal class DefaultTorrentListComponent(
         }
     }
 
-    private fun torrentsList() {
-        componentScope.launch {
+    private fun observeTorrentList() {
+        torrentListObserver?.cancel()
+        torrentListObserver = componentScope.launch {
             while (true) {
                 when(val result = torrentApi.getTorrents()) {
                     is Result.Error -> _uiState.update {
@@ -73,5 +76,9 @@ internal class DefaultTorrentListComponent(
                 delay(3000)
             }
         }
+    }
+
+    fun stopObservingTorrentList() {
+        torrentListObserver?.cancel()
     }
 }

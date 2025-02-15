@@ -3,6 +3,7 @@ package com.dik.torrentlist.screens.components.bufferization
 import com.arkivanov.decompose.ComponentContext
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
+import com.dik.common.i18n.LocalizationResource
 import com.dik.common.utils.successResult
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
@@ -26,7 +27,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.main_bufferization_season_and_episode
 
@@ -38,6 +38,7 @@ internal class DefaultBufferizationComponent(
     private val torrentApi: TorrentApi,
     private val searchTheMovieDbApi: SearchTheMovieDbApi,
     private val tvEpisodesTheMovieDbApi: TvEpisodesTheMovieDbApi,
+    private val localization: LocalizationResource,
     private val onClickDismiss: () -> Unit,
 ) : BufferizationComponent, ComponentContext by componentContext {
 
@@ -186,7 +187,7 @@ internal class DefaultBufferizationComponent(
     }
 
     private suspend fun prepareTitleSecond(seasonNumber: Int, episodeNumber: Int): String {
-        return getString(Res.string.main_bufferization_season_and_episode).format(
+        return localization.getString(Res.string.main_bufferization_season_and_episode).format(
             seasonNumber, episodeNumber
         )
     }

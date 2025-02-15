@@ -39,7 +39,8 @@ object KoinModules {
             theMovieDbApiModule,
             platformModule(),
             platformEventsModule(),
-            windowAdaptiveModule
+            windowAdaptiveModule,
+            commonModule
         )
     }
 }

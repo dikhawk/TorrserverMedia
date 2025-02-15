@@ -2,6 +2,7 @@ package com.dik.torrentlist.screens.main.appbar
 
 import com.arkivanov.decompose.ComponentContext
 import com.dik.common.AppDispatchers
+import com.dik.common.i18n.LocalizationResource
 import com.dik.torrentlist.screens.main.AddMagnetLink
 import com.dik.torrentlist.screens.main.AddTorrentFile
 import com.dik.torrentlist.screens.main.appbar.utils.defaultFilePickerDirectory
@@ -19,9 +20,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.add_torrent_dialog_title
+import torrservermedia.features.torrentlist.impl.generated.resources.main_app_bar_error_server_not_started
 
 internal class DefaultMainAppBarComponent(
     context: ComponentContext,
@@ -30,6 +31,7 @@ internal class DefaultMainAppBarComponent(
     private val addTorrentFile: AddTorrentFile,
     private val addMagnetLink: AddMagnetLink,
     private val torrserverCommands: TorrserverCommands,
+    private val localization: LocalizationResource,
     private val openSettingsScreen: () -> Unit,
 ) : MainAppBarComponent, ComponentContext by context {
 
@@ -49,7 +51,7 @@ internal class DefaultMainAppBarComponent(
             val file = FileKit.pickFile(
                 type = fileType,
                 mode = PickerMode.Single,
-                title = getString(Res.string.add_torrent_dialog_title),
+                title = localization.getString(Res.string.add_torrent_dialog_title),
                 initialDirectory = defaultFilePickerDirectory()
             )
             val filePath = file?.absolutePath(dispatchers.ioDispatcher())
@@ -67,11 +69,14 @@ internal class DefaultMainAppBarComponent(
     }
 
     override fun addLink() {
-        componentScope.launch(dispatchers.ioDispatcher()) {
+        componentScope.launch {
+            if (_uiState.value.link.isEmpty()) return@launch
+
             val result = addMagnetLink.invoke(_uiState.value.link)
 
             if (!result.error.isNullOrEmpty()) {
                 _uiState.update { it.copy(errorLink = result.error) }
+                return@launch
             }
 
             dismissDialog()
@@ -92,7 +97,15 @@ internal class DefaultMainAppBarComponent(
     }
 
     override fun openSettingsScreen() {
-        if (!_uiState.value.isServerStarted) return
+        if (!_uiState.value.isServerStarted) {
+            componentScope.launch {
+                _uiState.update {
+                    it.copy(error = localization.getString(Res.string.main_app_bar_error_server_not_started))
+                }
+            }
+
+            return
+        }
 
         openSettingsScreen.invoke()
     }
@@ -100,7 +113,6 @@ internal class DefaultMainAppBarComponent(
     private fun observeServerStatus() {
         componentScope.launch {
             torrserverCommands.serverStatus().collect { status ->
-
                 _uiState.update { it.copy(isServerStarted = status == TorrserverStatus.STARTED) }
             }
         }

@@ -4,10 +4,13 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
+import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
+import com.dik.common.i18n.LocalizationResource
 import com.dik.common.platform.WindowAdaptiveClient
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
+import com.dik.themoviedb.TvSeasonsTheMovieDbApi
 import com.dik.torrentlist.di.inject
 import com.dik.torrentlist.screens.components.bufferization.BufferizationComponent
 import com.dik.torrentlist.screens.components.bufferization.DefaultBufferizationComponent
@@ -44,6 +47,9 @@ internal class DefaultMainComponent(
     private val addMagnetLink: AddMagnetLink = inject(),
     private val tvEpisodesTmdb: TvEpisodesTheMovieDbApi = inject(),
     private val windowAdaptiveClient: WindowAdaptiveClient = inject(),
+    private val tvSeasonTmdb: TvSeasonsTheMovieDbApi = inject(),
+    private val appSettings: AppSettings = inject(),
+    private val localization: LocalizationResource = inject(),
     private val openSettingsScreen: () -> Unit = {},
     private val onClickPlayFile: suspend (contentFile: ContentFile) -> Unit,
     private val navigateToDetails: (torrentHash: String, poster: String) -> Unit
@@ -66,7 +72,8 @@ internal class DefaultMainComponent(
         openSettingsScreen = openSettingsScreen,
         torrserverCommands = torrserverCommands,
         addTorrentFile = addTorrentFile,
-        addMagnetLink = addMagnetLink
+        addMagnetLink = addMagnetLink,
+        localization = localization
     )
 
     override val torrserverBarComponent: TorrserverBarComponent =
@@ -74,7 +81,8 @@ internal class DefaultMainComponent(
             context = childContext("torrserver_bar"),
             torrserverCommands = torrserverCommands,
             dispatchers = dispatchers,
-            componentScope = componentScope
+            componentScope = componentScope,
+            localization = localization,
         )
 
     override val torrentListComponent: TorrentListComponent = DefaultTorrentListComponent(
@@ -90,10 +98,11 @@ internal class DefaultMainComponent(
         val windowWidthSizeClass = windowAdaptiveFlow.value
             ?.windowSizeClass?.windowWidthSizeClass ?: return
 
-        when(windowWidthSizeClass) {
+        when (windowWidthSizeClass) {
             WindowWidthSizeClass.COMPACT -> {
                 navigateToDetails(torrent.hash, torrent.poster)
             }
+
             else -> {
                 detailsComponent.showDetails(torrent.hash)
                 _uiState.update { it.copy(isShowDetails = true) }
@@ -110,6 +119,13 @@ internal class DefaultMainComponent(
     override val detailsComponent =
         DefaultDetailsComponent(
             componentContext = childContext(("details")),
+            dispatchers = dispatchers,
+            torrentApi = torrentApi,
+            appSettings = appSettings,
+            searchingTmdb = searchingTmdb,
+            tvSeasonTmdb = tvSeasonTmdb,
+            tvEpisodesTmdb = tvEpisodesTmdb,
+            localization = localization,
             screenFormat = DetailsComponentScreenFormat.PANE,
             onClickPlayFile = { torrent, contentFile ->
                 _uiState.update { it.copy(isShowDetails = true, isShowBufferization = true) }
@@ -129,7 +145,12 @@ internal class DefaultMainComponent(
             torrentApi = torrentApi,
             searchTheMovieDbApi = searchingTmdb,
             tvEpisodesTheMovieDbApi = tvEpisodesTmdb,
-            onClickDismiss = { _uiState.update { it.copy(isShowBufferization = false) } }
+            localization = localization,
+            onClickDismiss = {
+                _uiState.update {
+                    it.copy(isShowBufferization = false)
+                }
+            }
         )
 
     private fun observeServerStatus() {
@@ -150,7 +171,6 @@ internal class DefaultMainComponent(
                 tries++
 
                 if (_uiState.value.serverStatus == TorrserverStatus.STARTED) {
-                    println("Tries Server Status Success")
                     val result = addTorrentFile.invoke(pathToTorrent)
                     if (result.torrent != null) {
                         showDetails(result.torrent)

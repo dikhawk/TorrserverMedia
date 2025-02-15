@@ -2,9 +2,11 @@ package com.dik.torrentlist.screens.details
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
+import com.dik.common.i18n.LocalizationResource
 import com.dik.common.utils.successResult
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
@@ -25,6 +27,7 @@ import com.dik.videofilenameparser.parseFileNameBase
 import com.dik.videofilenameparser.parseFileNameTvShow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,7 +45,8 @@ internal class DefaultDetailsComponent(
     private val searchingTmdb: SearchTheMovieDbApi = inject(),
     private val tvSeasonTmdb: TvSeasonsTheMovieDbApi = inject(),
     private val tvEpisodesTmdb: TvEpisodesTheMovieDbApi = inject(),
-    private val screenFormat: DetailsComponentScreenFormat,
+    private val screenFormat: DetailsComponentScreenFormat = inject(),
+    private val localization: LocalizationResource = inject(),
     private val onClickPlayFile: suspend (torrent: Torrent, contentFile: ContentFile) -> Unit,
     private val onClickBack: () -> Unit = {}
 ) : ComponentContext by componentContext, DetailsComponent {
@@ -51,6 +55,12 @@ internal class DefaultDetailsComponent(
     private val _uiState = MutableStateFlow(DetailsState())
     override val uiState: StateFlow<DetailsState> = _uiState.asStateFlow()
     private var selectedTorrent: Torrent? = null
+
+    init {
+        lifecycle.doOnDestroy {
+            componentScope.cancel()
+        }
+    }
 
     override val contentFilesComponent = DefaultContentFilesComponent(
         componentContext = childContext("content_files"),
@@ -89,6 +99,7 @@ internal class DefaultDetailsComponent(
         torrentApi = torrentApi,
         searchTheMovieDbApi = searchingTmdb,
         tvEpisodesTheMovieDbApi = tvEpisodesTmdb,
+        localization = localization,
         onClickDismiss = { _uiState.update { it.copy(isShowBufferization = false) } }
     )
 

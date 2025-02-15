@@ -3,6 +3,7 @@ package com.dik.torrentlist.screens.main.torrserverbar
 import com.arkivanov.decompose.ComponentContext
 import com.dik.common.AppDispatchers
 import com.dik.common.ResultProgress
+import com.dik.common.i18n.LocalizationResource
 import com.dik.torrentlist.error.toMessage
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.server.TorrserverCommands
@@ -12,7 +13,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.main_torrserver_bar_msg_installing_torrserver
 
@@ -21,6 +21,7 @@ internal class DefaultTorrserverBarComponent(
     private val torrserverCommands: TorrserverCommands,
     private val dispatchers: AppDispatchers,
     private val componentScope: CoroutineScope,
+    private val localization: LocalizationResource,
 ) : TorrserverBarComponent, ComponentContext by context {
 
     private val _uiState = MutableStateFlow(TorrserverBarState())
@@ -36,7 +37,7 @@ internal class DefaultTorrserverBarComponent(
                         it.copy(
                             isShowProgress = true,
                             progressValue = res.progress.progress.toFloat(),
-                            serverStatusText = getString(Res.string.main_torrserver_bar_msg_installing_torrserver),
+                            serverStatusText = localization.getString(Res.string.main_torrserver_bar_msg_installing_torrserver),
                         )
                     }
 
@@ -51,7 +52,6 @@ internal class DefaultTorrserverBarComponent(
                                 isServerInstalled = true
                             )
                         }
-//                        torrserverCommands.startServer()
                         startTorserver()
                     }
                 }
@@ -62,37 +62,8 @@ internal class DefaultTorrserverBarComponent(
     override fun onClickStartServer() {
         componentScope.launch(dispatchers.defaultDispatcher()) {
             startTorserver()
-/*            val result = torrserverCommands.startServer()
-            _uiState.update { it.copy(isServerStarted = result is Result.Success) }
-            checkServerIsInstalled()*/
         }
     }
-
-/*    private fun checkServerIsInstalled() {
-        componentScope.launch {
-            val isInstalled = isServerInstalled()
-            val isStarted = isServerStarted()
-            _uiState.update {
-                it.copy(
-                    serverStatusText = getString(Res.string.main_torrserver_bar_msg_server_not_installed),
-                    isServerInstalled = isInstalled,
-                    isServerStarted = isStarted
-                )
-            }
-        }
-    }*/
-
-/*    private suspend fun isServerInstalled(): Boolean {
-        val result = torrserverCommands.isServerInstalled()
-
-        return result.successResult(::showError) ?: false
-    }
-
-    private suspend fun isServerStarted(): Boolean {
-        val result = torrserverCommands.isServerStarted()
-
-        return result.successResult(::showError) ?: false
-    }*/
 
     private fun showError(error: TorrserverError) {
         _uiState.update { it.copy(serverStatusText = error.toString()) }

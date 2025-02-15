@@ -2,6 +2,7 @@ package com.dik.torrentlist.di
 
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
+import com.dik.common.i18n.LocalizationResource
 import com.dik.common.platform.PlatformEvents
 import com.dik.common.platform.WindowAdaptiveClient
 import com.dik.moduleinjector.BaseDependencies
@@ -18,4 +19,5 @@ actual interface TorrentListDependencies : BaseDependencies {
     actual fun theMovieDbApi(): TheMovieDbApi
     actual fun platformEvents(): PlatformEvents
     actual fun windowAdaptive(): WindowAdaptiveClient
+    actual fun localizationResource(): LocalizationResource
 }
