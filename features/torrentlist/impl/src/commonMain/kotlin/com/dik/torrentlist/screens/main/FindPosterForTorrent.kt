@@ -58,13 +58,6 @@ internal class FindPosterForTorrent(
     }
 }
 
-internal data class PosterResult(
-    val error: String? = null,
-    val thumbnail300: String? = null,
-    val thumbnail500: String? = null,
-    val thumbnailOriginal: String? = null
-)
-
 internal data class Poster(
     val poster300: String? = null,
     val poster500: String? = null,
