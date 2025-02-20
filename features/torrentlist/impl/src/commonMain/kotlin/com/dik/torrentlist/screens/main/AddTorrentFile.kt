@@ -7,7 +7,6 @@ import com.dik.torrentlist.error.toMessage
 import com.dik.torrentlist.utils.FileUtils
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.TorrentApi
-import org.jetbrains.compose.resources.getString
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.main_torrent_list_add_torrent_file_not_exist
 
@@ -19,7 +18,7 @@ internal class AddTorrentFile(
 ) {
     suspend operator fun invoke(path: String): AddTorrentResult {
         if (!fileUtils.isFileExist(path)) return AddTorrentResult(
-            error = getString(Res.string.main_torrent_list_add_torrent_file_not_exist)
+            error = localization.getString(Res.string.main_torrent_list_add_torrent_file_not_exist)
         )
 
         return when (val result = torrentApi.addTorrent(path)) {
