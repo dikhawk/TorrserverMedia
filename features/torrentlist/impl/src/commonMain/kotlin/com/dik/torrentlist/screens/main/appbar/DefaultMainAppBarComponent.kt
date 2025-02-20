@@ -35,7 +35,13 @@ internal class DefaultMainAppBarComponent(
     }
 
     override fun openFilePickTorrent() {
-        if (!_uiState.value.isServerStarted) return
+        if (!_uiState.value.isServerStarted) {
+            componentScope.launch {
+                _uiState.update { it.copy(error = localization.getString(Res.string.main_app_bar_error_server_not_started)) }
+            }
+
+            return
+        }
 
         _uiState.update { it.copy(action = MainAppBarAction.ShowFilePicker) }
     }
@@ -49,7 +55,13 @@ internal class DefaultMainAppBarComponent(
     }
 
     override fun openAddLinkDialog() {
-        if (!_uiState.value.isServerStarted) return
+        if (!_uiState.value.isServerStarted) {
+            componentScope.launch {
+                _uiState.update { it.copy(error = localization.getString(Res.string.main_app_bar_error_server_not_started)) }
+            }
+
+            return
+        }
 
         _uiState.update { it.copy(action = MainAppBarAction.ShowAddLinkDialog) }
     }
