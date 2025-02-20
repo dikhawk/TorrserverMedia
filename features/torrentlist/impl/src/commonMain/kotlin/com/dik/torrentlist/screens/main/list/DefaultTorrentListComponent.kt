@@ -4,7 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.dik.common.Result
 import com.dik.torrentlist.screens.main.AddTorrentFile
 import com.dik.torrentlist.screens.main.AddTorrentResult
-import com.dik.torrentlist.utils.uriToPath
+import com.dik.torrentlist.utils.FileUtils
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.TorrentApi
 import kotlinx.coroutines.CoroutineScope
@@ -25,6 +25,7 @@ internal class DefaultTorrentListComponent(
     private val torrentApi: TorrentApi,
     private val addTorrentFile: AddTorrentFile,
     private val componentScope: CoroutineScope,
+    private val fileUtils: FileUtils
 ) : ComponentContext by context, TorrentListComponent {
 
     private val _uiState: MutableStateFlow<TorrentListState> = MutableStateFlow(TorrentListState())
@@ -52,7 +53,7 @@ internal class DefaultTorrentListComponent(
         componentScope.launch {
             val tasks = mutableListOf<Deferred<AddTorrentResult>>()
             paths.forEach { uri ->
-                val path = uri.uriToPath()
+                val path = fileUtils.uriToPath(uri)
                 tasks.add(async { addTorrentFile.invoke(path) })
             }
             tasks.awaitAll()

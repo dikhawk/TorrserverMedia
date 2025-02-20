@@ -22,7 +22,7 @@ internal class AddMagnetLink(
             return AddMagnetLinkResult(error = localization.getString(Res.string.main_add_dialog_error_invalid_magnet))
 
         return when (val result = magnetApi.addMagnet(magnetUrl = magnetLink)) {
-            is Result.Error -> AddMagnetLinkResult(error = result.error.toMessage())
+            is Result.Error -> AddMagnetLinkResult(error = result.error.toMessage(localization))
             is Result.Success -> {
                 var torrent = result.data
                 val poster = findThumbnailForTorrent.invoke(result.data).successResult()

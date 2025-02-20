@@ -7,13 +7,15 @@ internal interface MainAppBarComponent {
 
     val uiState: StateFlow<MainAppBarState>
 
-    fun onClickAddTorrent()
+    fun openFilePickTorrent()
+    fun onFilePicked(path: String)
     fun openAddLinkDialog()
     fun addLink()
     fun dismissDialog()
     fun onLinkChanged(value: String)
     fun clearLink()
     fun openSettingsScreen()
+    fun dismissAction()
 }
 
 @Stable
@@ -27,5 +29,6 @@ internal data class MainAppBarState(
 
 internal sealed interface MainAppBarAction {
     data object ShowAddLinkDialog : MainAppBarAction
+    data object ShowFilePicker : MainAppBarAction
     data object Undefined: MainAppBarAction
 }

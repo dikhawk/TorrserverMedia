@@ -1,5 +1,7 @@
 package com.dik.torrentlist.utils
 
-expect fun String.uriToPath(): String
-
-expect fun String.isFileExist(): Boolean
+internal interface FileUtils {
+    suspend fun uriToPath(uri: String): String
+    suspend fun isFileExist(path: String): Boolean
+    suspend fun absolutPath(path: String): String
+}

@@ -57,9 +57,7 @@ internal class DefaultDetailsComponent(
     private var selectedTorrent: Torrent? = null
 
     init {
-        lifecycle.doOnDestroy {
-            componentScope.cancel()
-        }
+        lifecycle.doOnDestroy { componentScope.cancel() }
     }
 
     override val contentFilesComponent = DefaultContentFilesComponent(
@@ -89,7 +87,8 @@ internal class DefaultDetailsComponent(
         componentContext = childContext("torrent_statistics"),
         dispatchers = dispatchers,
         componentScope = componentScope,
-        torrrentApi = torrentApi
+        torrrentApi = torrentApi,
+        localization = localization,
     )
 
     override val bufferizationComponent: BufferizationComponent = DefaultBufferizationComponent(

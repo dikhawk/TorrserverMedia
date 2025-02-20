@@ -23,6 +23,7 @@ import com.dik.torrentlist.screens.main.list.TorrentListComponent
 import com.dik.torrentlist.screens.main.torrserverbar.DefaultTorrserverBarComponent
 import com.dik.torrentlist.screens.main.torrserverbar.TorrServerStarterPlatform
 import com.dik.torrentlist.screens.main.torrserverbar.TorrserverBarComponent
+import com.dik.torrentlist.utils.FileUtils
 import com.dik.torrserverapi.ContentFile
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.model.TorrserverStatus
@@ -52,6 +53,7 @@ internal class DefaultMainComponent(
     private val appSettings: AppSettings = inject(),
     private val localization: LocalizationResource = inject(),
     private val torrServerStarter: TorrServerStarterPlatform = inject(),
+    private val fileUtils: FileUtils = inject(),
     private val openSettingsScreen: () -> Unit = {},
     private val onClickPlayFile: suspend (contentFile: ContentFile) -> Unit,
     private val navigateToDetails: (torrentHash: String, poster: String) -> Unit
@@ -69,13 +71,13 @@ internal class DefaultMainComponent(
 
     override val mainAppBarComponent: MainAppBarComponent = DefaultMainAppBarComponent(
         context = childContext("main_app_bar"),
-        dispatchers = dispatchers,
         componentScope = componentScope,
         openSettingsScreen = openSettingsScreen,
         torrserverCommands = torrserverCommands,
         addTorrentFile = addTorrentFile,
         addMagnetLink = addMagnetLink,
-        localization = localization
+        localization = localization,
+        fileUtils = fileUtils
     )
 
     override val torrserverBarComponent: TorrserverBarComponent =
@@ -93,7 +95,8 @@ internal class DefaultMainComponent(
         onTorrentClick = { torrent -> showDetails(torrent) },
         torrentApi = torrentApi,
         componentScope = componentScope,
-        addTorrentFile = addTorrentFile
+        addTorrentFile = addTorrentFile,
+        fileUtils = fileUtils,
     )
 
     private fun showDetails(torrent: Torrent) {

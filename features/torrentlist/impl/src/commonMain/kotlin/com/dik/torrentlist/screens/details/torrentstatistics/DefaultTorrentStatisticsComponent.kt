@@ -3,6 +3,7 @@ package com.dik.torrentlist.screens.details.torrentstatistics
 import com.arkivanov.decompose.ComponentContext
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
+import com.dik.common.i18n.LocalizationResource
 import com.dik.torrentlist.converters.bytesToBits
 import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrentlist.error.toMessage
@@ -22,7 +23,8 @@ class DefaultTorrentStatisticsComponent(
     componentContext: ComponentContext,
     private val dispatchers: AppDispatchers,
     private val componentScope: CoroutineScope,
-    private val torrrentApi: TorrentApi
+    private val torrrentApi: TorrentApi,
+    private val localization: LocalizationResource
 ) : TorrentStatisticsComponent, ComponentContext by componentContext {
 
     private val _uiState = MutableStateFlow(TorrentStatisticsState())
@@ -65,7 +67,7 @@ class DefaultTorrentStatisticsComponent(
 
     private fun showError(error: TorrserverError) {
         componentScope.launch {
-            _uiState.update { it.copy(error = error.toMessage()) }
+            _uiState.update { it.copy(error = error.toMessage(localization)) }
         }
     }
 }
