@@ -5,9 +5,10 @@ android-targetSdk = "28"
 
 kotlin = "2.1.10"
 compose = "1.7.3"
-agp = "8.8.0"
+compose-tv = "1.0.0"
+agp = "8.8.1"
 androidx-activityCompose = "1.10.0"
-androidx-uiTest = "1.7.7"
+androidx-uiTest = "1.7.8"
 coil = "3.1.0"
 kotlinx-coroutines = "1.10.1"
 ktor = "3.0.3"
@@ -27,6 +28,8 @@ accompanist = "0.37.0"
 libsu = "6.0.0"
 android-lifecycle = "2.8.7"
 commpose-adaptive = "1.0.1"
+mockk = "1.13.16"
+turbine = "1.2.0"
 
 
 [libraries]
@@ -38,6 +41,8 @@ androidx-compose-windowSizeClass = { module = "androidx.compose.material3:materi
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-compose-core = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
@@ -71,11 +76,15 @@ kermit-core = { module = "co.touchlab:kermit", version.ref = "kermit" }
 compose-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "commpose-adaptive" }
 compose-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "commpose-adaptive" }
 compose-adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation", version.ref = "commpose-adaptive" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+
 
 #Android
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 libsu-core = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsu" }
 android-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "android-lifecycle" }
+compose-tv = { module = "androidx.tv:tv-material", version.ref = "compose-tv" }
 
 [plugins]
 
@@ -92,4 +101,12 @@ buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig"
 decompose = [
     "decompose-core",
     "decompose-compose-ext",
+]
+
+testing = [
+    "kotlin-test",
+    "kotlin-test-junit",
+    "mockk",
+    "kotlinx-coroutines-test",
+    "turbine"
 ]
