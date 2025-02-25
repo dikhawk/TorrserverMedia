@@ -44,10 +44,11 @@ class DefaultMainComponentTest {
     private val lifecycle = LifecycleRegistry()
     private val torrentApi: TorrentApi = mockk()
     @OptIn(ExperimentalCoroutinesApi::class)
+    private val unconfiedTestDispatcher = UnconfinedTestDispatcher()
     private val dispatchers = object : AppDispatchers {
-        override fun ioDispatcher() = UnconfinedTestDispatcher()
-        override fun defaultDispatcher() = UnconfinedTestDispatcher()
-        override fun mainDispatcher() = UnconfinedTestDispatcher()
+        override fun ioDispatcher() = unconfiedTestDispatcher
+        override fun defaultDispatcher() = unconfiedTestDispatcher
+        override fun mainDispatcher() = unconfiedTestDispatcher
     }
     private val torrServerStatusFlow = MutableSharedFlow<TorrserverStatus>(replay = 1)
     private val torrserverCommands: TorrserverCommands = mockk {
