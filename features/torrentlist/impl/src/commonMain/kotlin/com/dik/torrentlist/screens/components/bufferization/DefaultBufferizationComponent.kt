@@ -56,7 +56,7 @@ internal class DefaultBufferizationComponent(
         resetUiStateTorrentStatistics()
         preloadJob = componentScope.launch {
             showTorrentInfo(contentFile)
-            loadDescriptionForFile(contentFile)
+            loadOverviewForFile(contentFile)
 
             val result = torrentApi.preloadTorrent(torrent.hash, contentFile.id)
             when (result) {
@@ -86,14 +86,13 @@ internal class DefaultBufferizationComponent(
         torrentStatistics?.cancel()
         torrentStatistics = componentScope.launch {
             while (true) {
-                delay(2000)
-
                 val result = torrentApi.getTorrent(torrent.hash)
 
                 when (result) {
                     is Result.Error -> this.cancel()
                     is Result.Success -> showTorrentStatistics(result.data)
                 }
+                delay(2000)
             }
         }
     }
@@ -140,7 +139,7 @@ internal class DefaultBufferizationComponent(
         _uiState.update { BufferizationState() }
     }
 
-    private fun loadDescriptionForFile(contentFile: ContentFile) {
+    private fun loadOverviewForFile(contentFile: ContentFile) {
         val fileName = contentFile.path.fileName()
         val tv: ParsedShow? = parseFileNameTvShow(fileName)
         val movie: ParsedBase = parseFileNameBase(fileName)
@@ -151,38 +150,48 @@ internal class DefaultBufferizationComponent(
         componentScope.launch {
             val queryTitle = if (isTv) tv?.title ?: "" else movie.title
             val result = searchTheMovieDbApi.multiSearching(queryTitle)
-            val content = result.successResult()?.firstOrNull()
+            val content = result.successResult()?.firstOrNull() ?: return@launch
 
             when (content) {
-                is Movie -> {
-                    _uiState.update {
-                        it.copy(
-                            overview = content.overview,
-                            title = content.title,
-                            titleSecond = content.originalTitle
-                        )
-                    }
-                }
+                is Movie -> overviewForMovie(content)
 
                 is TvShow -> {
-                    val episode = tvEpisodesTheMovieDbApi.details(
-                        seriesId = content.id,
-                        seasonNumber = seasonNumber,
-                        episodeNumber = episodeNumber,
-                    ).successResult()
-
-                    val overview = if (!episode?.overview.isNullOrEmpty()) episode?.overview else
-                        content.overview
-
-                    _uiState.update {
-                        it.copy(
-                            overview = overview ?: "",
-                            title = content.originalName,
-                            titleSecond = prepareTitleSecond(seasonNumber, episodeNumber)
-                        )
-                    }
+                    overviewForTvShow(content, seasonNumber, episodeNumber)
                 }
             }
+        }
+    }
+
+    private suspend fun overviewForTvShow(
+        content: TvShow,
+        seasonNumber: Int,
+        episodeNumber: Int
+    ) {
+        val episode = tvEpisodesTheMovieDbApi.details(
+            seriesId = content.id,
+            seasonNumber = seasonNumber,
+            episodeNumber = episodeNumber,
+        ).successResult()
+
+        val overview = if (!episode?.overview.isNullOrEmpty()) episode?.overview else
+            content.overview
+
+        _uiState.update {
+            it.copy(
+                overview = overview ?: "",
+                title = content.originalName,
+                titleSecond = prepareTitleSecond(seasonNumber, episodeNumber)
+            )
+        }
+    }
+
+    private fun overviewForMovie(content: Movie) {
+        _uiState.update {
+            it.copy(
+                overview = content.overview,
+                title = content.title,
+                titleSecond = content.originalTitle
+            )
         }
     }
 

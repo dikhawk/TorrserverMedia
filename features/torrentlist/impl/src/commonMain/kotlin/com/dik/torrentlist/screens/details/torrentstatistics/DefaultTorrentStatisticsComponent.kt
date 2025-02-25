@@ -43,7 +43,7 @@ class DefaultTorrentStatisticsComponent(
                     is Result.Success -> updateUiState(res.data)
                 }
 
-                delay(3000)
+                delay(2000)
             }
         }
     }

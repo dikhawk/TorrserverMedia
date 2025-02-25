@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.main_details_season
 
@@ -63,7 +62,6 @@ internal class DefaultDetailsComponent(
     override val contentFilesComponent = DefaultContentFilesComponent(
         componentContext = childContext("content_files"),
         dispatchers = dispatchers,
-        appSettings = appSettings,
         componentScope = componentScope,
         onClickPlayFile = { contentFile ->
             val torrent = this.selectedTorrent
@@ -187,10 +185,11 @@ internal class DefaultDetailsComponent(
             _uiState.update {
                 it.copy(
                     title = "${tvShow.name} (${tvShow.originalName})",
-                    seasonNumber = getString(Res.string.main_details_season).format(season),
+                    seasonNumber = localization.getString(Res.string.main_details_season).format(season),
                     overview = tvSeason?.overview ?: (tvShow.overview ?: "")
                 )
             }
+            println(uiState.value)
         }
     }
 }
