@@ -69,12 +69,19 @@ kotlin {
             implementation(libs.kstore)
             implementation(libs.filekit.core)
             implementation(libs.okio)
+            implementation(libs.kotlinx.datetime)
         }
 
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.koin.android)
             implementation(libs.androidx.activityCompose)
+        }
+
+        commonTest.dependencies {
+            implementation(libs.bundles.testing)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.compose.adaptive)
         }
     }
 }
