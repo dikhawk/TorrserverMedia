@@ -65,5 +65,11 @@ kotlin {
             implementation(compose.uiTooling)
             implementation(compose.preview)
         }
+
+        commonTest.dependencies {
+            implementation(libs.bundles.testing)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.compose.adaptive)
+        }
     }
 }
