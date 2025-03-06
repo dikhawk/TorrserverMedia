@@ -378,9 +378,6 @@ internal class DefaultMainComponent(
         return Player.entries.filter { it.platforms.contains(platformName()) }
     }
 
-    private fun Long.calculatePercent(percent: Int): Long =
-        (this.toDouble() / 100.0 * percent.toDouble()).toLong()
-
     private fun showError(message: String) {
         _uiState.update { it.copy(snackbar = message) }
     }
