@@ -36,6 +36,9 @@ internal interface MainComponent {
     fun onChangePreloadCache(value: String)
     fun onChangeDefaultPlayer(value: Player)
     fun onChangeLanguage(value: AppLanguage)
+    fun loadSettings()
+    fun showProgressBar()
+    fun hideProgressBar()
 }
 
 @Stable
@@ -47,7 +50,7 @@ internal data class MainState(
     val operationSystem: String = "",
     val language: AppLanguage = AppLanguage.ENGLISH,
     val languages: List<AppLanguage> = AppLanguage.entries,
-    val defaultPlayer: Player = Player.DEFAULT_PLAYER,
+    val player: Player = Player.DEFAULT_PLAYER,
     val playersList: List<Player> = listOf(),
     val cacheSize: String = "0",
     val readerReadAHead: String = "0",
@@ -71,6 +74,6 @@ internal data class MainState(
     val action: MainAction? = null
 )
 
-internal enum class MainAction {
-    DEFAULT_SETTINGS_DIALOG,
+internal sealed interface MainAction {
+    data object DefaultSettingsDialog : MainAction
 }

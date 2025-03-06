@@ -8,6 +8,7 @@ import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.value.Value
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
+import com.dik.common.i18n.LocalizationResource
 import com.dik.settings.di.inject
 import com.dik.settings.main.DefaultMainComponent
 import com.dik.settings.main.MainComponent
@@ -22,6 +23,7 @@ internal class DefaultRootComponent(
     private val appSettings: AppSettings = inject(),
     private val torrserverStuffApi: TorrserverStuffApi = inject(),
     private val torrserverCommands: TorrserverCommands = inject(),
+    private val localization: LocalizationResource = inject(),
     private val onFinish: () -> Unit,
 ) : RootComponent, ComponentContext by context {
 
@@ -41,13 +43,14 @@ internal class DefaultRootComponent(
 
     override fun mainComponent(componentContext: ComponentContext): MainComponent =
         DefaultMainComponent(
-            componentContext,
+            context = componentContext,
             onFinish = onFinish,
             serverSettingsApi = serverSettingsApi,
             dispatchers = dispatchers,
             appSettings = appSettings,
             torrserverStuffApi = torrserverStuffApi,
-            torrserverCommands = torrserverCommands
+            torrserverCommands = torrserverCommands,
+            localization = localization
         )
 
     private fun childFactory(

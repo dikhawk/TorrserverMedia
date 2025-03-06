@@ -7,11 +7,16 @@ import com.dik.common.AppDispatchers
 import com.dik.common.Result
 import com.dik.common.ResultProgress
 import com.dik.common.i18n.AppLanguage
+import com.dik.common.i18n.LocalizationResource
 import com.dik.common.i18n.setLocalization
 import com.dik.common.player.Player
 import com.dik.common.utils.cpuArch
 import com.dik.common.utils.platformName
 import com.dik.common.utils.successResult
+import com.dik.settings.utils.bytesToMb
+import com.dik.settings.utils.mbToBytes
+import com.dik.settings.utils.toIntOrZero
+import com.dik.settings.utils.toLongOrZero
 import com.dik.torrserverapi.model.ServerSettings
 import com.dik.torrserverapi.server.ServerSettingsApi
 import com.dik.torrserverapi.server.TorrserverCommands
@@ -24,13 +29,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 import torrservermedia.features.settings.impl.generated.resources.Res
 import torrservermedia.features.settings.impl.generated.resources.main_settings_available_new_version
 import torrservermedia.features.settings.impl.generated.resources.main_settings_available_new_version_update_error
 import torrservermedia.features.settings.impl.generated.resources.main_settings_available_new_version_update_loading
 import torrservermedia.features.settings.impl.generated.resources.main_settings_available_new_version_update_success
 import torrservermedia.features.settings.impl.generated.resources.main_settings_snackbar_default_settings
+import torrservermedia.features.settings.impl.generated.resources.main_settings_snackbar_not_available_now
 import torrservermedia.features.settings.impl.generated.resources.main_settings_snackbar_save
 
 internal class DefaultMainComponent(
@@ -39,6 +44,7 @@ internal class DefaultMainComponent(
     private val torrserverStuffApi: TorrserverStuffApi,
     private val torrserverCommands: TorrserverCommands,
     private val appSettings: AppSettings,
+    private val localization: LocalizationResource,
     private val dispatchers: AppDispatchers,
     private val onFinish: () -> Unit,
 ) : MainComponent, ComponentContext by context {
@@ -50,7 +56,6 @@ internal class DefaultMainComponent(
 
     init {
         lifecycle.doOnDestroy { componentScope.cancel() }
-        loadSettings()
     }
 
     override fun onClickBack() {
@@ -62,33 +67,45 @@ internal class DefaultMainComponent(
         componentScope.launch(dispatchers.ioDispatcher()) {
             torrserverCommands.installServer().collect { result ->
                 when (result) {
-                    is ResultProgress.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                availableNewVersionText = getString(Res.string.main_settings_available_new_version_update_error),
-                                isShowAvailableNewVersionProgress = false
-                            )
-                        }
-                    }
+                    is ResultProgress.Error -> updateError()
 
-                    is ResultProgress.Loading -> {
-                        _uiState.update {
-                            it.copy(availableNewVersionText = getString(Res.string.main_settings_available_new_version_update_loading) + " ${result.progress.progress} %")
-                        }
-                    }
+                    is ResultProgress.Loading -> updateProgress(result.progress.progress)
 
-                    is ResultProgress.Success -> {
-                        restartTorrserver()
-                        _uiState.update {
-                            it.copy(
-                                availableNewVersionText = getString(Res.string.main_settings_available_new_version_update_success),
-                                isAvailableNewVersion = false,
-                                isShowAvailableNewVersionProgress = false
-                            )
-                        }
-                    }
+                    is ResultProgress.Success -> updateSuccess()
                 }
             }
+        }
+    }
+
+    private suspend fun updateSuccess() {
+        restartTorrserver()
+        _uiState.update {
+            it.copy(
+                availableNewVersionText = localization
+                    .getString(Res.string.main_settings_available_new_version_update_success),
+                isAvailableNewVersion = false,
+                isShowAvailableNewVersionProgress = false
+            )
+        }
+    }
+
+    private suspend fun updateProgress(progress: Double) {
+        _uiState.update {
+            it.copy(
+                availableNewVersionText = localization
+                    .getString(Res.string.main_settings_available_new_version_update_loading)
+                    .format(progress.toString())
+            )
+        }
+    }
+
+    private suspend fun updateError() {
+        _uiState.update {
+            it.copy(
+                availableNewVersionText = localization
+                    .getString(Res.string.main_settings_available_new_version_update_error),
+                isShowAvailableNewVersionProgress = false
+            )
         }
     }
 
@@ -98,7 +115,7 @@ internal class DefaultMainComponent(
     }
 
     override fun onChangeDefaultPlayer(value: Player) {
-        _uiState.update { it.copy(defaultPlayer = value) }
+        _uiState.update { it.copy(player = value) }
     }
 
     override fun onChangeCacheSize(value: String) {
@@ -190,22 +207,34 @@ internal class DefaultMainComponent(
     }
 
     override fun onClickSave() {
-        if (_uiState.value.isShowProgressBar) return
-
-        _uiState.update { it.copy(isShowProgressBar = true) }
-
-        componentScope.launch {
-            saveAppSettings()
-            serverSettingsApi.saveSettings(getServerSettings())
-            _uiState.update { it.copy(snackbar = getString(Res.string.main_settings_snackbar_save)) }
-            _uiState.update { it.copy(isShowProgressBar = false) }
+        if (_uiState.value.isShowProgressBar) {
+            componentScope.launch {
+                val message = localization.getString(Res.string.main_settings_snackbar_not_available_now)
+                _uiState.update { it.copy(snackbar = message) }
+            }
+            return
         }
-    }
 
-    private fun saveAppSettings() {
+        showProgressBar()
+
         componentScope.launch {
-            appSettings.defaultPlayer = _uiState.value.defaultPlayer
+            appSettings.defaultPlayer = _uiState.value.player
             appSettings.language = _uiState.value.language
+
+            val result = serverSettingsApi.saveSettings(getServerSettings())
+
+            when (result) {
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(snackbar = localization.getString(Res.string.main_settings_snackbar_save))
+                    }
+                }
+
+                is Result.Error -> _uiState.update { it.copy(snackbar = result.error.toString()) }
+
+            }
+
+            hideProgressBar()
         }
     }
 
@@ -241,12 +270,6 @@ internal class DefaultMainComponent(
         )
     }
 
-    private fun String.toIntOrZero(): Int = if (this.isEmpty()) 0 else this.toInt()
-
-    private fun String.toLongOrZero(): Long = if (this.isEmpty()) 0L else this.toLong()
-
-    private fun Long.mbToBytes(): Long = this * 1024L * 1024L
-
     override fun dismissSnackbar() {
         _uiState.update { it.copy(snackbar = null) }
     }
@@ -260,24 +283,29 @@ internal class DefaultMainComponent(
     }
 
     override fun defaultSettings() {
-        if (_uiState.value.isShowProgressBar) return
+        if (_uiState.value.isShowProgressBar) {
+            componentScope.launch {
+                _uiState.update { it.copy(snackbar = localization.getString(Res.string.main_settings_snackbar_not_available_now)) }
+            }
+            return
+        }
 
-        _uiState.update { it.copy(isShowProgressBar = true) }
+        showProgressBar()
         componentScope.launch {
             val result = serverSettingsApi.defaultSettings()
             when (result) {
                 is Result.Error -> showError(result.error.toString())
                 is Result.Success -> {
                     updateSettingsUiState(result.data)
-                    _uiState.update { it.copy(snackbar = getString(Res.string.main_settings_snackbar_default_settings)) }
+                    _uiState.update { it.copy(snackbar = localization.getString(Res.string.main_settings_snackbar_default_settings)) }
                 }
             }
-            _uiState.update { it.copy(isShowProgressBar = false) }
+            hideProgressBar()
         }
     }
 
-    private fun loadSettings() {
-        _uiState.update { it.copy(isShowProgressBar = true) }
+    override fun loadSettings() {
+        showProgressBar()
 
         componentScope.launch {
             val result = serverSettingsApi.getSettings()
@@ -287,19 +315,27 @@ internal class DefaultMainComponent(
                 is Result.Success -> updateSettingsUiState(result.data)
             }
 
-            checkUpates()
-            _uiState.update { it.copy(isShowProgressBar = false) }
+            checkUpdates()
+            hideProgressBar()
         }
     }
 
-    private suspend fun checkUpates() {
+    override fun showProgressBar() {
+        _uiState.update { it.copy(isShowProgressBar = true) }
+    }
+
+    override fun hideProgressBar() {
+        _uiState.update { it.copy(isShowProgressBar = false) }
+    }
+
+    private suspend fun checkUpdates() {
         val echoResult = torrserverStuffApi.echo().successResult()
         val updatesResult = torrserverCommands.isAvailableNewVersion().successResult() ?: false
 
         if (!echoResult.isNullOrEmpty() && updatesResult) {
             _uiState.update {
                 it.copy(
-                    availableNewVersionText = getString(Res.string.main_settings_available_new_version),
+                    availableNewVersionText = localization.getString(Res.string.main_settings_available_new_version),
                     isAvailableNewVersion = true
                 )
             }
@@ -313,7 +349,7 @@ internal class DefaultMainComponent(
         _uiState.update {
             it.copy(
                 operationSystem = "${platform.osname} $cpu",
-                defaultPlayer = appSettings.defaultPlayer,
+                player = appSettings.defaultPlayer,
                 language = appSettings.language,
                 playersList = getPlayersLists(),
                 cacheSize = settings.cacheSize.bytesToMb().toString(), //to Mb
@@ -339,13 +375,11 @@ internal class DefaultMainComponent(
     }
 
     private fun getPlayersLists(): List<Player> {
-        return Player.values().filter { it.platforms.contains(platformName()) }
+        return Player.entries.filter { it.platforms.contains(platformName()) }
     }
 
     private fun Long.calculatePercent(percent: Int): Long =
         (this.toDouble() / 100.0 * percent.toDouble()).toLong()
-
-    private fun Long.bytesToMb(): Long = this / 1024L / 1024L
 
     private fun showError(message: String) {
         _uiState.update { it.copy(snackbar = message) }

@@ -133,7 +133,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
 
             DropDownListItem(
                 header = stringResource(Res.string.main_settings_default_player_header),
-                selectedItem = uiState.value.defaultPlayer,
+                selectedItem = uiState.value.player,
                 items = uiState.value.playersList,
                 title = { it.title },
                 onClickItem = { component.onChangeDefaultPlayer(it) })
@@ -280,7 +280,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
 
             Row(
                 modifier = Modifier.fillMaxWidth()
-                    .clickable { component.invokeAction(MainAction.DEFAULT_SETTINGS_DIALOG) }
+                    .clickable { component.invokeAction(MainAction.DefaultSettingsDialog) }
                     .padding(8.dp)) {
                 AppNormalText(text = stringResource(Res.string.main_settings_default_settings_header))
             }
@@ -291,7 +291,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
         }
     }
 
-    if (uiState.value.action == MainAction.DEFAULT_SETTINGS_DIALOG) {
+    if (uiState.value.action == MainAction.DefaultSettingsDialog) {
         ConfirmDialog(
             message = stringResource(Res.string.main_settings_dialog_default_settings_title),
             onDismissRequest = { component.dismissAction() },
@@ -301,6 +301,10 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
                 component.dismissAction()
             }
         )
+    }
+
+    LaunchedEffect(Unit) {
+        component.loadSettings()
     }
 
     LaunchedEffect(uiState.value.snackbar) {

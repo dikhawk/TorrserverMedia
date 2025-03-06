@@ -2,6 +2,7 @@ package com.dik.settings.di
 
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
+import com.dik.common.i18n.LocalizationResource
 import com.dik.torrserverapi.server.ServerSettingsApi
 import com.dik.torrserverapi.server.TorrserverCommands
 import com.dik.torrserverapi.server.TorrserverStuffApi
@@ -24,6 +25,7 @@ object KoinModules {
             single<AppDispatchers> { dependecies.dispatchers() }
             single<TorrserverStuffApi> { dependecies.torrServerApi().torrserverStuffApi() }
             single<TorrserverCommands> { dependecies.torrServerApi().torrserverCommands() }
+            single<LocalizationResource> { dependecies.localizationResource() }
         }))
 
         return koin

@@ -44,6 +44,7 @@
     <string name="main_settings_available_new_version">A new version is available. Update?</string>
     <string name="main_settings_available_new_version_update_success">Server updated</string>
     <string name="main_settings_available_new_version_update_error">Failed to update the server</string>
-    <string name="main_settings_available_new_version_update_loading">Downloading update</string>
+    <string name="main_settings_available_new_version_update_loading">Downloading update: %s %%</string>
     <string name="main_settings_language_header">Language</string>
+    <string name="main_settings_snackbar_not_available_now">Not available now</string>
 </resources>
