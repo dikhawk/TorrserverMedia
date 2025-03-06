@@ -2,6 +2,7 @@ package com.dik.torrservermedia.di
 
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
+import com.dik.common.i18n.LocalizationResource
 import com.dik.settings.SettingsFeatureApi
 import com.dik.settings.di.SettingsComponentHolder
 import com.dik.settings.di.SettingsDependencies
@@ -22,6 +23,7 @@ val featuresModule = module {
             override fun torrServerApi(): TorrserverApi = get()
             override fun dispatchers(): AppDispatchers = get()
             override fun appSettings(): AppSettings = get()
+            override fun localizationResource(): LocalizationResource = get()
         })
         SettingsComponentHolder.get()
     }
