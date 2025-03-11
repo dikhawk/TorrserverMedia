@@ -28,6 +28,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.json.Json
+import okio.FileSystem
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -36,6 +37,7 @@ import org.koin.dsl.module
 internal val torrserverModule = module {
     factory<CmdRunner> { KmpCmdRunner }
     factory<ServerConfig> { TorrserverConfig }
+    factory<FileSystem> { FileSystem.SYSTEM }
     singleOf(::MagnetApiImpl).bind<MagnetApi>()
     singleOf(::TorrentApiImpl).bind<TorrentApi>()
     singleOf(::TorrserverStuffApiImpl).bind<TorrserverStuffApi>()
