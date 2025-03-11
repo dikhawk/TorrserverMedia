@@ -61,5 +61,10 @@ kotlin {
         jvmMain.dependencies {
             implementation(libs.ktor.client.cio)
         }
+
+        commonTest.dependencies {
+            implementation(libs.bundles.testing)
+            implementation(libs.kotlinx.coroutines.core)
+        }
     }
 }
