@@ -21,18 +21,22 @@ class RestoreServerFromBackUp(
             val file = pathToFile.toPath()
             val backUpFile = pathToBackupFile.toPath()
 
-            if (!fileSystem.exists(backUpFile)) {
-                Logger.e("$tag backup file not exist $pathToBackupFile")
-                return@withContext Result.Error(TorrserverError.Server.FileNotExist("Backup file not exist: $pathToBackupFile"))
+            try {
+                if (!fileSystem.exists(backUpFile)) {
+                    Logger.e("$tag backup file not exist $pathToBackupFile")
+                    return@withContext Result.Error(TorrserverError.Server.FileNotExist("Backup file not exist: $pathToBackupFile"))
+                }
+
+                if (fileSystem.exists(file)) fileSystem.delete(file)
+
+                fileSystem.copy(source = backUpFile, target = file)
+
+                Logger.i("$tag file restored from backup successfully")
+
+                return@withContext Result.Success(Unit)
+            } catch (e: Exception) {
+                return@withContext Result.Error(TorrserverError.Unknown(e.message ?: e.toString()))
             }
-
-            if (fileSystem.exists(file)) fileSystem.delete(file)
-
-            fileSystem.copy(source = backUpFile, target = file)
-
-            Logger.i("$tag file restored from backup successfully")
-
-            return@withContext Result.Success(Unit)
         }
     }
 }
