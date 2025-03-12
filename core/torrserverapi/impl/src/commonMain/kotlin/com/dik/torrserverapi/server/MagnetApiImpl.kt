@@ -36,7 +36,6 @@ class MagnetApiImpl(
                 return Result.Error(TorrserverError.HttpError.ResponseReturnError(request.status.description))
 
             val response = request.body<TorrentResponse>()
-            val string = response
 
             return Result.Success(response.mapToTorrent())
         } catch (e: Exception) {
