@@ -1,6 +1,7 @@
 package com.dik.torrentlist.screens.components.bufferization
 
 import com.arkivanov.decompose.ComponentContext
+import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
 import com.dik.common.i18n.LocalizationResource
@@ -39,6 +40,7 @@ internal class DefaultBufferizationComponent(
     private val searchTheMovieDbApi: SearchTheMovieDbApi,
     private val tvEpisodesTheMovieDbApi: TvEpisodesTheMovieDbApi,
     private val localization: LocalizationResource,
+    private val appSettings: AppSettings,
     private val onClickDismiss: () -> Unit,
 ) : BufferizationComponent, ComponentContext by componentContext {
 
@@ -146,10 +148,11 @@ internal class DefaultBufferizationComponent(
         val seasonNumber = tv?.seasons?.firstOrNull() ?: 0
         val episodeNumber = tv?.episodeNumbers?.firstOrNull() ?: 0
         val isTv = (seasonNumber > 0) && (episodeNumber > 0)
+        val language = appSettings.language.iso
 
         componentScope.launch {
             val queryTitle = if (isTv) tv?.title ?: "" else movie.title
-            val result = searchTheMovieDbApi.multiSearching(queryTitle)
+            val result = searchTheMovieDbApi.multiSearching(query = queryTitle, language = language)
             val content = result.successResult()?.firstOrNull() ?: return@launch
 
             when (content) {
@@ -167,10 +170,12 @@ internal class DefaultBufferizationComponent(
         seasonNumber: Int,
         episodeNumber: Int
     ) {
+        val language = appSettings.language.iso
         val episode = tvEpisodesTheMovieDbApi.details(
             seriesId = content.id,
             seasonNumber = seasonNumber,
             episodeNumber = episodeNumber,
+            language = language,
         ).successResult()
 
         val overview = if (!episode?.overview.isNullOrEmpty()) episode?.overview else

@@ -1,5 +1,6 @@
 package com.dik.torrentlist.screens.main
 
+import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.Result
 import com.dik.common.errors.Error
 import com.dik.themoviedb.SearchTheMovieDbApi
@@ -12,6 +13,7 @@ import com.dik.videofilenameparser.parseFileNameBase
 import com.dik.videofilenameparser.parseFileNameTvShow
 
 internal class FindPosterForTorrent(
+    private val appSettings: AppSettings,
     private val searchTheMovieDbApi: SearchTheMovieDbApi,
 ) {
 
@@ -24,9 +26,10 @@ internal class FindPosterForTorrent(
         val episodeNumber = tv?.episodeNumbers?.firstOrNull() ?: 0
         val isTv = (seasonNumber > 0) && (episodeNumber > 0)
         val title = if (isTv) tv?.title else movie.title
+        val language = appSettings.language.iso
 
         if (!title.isNullOrEmpty()) {
-            when (val queryResult = searchTheMovieDbApi.multiSearching(title)) {
+            when (val queryResult = searchTheMovieDbApi.multiSearching(query = title, language = language)) {
                 is Result.Error -> return Result.Error(
                     FindPosterForTorrentErrors.UnknownError(queryResult.error.toString())
                 )

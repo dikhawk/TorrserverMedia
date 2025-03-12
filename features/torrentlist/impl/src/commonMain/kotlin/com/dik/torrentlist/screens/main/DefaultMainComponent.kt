@@ -152,6 +152,7 @@ internal class DefaultMainComponent(
             searchTheMovieDbApi = searchingTmdb,
             tvEpisodesTheMovieDbApi = tvEpisodesTmdb,
             localization = localization,
+            appSettings = appSettings,
             onClickDismiss = {
                 _uiState.update {
                     it.copy(isShowBufferization = false)

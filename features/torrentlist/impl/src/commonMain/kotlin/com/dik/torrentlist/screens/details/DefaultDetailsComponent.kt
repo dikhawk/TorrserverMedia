@@ -97,6 +97,7 @@ internal class DefaultDetailsComponent(
         searchTheMovieDbApi = searchingTmdb,
         tvEpisodesTheMovieDbApi = tvEpisodesTmdb,
         localization = localization,
+        appSettings = appSettings,
         onClickDismiss = { _uiState.update { it.copy(isShowBufferization = false) } }
     )
 
@@ -157,7 +158,9 @@ internal class DefaultDetailsComponent(
         val episode = parseTvName?.episodeNumbers?.firstOrNull() ?: 0
         val isTv = (season > 0) && (episode > 0)
         val titleForQuery = if (isTv) parseTvName?.title ?: "" else parseMovieName.title
-        val result = searchingTmdb.multiSearching(titleForQuery).successResult()
+        val language = appSettings.language.iso
+        val result = searchingTmdb.multiSearching(query = titleForQuery, language = language)
+            .successResult()
 
         if (result.isNullOrEmpty()) return
 
@@ -189,7 +192,6 @@ internal class DefaultDetailsComponent(
                     overview = tvSeason?.overview ?: (tvShow.overview ?: "")
                 )
             }
-            println(uiState.value)
         }
     }
 }
