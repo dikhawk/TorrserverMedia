@@ -12,6 +12,7 @@ interface TorrentListComponent {
     fun onClickItem(torrent: Torrent)
     fun onClickDeleteItem(torrent: Torrent)
     fun addTorrents(paths: List<String>)
+    fun startObserveTorrentList()
 }
 
 @Stable

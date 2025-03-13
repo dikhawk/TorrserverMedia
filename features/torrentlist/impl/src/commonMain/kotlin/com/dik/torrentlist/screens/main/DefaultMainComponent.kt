@@ -93,10 +93,13 @@ internal class DefaultMainComponent(
     override val torrentListComponent: TorrentListComponent = DefaultTorrentListComponent(
         context = childContext("torrserverbar"),
         onTorrentClick = { torrent -> showDetails(torrent) },
+        onTorrentsIsEmpty = { isEmpty ->
+            if (isEmpty) _uiState.update { it.copy(isShowDetails = false) }
+        },
         torrentApi = torrentApi,
         componentScope = componentScope,
         addTorrentFile = addTorrentFile,
-        fileUtils = fileUtils,
+        fileUtils = fileUtils
     )
 
     private fun showDetails(torrent: Torrent) {

@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 internal class DefaultTorrentListComponent(
     context: ComponentContext,
     private val onTorrentClick: (Torrent) -> Unit,
+    private val onTorrentsIsEmpty: (Boolean) -> Unit,
     private val torrentApi: TorrentApi,
     private val addTorrentFile: AddTorrentFile,
     private val componentScope: CoroutineScope,
@@ -32,11 +33,6 @@ internal class DefaultTorrentListComponent(
     override val uiState: StateFlow<TorrentListState> = _uiState.asStateFlow()
     private var torrentListObserver: Job? = null
 
-    init {
-        componentScope.launch {
-            observeTorrentList()
-        }
-    }
 
     override fun onClickItem(torrent: Torrent) {
         onTorrentClick(torrent)
@@ -61,7 +57,7 @@ internal class DefaultTorrentListComponent(
         }
     }
 
-    private fun observeTorrentList() {
+    override fun startObserveTorrentList() {
         torrentListObserver?.cancel()
         torrentListObserver = componentScope.launch {
             while (true) {
@@ -72,9 +68,10 @@ internal class DefaultTorrentListComponent(
                     is Result.Success -> {
                         _uiState.value.torrents.clear()
                         _uiState.value.torrents.addAll(result.data)
+                        onTorrentsIsEmpty(result.data.isEmpty())
                     }
                 }
-                delay(3000)
+                delay(1000)
             }
         }
     }
