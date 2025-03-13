@@ -22,9 +22,7 @@ internal class AddTorrentFile(
         )
 
         return when (val result = torrentApi.addTorrent(path)) {
-            is Result.Error -> AddTorrentResult(
-                error = result.error.toMessage(localization)
-            )
+            is Result.Error -> AddTorrentResult(error = result.error.toMessage(localization))
 
             is Result.Success -> {
                 var torrent = result.data
