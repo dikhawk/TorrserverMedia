@@ -53,7 +53,6 @@ fun main(args: Array<String>) {
         setLocalization(appSettings.language)
     }
 
-
     application {
         Window(
             title = stringResource(Res.string.app_name),
