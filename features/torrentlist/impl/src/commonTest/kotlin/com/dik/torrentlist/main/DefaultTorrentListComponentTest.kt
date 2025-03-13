@@ -38,6 +38,7 @@ class DefaultTorrentListComponentTest {
         defaultTorrentListComponent = DefaultTorrentListComponent(
             context = mockk<ComponentContext>(),
             onTorrentClick = {},
+            onTorrentsIsEmpty = {},
             torrentApi = torrentApi,
             addTorrentFile = addTorrentFile,
             componentScope = testScope,
@@ -52,7 +53,9 @@ class DefaultTorrentListComponentTest {
 
         val uiState = defaultTorrentListComponent.uiState
 
-        advanceTimeBy(3000)
+        defaultTorrentListComponent.startObserveTorrentList()
+
+        advanceTimeBy(1000)
 
         defaultTorrentListComponent.stopObservingTorrentList()
 
@@ -67,7 +70,9 @@ class DefaultTorrentListComponentTest {
 
         val uiState = defaultTorrentListComponent.uiState
 
-        advanceTimeBy(3000)
+        defaultTorrentListComponent.startObserveTorrentList()
+
+        advanceTimeBy(1000)
 
         defaultTorrentListComponent.stopObservingTorrentList()
 
@@ -81,6 +86,7 @@ class DefaultTorrentListComponentTest {
 
         coEvery { addTorrentFile.invoke(any()) } returns AddTorrentResult(torrent = mockk())
         coEvery { fileUtils.uriToPath(uriTorrent.toString()) } returns uriTorrent.toString()
+        defaultTorrentListComponent.startObserveTorrentList()
         defaultTorrentListComponent.stopObservingTorrentList()
 
         assertFalse(defaultTorrentListComponent.uiState.value.isShowProgress)
@@ -101,6 +107,7 @@ class DefaultTorrentListComponentTest {
 
         coEvery { addTorrentFile.invoke(any()) } returns AddTorrentResult(error = "File not exist")
         coEvery { fileUtils.uriToPath(uriTorrent.toString()) } returns uriTorrent.toString()
+        defaultTorrentListComponent.startObserveTorrentList()
         defaultTorrentListComponent.stopObservingTorrentList()
 
         assertFalse(defaultTorrentListComponent.uiState.value.isShowProgress)
