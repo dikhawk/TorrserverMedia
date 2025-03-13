@@ -1,8 +1,10 @@
 package com.dik.torrentlist.details
 
 import app.cash.turbine.test
+import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
+import com.dik.common.i18n.AppLanguage
 import com.dik.common.i18n.LocalizationResource
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
@@ -49,6 +51,9 @@ class BufferizationComponentTest {
     private val tvEpisodesTheMovieDbApi: TvEpisodesTheMovieDbApi = mockk()
     private val localization: LocalizationResource = mockk()
     private val onClickDismiss: () -> Unit = mockk(relaxed = true)
+    private val appSettings: AppSettings = mockk(relaxed = true) {
+        every { language } returns AppLanguage.RUSSIAN
+    }
 
     
     @Test
@@ -108,9 +113,9 @@ class BufferizationComponentTest {
         val component = bufferizationComponentTest()
 
         coEvery { torrentApi.preloadTorrent(torrent.hash, contentFile.id) } returns Result.Success(Unit)
-        coEvery { searchTheMovieDbApi.multiSearching(scruppedMovieTitle) } returns Result.Success(
-            listOf(movie)
-        )
+        coEvery {
+            searchTheMovieDbApi.multiSearching(query = scruppedMovieTitle, language = AppLanguage.RUSSIAN.iso)
+        } returns Result.Success(listOf(movie))
 
         component.startBufferezation(torrent, contentFile, {})
 
@@ -152,12 +157,18 @@ class BufferizationComponentTest {
         val tvEpisode: TvEpisode = mockk(relaxed = true) { every { overview } returns "About tv show" }
 
         coEvery { torrentApi.preloadTorrent(torrent.hash, contentFile.id) } returns Result.Success(Unit)
-        coEvery { searchTheMovieDbApi.multiSearching(scruppedTvShow.title) } returns
-                Result.Success(listOf(tvShow))
+        coEvery {
+            searchTheMovieDbApi.multiSearching(query = scruppedTvShow.title, language = AppLanguage.RUSSIAN.iso)
+        } returns Result.Success(listOf(tvShow))
         coEvery { localization.getString(Res.string.main_bufferization_season_and_episode) } returns tvShowTitleMask
-        coEvery { tvEpisodesTheMovieDbApi.details(
-            seriesId = tvShow.id, seasonNumber = season, episodeNumber = episode
-        ) } returns Result.Success(tvEpisode)
+        coEvery {
+            tvEpisodesTheMovieDbApi.details(
+                seriesId = tvShow.id,
+                seasonNumber = season,
+                episodeNumber = episode,
+                language = AppLanguage.RUSSIAN.iso
+            )
+        } returns Result.Success(tvEpisode)
 
         component.startBufferezation(torrent, contentFile, {})
 
@@ -191,9 +202,9 @@ class BufferizationComponentTest {
         val runAferBuferazation: () -> Unit = mockk(relaxed = true)
 
         coEvery { torrentApi.preloadTorrent(torrent.hash, contentFile.id) } returns Result.Success(Unit)
-        coEvery { searchTheMovieDbApi.multiSearching(any()) } returns Result.Success(
-            listOf(mockk<Movie>(relaxed = true))
-        )
+        coEvery {
+            searchTheMovieDbApi.multiSearching(query = any(), language = AppLanguage.RUSSIAN.iso)
+        } returns Result.Success(listOf(mockk<Movie>(relaxed = true)))
 
         component.startBufferezation(torrent, contentFile, runAferBuferazation)
 
@@ -222,9 +233,9 @@ class BufferizationComponentTest {
         val runAferBuferazation: () -> Unit = mockk(relaxed = true)
 
         coEvery { torrentApi.preloadTorrent(torrent.hash, contentFile.id) } returns Result.Success(Unit)
-        coEvery { searchTheMovieDbApi.multiSearching(any()) } returns Result.Error(
-            TheMovieDbError.HttpError.ResponseReturnNull
-        )
+        coEvery {
+            searchTheMovieDbApi.multiSearching(query = any(), language = AppLanguage.RUSSIAN.iso)
+        } returns Result.Error(TheMovieDbError.HttpError.ResponseReturnNull)
 
         component.startBufferezation(torrent, contentFile, runAferBuferazation)
 
@@ -263,7 +274,7 @@ class BufferizationComponentTest {
         val runAferBuferazation: () -> Unit = mockk(relaxed = true)
 
         coEvery { torrentApi.preloadTorrent(torrent.hash, contentFile.id) } returns Result.Success(Unit)
-        coEvery { searchTheMovieDbApi.multiSearching(any()) } returns Result.Success(
+        coEvery { searchTheMovieDbApi.multiSearching(query = any(), language = AppLanguage.RUSSIAN.iso) } returns Result.Success(
             listOf(mockk<Movie>(relaxed = true))
         )
         coEvery { torrentApi.getTorrent(torrent.hash) } returns Result.Success(torrent)
@@ -296,6 +307,7 @@ class BufferizationComponentTest {
         searchTheMovieDbApi = searchTheMovieDbApi,
         tvEpisodesTheMovieDbApi = tvEpisodesTheMovieDbApi,
         localization = localization,
-        onClickDismiss = onClickDismiss
+        onClickDismiss = onClickDismiss,
+        appSettings = appSettings
     )
 }

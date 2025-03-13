@@ -6,6 +6,7 @@ import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
+import com.dik.common.i18n.AppLanguage
 import com.dik.common.i18n.LocalizationResource
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
@@ -46,7 +47,9 @@ class DefaultDetailsComponentTest {
         override fun mainDispatcher() = unconfiedDispatcher
     }
     private val torrentApi: TorrentApi = mockk()
-    private val appSettings: AppSettings = mockk()
+    private val appSettings: AppSettings = mockk(relaxed = true) {
+        every { language } returns AppLanguage.RUSSIAN
+    }
     private val searchingTmdb: SearchTheMovieDbApi = mockk()
     private val tvSeasonTmdb: TvSeasonsTheMovieDbApi = mockk()
     private val tvEpisodesTmdb: TvEpisodesTheMovieDbApi = mockk()
@@ -108,11 +111,12 @@ class DefaultDetailsComponentTest {
             every { poster500 } returns "poster500.jpg"
             every { overview } returns "About the movie"
         }
+        val query = parseFileNameBase(torrent.title).title
 
         coEvery { torrentApi.getTorrent(hash) } returns Result.Success(torrent)
-        coEvery { searchingTmdb.multiSearching(parseFileNameBase(torrent.title).title) } returns
-                Result.Success(listOf(movie))
-
+        coEvery {
+            searchingTmdb.multiSearching(query = query, language = AppLanguage.RUSSIAN.iso)
+        } returns Result.Success(listOf(movie))
 
         component.showDetails(hash)
 
@@ -158,9 +162,10 @@ class DefaultDetailsComponentTest {
 
         coEvery { localization.getString(Res.string.main_details_season) } returns seasonNumberMask
         coEvery { torrentApi.getTorrent(hash) } returns Result.Success(torrent)
-        coEvery { searchingTmdb.multiSearching(parseTvShow!!.title) } returns
-                Result.Success(listOf(tvShow))
-        coEvery { tvSeasonTmdb.details(tvShow.id, parseTvShow!!.seasons.first()) } returns Result.Success(tvSeason)
+        coEvery {
+            searchingTmdb.multiSearching(query = parseTvShow.title, language = AppLanguage.RUSSIAN.iso)
+        } returns Result.Success(listOf(tvShow))
+        coEvery { tvSeasonTmdb.details(tvShow.id, parseTvShow.seasons.first()) } returns Result.Success(tvSeason)
 
         component.showDetails(hash)
 
@@ -192,7 +197,9 @@ class DefaultDetailsComponentTest {
         )
 
         coEvery { torrentApi.preloadTorrent(any(), any()) } returns Result.Success(Unit)
-        coEvery { searchingTmdb.multiSearching(any()) } returns Result.Success(emptyList())
+        coEvery {
+            searchingTmdb.multiSearching(query = any(), language = AppLanguage.RUSSIAN.iso)
+        } returns Result.Success(emptyList())
         coEvery { torrentApi.getTorrent(torrent.hash) } returns Result.Success(torrent)
 
         component.runBufferization(torrent = torrent, contentFile = contentFile, runAferBuferazation = {})

@@ -1,6 +1,8 @@
 package com.dik.torrentlist.main
 
+import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.Result
+import com.dik.common.i18n.AppLanguage
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.errors.TheMovieDbError
 import com.dik.themoviedb.model.Movie
@@ -21,7 +23,10 @@ import kotlin.test.assertTrue
 class FindPosterForTorrentTest {
 
     private val searchTheMovieDbApi: SearchTheMovieDbApi = mockk()
-    private val findPosterForTorrent = FindPosterForTorrent(searchTheMovieDbApi)
+    private val appSettings: AppSettings = mockk(relaxed = true) {
+        every { language } returns AppLanguage.RUSSIAN
+    }
+    private val findPosterForTorrent = FindPosterForTorrent(searchTheMovieDbApi = searchTheMovieDbApi, appSettings = appSettings)
 
     @Test
     fun `Returns poster when search is successful for Movie`() = runTest {
@@ -33,7 +38,9 @@ class FindPosterForTorrentTest {
         }
 
         val title = parseFileNameBase(torrent.name).title
-        coEvery { searchTheMovieDbApi.multiSearching(title) } returns Result.Success(listOf(content))
+        coEvery {
+            searchTheMovieDbApi.multiSearching(query = title, language = AppLanguage.RUSSIAN.iso)
+        } returns Result.Success(listOf(content))
 
         val result = findPosterForTorrent.invoke(torrent)
 
@@ -51,7 +58,9 @@ class FindPosterForTorrentTest {
         }
 
         val title = parseFileNameTvShow(torrent.name)!!.title
-        coEvery { searchTheMovieDbApi.multiSearching(title) } returns Result.Success(listOf(content))
+        coEvery {
+            searchTheMovieDbApi.multiSearching(query = title, language = AppLanguage.RUSSIAN.iso)
+        } returns Result.Success(listOf(content))
 
         val result = findPosterForTorrent.invoke(torrent)
 
@@ -65,7 +74,9 @@ class FindPosterForTorrentTest {
             every { name } returns "Unknown Video.mkv"
         }
         val title = parseFileNameBase(torrent.name).title
-        coEvery { searchTheMovieDbApi.multiSearching(title) } returns Result.Success(emptyList())
+        coEvery {
+            searchTheMovieDbApi.multiSearching(query = title, language = AppLanguage.RUSSIAN.iso)
+        } returns Result.Success(emptyList())
 
         val result = findPosterForTorrent.invoke(torrent)
 
@@ -80,8 +91,9 @@ class FindPosterForTorrentTest {
         }
         val title = parseFileNameBase(torrent.name).title
 
-        coEvery { searchTheMovieDbApi.multiSearching(title) } returns
-                Result.Error(TheMovieDbError.HttpError.ResponseReturnNull)
+        coEvery {
+            searchTheMovieDbApi.multiSearching(query = title, language = AppLanguage.RUSSIAN.iso)
+        } returns Result.Error(TheMovieDbError.HttpError.ResponseReturnNull)
 
         val result = findPosterForTorrent.invoke(torrent)
 
