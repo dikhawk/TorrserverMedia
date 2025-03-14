@@ -47,8 +47,8 @@ To build the application bundle:
 - find `.apk file in composeApp/build/outputs/apk/debug/composeApp-debug.apk`
 
 #### **Desktop**
-Run the desktop application: `./gradlew :composeApp:run`
-Run desktop UI tests: `./gradlew :composeApp:jvmTest`
-Compile Jar: `./gradlew packageUberJarForCurrentOS`
-Compile AppImage: `./gradlew packageAppImage`
-Compile EXE: `./gradlew packageExe`
+- Run the desktop application: `./gradlew :composeApp:run`
+- Run desktop UI tests: `./gradlew :composeApp:jvmTest`
+- Compile Jar: `./gradlew packageUberJarForCurrentOS`
+- Compile AppImage: `./gradlew packageAppImage`
+- Compile EXE: `./gradlew packageExe`
