@@ -43,13 +43,12 @@ To run the application on android device/emulator:
 - open project in Android Studio and run imported android run configuration
 
 To build the application bundle:
-- run ./gradlew :composeApp:assembleDebug
-- find .apk file in composeApp/build/outputs/apk/debug/composeApp-debug.apk
-  Run android simulator UI tests: ./gradlew :composeApp:pixel5Check
+- run `./gradlew :composeApp:assembleDebug`
+- find `.apk file in composeApp/build/outputs/apk/debug/composeApp-debug.apk`
 
 #### **Desktop**
-Run the desktop application: ./gradlew :composeApp:run
-Run desktop UI tests: ./gradlew :composeApp:jvmTest
-Compile Jar: ./gradlew packageUberJarForCurrentOS
-Compile AppImage: ./gradlew packageAppImage
-Compile EXE: ./gradlew packageExe
+Run the desktop application: `./gradlew :composeApp:run`
+Run desktop UI tests: `./gradlew :composeApp:jvmTest`
+Compile Jar: `./gradlew packageUberJarForCurrentOS`
+Compile AppImage: `./gradlew packageAppImage`
+Compile EXE: `./gradlew packageExe`
