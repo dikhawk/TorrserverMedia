@@ -1,7 +1,7 @@
 # 🎬 TorrServerMedia
 
 **TorrServerMedia** is a cross-platform application for working with [TorrServer](https://github.com/YouROK/TorrServer), allowing you to easily stream media via torrent links.
-
+The project also integrates with [The Movie Database API](https://www.themoviedb.org/) to provide rich media information — movie posters, descriptions, and ratings.
 ---
 
 ## 🚀 **Project Features**
@@ -39,13 +39,17 @@ The project is built with **Kotlin Multiplatform (KMP)** using modern tools:
 ### ▶️ **Running the project**
 
 #### **Android**
-To run the application on an Android device/emulator:
-- Open the project in Android Studio and run the imported Android run configuration
+To run the application on android device/emulator:
+- open project in Android Studio and run imported android run configuration
 
 To build the application bundle:
-- Run `./gradlew :composeApp:assembleDebug`
-- Find the `.apk` file at `composeApp/build/outputs/apk/debug/composeApp-debug.apk`
+- run ./gradlew :composeApp:assembleDebug
+- find .apk file in composeApp/build/outputs/apk/debug/composeApp-debug.apk
+  Run android simulator UI tests: ./gradlew :composeApp:pixel5Check
 
-Run Android simulator UI tests:
-```bash
-./gradlew :composeApp:pixel5Check
+#### **Desktop**
+Run the desktop application: ./gradlew :composeApp:run
+Run desktop UI tests: ./gradlew :composeApp:jvmTest
+Compile Jar: ./gradlew packageUberJarForCurrentOS
+Compile AppImage: ./gradlew packageAppImage
+Compile EXE: ./gradlew packageExe
