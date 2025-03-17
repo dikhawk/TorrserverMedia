@@ -118,7 +118,7 @@ internal class DefaultDetailsComponent(
     }
 
     override fun showDetails(hash: String) {
-        _uiState.update { DetailsState() }
+        clearUiState()
         componentScope.launch {
             val torrent = torrentApi.getTorrent(hash).successResult() ?: return@launch
 
@@ -136,6 +136,10 @@ internal class DefaultDetailsComponent(
             }
             loadTmdbDetails(torrent)
         }
+    }
+
+    private fun clearUiState() {
+        _uiState.update { DetailsState() }
     }
 
     private suspend fun findAndAddThumbnail(torrent: Torrent): Torrent {
