@@ -118,6 +118,8 @@ internal class DefaultDetailsComponent(
     }
 
     override fun showDetails(hash: String) {
+        if (selectedTorrent?.hash == hash) return
+
         clearUiState()
         componentScope.launch {
             val torrent = torrentApi.getTorrent(hash).successResult() ?: return@launch
