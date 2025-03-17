@@ -20,6 +20,7 @@ import com.dik.torrentlist.screens.main.AddMagnetLink
 import com.dik.torrentlist.screens.main.AddTorrentFile
 import com.dik.torrentlist.screens.main.AddTorrentResult
 import com.dik.torrentlist.screens.main.DefaultMainComponent
+import com.dik.torrentlist.screens.main.FindPosterForTorrent
 import com.dik.torrentlist.screens.main.torrserverbar.TorrServerStarterPlatform
 import com.dik.torrentlist.utils.FileUtils
 import com.dik.torrserverapi.model.TorrserverStatus
@@ -63,6 +64,7 @@ class DefaultMainComponentTest {
     private val appSettings: AppSettings = mockk(relaxed = true) {
         every { language } returns AppLanguage.RUSSIAN
     }
+    private val findPosterForTorrent: FindPosterForTorrent = mockk(relaxed = true)
     private val tvSeasonTmdb: TvSeasonsTheMovieDbApi = mockk()
     private val navigateToDetails: (torrentHash: String, poster: String) -> Unit  = mockk(relaxed = true)
     private val localization: LocalizationResource = mockk()
@@ -169,6 +171,7 @@ class DefaultMainComponentTest {
         addMagnetLink = addMagnetLink,
         tvEpisodesTmdb = tvEpisodesTmdb,
         windowAdaptiveClient = windowAdaptiveClient,
+        findPosterForTorrent = findPosterForTorrent,
         appSettings = appSettings,
         tvSeasonTmdb = tvSeasonTmdb,
         openSettingsScreen = {},
