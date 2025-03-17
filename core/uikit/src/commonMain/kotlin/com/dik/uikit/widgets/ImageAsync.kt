@@ -15,8 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil3.PlatformContext
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import org.jetbrains.compose.resources.DrawableResource
@@ -40,7 +40,7 @@ fun AppAsyncImage(
         isError -> errorStub.invoke()
         else -> AsyncImage(
             modifier = modifier,
-            model = ImageRequest.Builder(PlatformContext.INSTANCE).data(url).crossfade(crossfade).build(),
+            model = ImageRequest.Builder(LocalPlatformContext.current).data(url).crossfade(crossfade).build(),
             contentDescription = contentDescription,
             contentScale = contentScale,
             onError = { _ -> isError = true }
