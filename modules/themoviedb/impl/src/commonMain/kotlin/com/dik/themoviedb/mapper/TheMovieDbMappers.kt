@@ -30,9 +30,9 @@ internal fun MoviePolymorphResponse.mapToMovie(): Movie {
         title = this.title ?: "",
         originalTitle = this.originalTitle ?: "",
         overview = this.overview ?: "",
-        poster300 = MOVIEDB_PIC_W300_URL + this.posterPath,
-        poster500 = MOVIEDB_PIC_W500_URL + this.posterPath,
-        posterOriginal = MOVIEDB_PIC_ORIGINAL_URL + this.posterPath,
+        poster300 = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_W300_URL + this.posterPath,
+        poster500 = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_W500_URL + this.posterPath,
+        posterOriginal = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_ORIGINAL_URL + this.posterPath,
         mediaType = this.mediaType.toMediaType(),
         adult = this.adult ?: false,
         originalLanguage = this.originalLanguage ?: "",
@@ -55,7 +55,7 @@ internal fun PersonPolymorphResponse.mapToPerson(): Person {
         popularity = this.popularity ?: 0.0,
         gender = this.gender ?: -1,
         knownForDepartment = this.knownForDepartment ?: "",
-        profilePath = MOVIEDB_PIC_W300_URL + this.profilePath
+        profilePath = if (this.profilePath.isNullOrEmpty()) "" else MOVIEDB_PIC_W300_URL + this.profilePath
     )
 }
 
@@ -66,9 +66,9 @@ internal fun TvShowPolymorphResponse.mapToTvShow(): TvShow {
         name = this.name ?: "",
         originalName = this.originalName ?: "",
         overview = this.overview ?: "",
-        poster300 = MOVIEDB_PIC_W300_URL + this.posterPath,
-        poster500 = MOVIEDB_PIC_W500_URL + this.posterPath,
-        posterOriginal = MOVIEDB_PIC_ORIGINAL_URL + this.posterPath,
+        poster300 = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_W300_URL + this.posterPath,
+        poster500 = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_W500_URL + this.posterPath,
+        posterOriginal = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_ORIGINAL_URL + this.posterPath,
         mediaType = this.mediaType.toMediaType(),
         adult = this.adult ?: false,
         originalLanguage = this.originalLanguage ?: "",
@@ -101,14 +101,14 @@ internal fun List<MovieResponse>.mapToMovieList(): List<Movie> {
 
 internal fun MovieResponse.mapToMovie(): Movie {
     return Movie(
-        backdropPath = MOVIEDB_PIC_W300_URL + this.backdropPath,
+        backdropPath = if (this.backdropPath.isNullOrEmpty()) "" else MOVIEDB_PIC_W300_URL + this.backdropPath,
         id = this.id ?: 0,
         title = this.title ?: "",
         originalTitle = this.originalTitle ?: "",
         overview = this.overview ?: "",
-        poster300 = MOVIEDB_PIC_W300_URL + this.posterPath,
-        poster500 = MOVIEDB_PIC_W500_URL + this.posterPath,
-        posterOriginal = MOVIEDB_PIC_ORIGINAL_URL + this.posterPath,
+        poster300 = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_W300_URL + this.posterPath,
+        poster500 = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_W500_URL + this.posterPath,
+        posterOriginal = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_ORIGINAL_URL + this.posterPath,
         mediaType = MediaType.Movie,
         adult = this.adult ?: false,
         originalLanguage = this.originalLanguage ?: "",
@@ -135,7 +135,7 @@ internal fun PersonResponse.mapToPerson(): Person {
         popularity = this.popularity ?: 0.0,
         gender = this.gender ?: -1,
         knownForDepartment = this.knownForDepartment ?: "",
-        profilePath = MOVIEDB_PIC_W300_URL + this.profilePath
+        profilePath = if (this.profilePath.isNullOrEmpty()) "" else MOVIEDB_PIC_W300_URL + this.profilePath
     )
 }
 
@@ -145,14 +145,14 @@ internal fun List<TvShowResponse>.mapToTvShowList(): List<TvShow> {
 
 internal fun TvShowResponse.mapToTvShow(): TvShow {
     return TvShow(
-        backdropPath = MOVIEDB_PIC_W300_URL + this.backdropPath,
+        backdropPath = if (this.backdropPath.isNullOrEmpty()) "" else MOVIEDB_PIC_W300_URL + this.backdropPath,
         id = this.id ?: 0,
         name = this.name ?: "",
         originalName = this.originalName ?: "",
         overview = this.overview ?: "",
-        poster300 = MOVIEDB_PIC_W300_URL + this.posterPath,
-        poster500 = MOVIEDB_PIC_W500_URL + this.posterPath,
-        posterOriginal = MOVIEDB_PIC_ORIGINAL_URL + this.posterPath,
+        poster300 = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_W300_URL + this.posterPath,
+        poster500 = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_W500_URL + this.posterPath,
+        posterOriginal = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_ORIGINAL_URL + this.posterPath,
         mediaType = MediaType.TV,
         adult = this.adult ?: false,
         originalLanguage = this.originalLanguage ?: "",
@@ -172,9 +172,9 @@ internal fun TvSeasonResponse.mapToTvSeason(): TvSeason {
         airDate = this.airDate,
         episodeCount = this.episodeCount,
         overview = this.overview,
-        poster300 = MOVIEDB_PIC_W300_URL + this.posterPath,
-        poster500 = MOVIEDB_PIC_W500_URL + this.posterPath,
-        posterOriginal = MOVIEDB_PIC_ORIGINAL_URL + this.posterPath,
+        poster300 = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_W300_URL + this.posterPath,
+        poster500 = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_W500_URL + this.posterPath,
+        posterOriginal = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_ORIGINAL_URL + this.posterPath,
         seasonNumber = this.seasonNumber,
         voteAverage = this.voteAverage,
         episodes = this.episodes?.mapToListTvEpisode() ?: emptyList()
