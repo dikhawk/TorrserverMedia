@@ -15,7 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import coil3.PlatformContext
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.vectorResource
 import torrservermedia.core.uikit.generated.resources.Res
@@ -27,6 +30,7 @@ fun AppAsyncImage(
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
     contentScale: ContentScale = ContentScale.None,
+    crossfade: Boolean = true,
     errorStub: @Composable () -> Unit = { ImageStub(modifier = modifier, image = Res.drawable.ic_movie) }
 ) {
     var isError by remember { mutableStateOf(false) }
@@ -36,12 +40,10 @@ fun AppAsyncImage(
         isError -> errorStub.invoke()
         else -> AsyncImage(
             modifier = modifier,
-            model = url,
+            model = ImageRequest.Builder(PlatformContext.INSTANCE).data(url).crossfade(crossfade).build(),
             contentDescription = contentDescription,
             contentScale = contentScale,
-            onError = { error ->
-                isError = true
-            }
+            onError = { _ -> isError = true }
         )
     }
 }
