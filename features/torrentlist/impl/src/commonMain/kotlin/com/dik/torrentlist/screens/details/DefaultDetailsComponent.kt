@@ -19,6 +19,7 @@ import com.dik.torrentlist.screens.components.bufferization.BufferizationCompone
 import com.dik.torrentlist.screens.components.bufferization.DefaultBufferizationComponent
 import com.dik.torrentlist.screens.details.files.DefaultContentFilesComponent
 import com.dik.torrentlist.screens.details.torrentstatistics.DefaultTorrentStatisticsComponent
+import com.dik.torrentlist.screens.main.FindPosterForTorrent
 import com.dik.torrentlist.utils.fileName
 import com.dik.torrserverapi.ContentFile
 import com.dik.torrserverapi.model.Torrent
@@ -46,6 +47,7 @@ internal class DefaultDetailsComponent(
     private val tvEpisodesTmdb: TvEpisodesTheMovieDbApi = inject(),
     private val screenFormat: DetailsComponentScreenFormat = inject(),
     private val localization: LocalizationResource = inject(),
+    private val findPosterForTorrent: FindPosterForTorrent = inject(),
     private val onClickPlayFile: suspend (torrent: Torrent, contentFile: ContentFile) -> Unit,
     private val onClickBack: () -> Unit = {}
 ) : ComponentContext by componentContext, DetailsComponent {
@@ -119,6 +121,8 @@ internal class DefaultDetailsComponent(
         _uiState.update { DetailsState() }
         componentScope.launch {
             val torrent = torrentApi.getTorrent(hash).successResult() ?: return@launch
+
+            findAndAddThumbnail(torrent)
             this@DefaultDetailsComponent.selectedTorrent = torrent
 
             contentFilesComponent.showFiles(torrent.files)
@@ -132,6 +136,18 @@ internal class DefaultDetailsComponent(
             }
             loadTmdbDetails(torrent)
         }
+    }
+
+    private suspend fun findAndAddThumbnail(torrent: Torrent): Torrent {
+        if (torrent.poster.isNotEmpty()) return torrent
+
+        val findResult = findPosterForTorrent.invoke(torrent).successResult()
+        val poster = findResult?.poster300 ?: return torrent
+
+        val updatedTorrent = torrent.copy(poster = poster)
+        torrentApi.updateTorrent(updatedTorrent)
+
+        return updatedTorrent
     }
 
     override fun runBufferization(
@@ -188,7 +204,8 @@ internal class DefaultDetailsComponent(
             _uiState.update {
                 it.copy(
                     title = "${tvShow.name} (${tvShow.originalName})",
-                    seasonNumber = localization.getString(Res.string.main_details_season).format(season),
+                    seasonNumber = localization.getString(Res.string.main_details_season)
+                        .format(season),
                     overview = tvSeason?.overview ?: (tvShow.overview ?: "")
                 )
             }
