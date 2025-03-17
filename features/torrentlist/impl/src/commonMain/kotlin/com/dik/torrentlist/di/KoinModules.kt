@@ -35,13 +35,16 @@ object KoinModules {
 
     private val mutex = Mutex()
 
+    @Volatile
     var koin: Koin? = null
         private set
 
     fun init(dependencies: TorrentListDependencies) {
-        if (koin == null) {
-            runBlocking {
-                mutex.withLock {
+        if (koin != null) return
+
+        runBlocking {
+            mutex.withLock {
+                if (koin == null) {
                     koin = koinApplication {
                         koinConfiguration(dependencies).invoke(this)
                         torrentListModules(dependencies)

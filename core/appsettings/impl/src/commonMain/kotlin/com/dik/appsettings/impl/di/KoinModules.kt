@@ -4,34 +4,47 @@ import com.dik.appsettings.api.model.AppSettings
 import com.dik.appsettings.impl.AppSettingsImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.koin.core.Koin
+import org.koin.core.KoinApplication
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 
 object KoinModules {
-    val koin: Koin by lazy {
-        koinApplication {
-//            modules()
-        }.koin
-    }
+
+    private val mutex = Mutex()
+
+    @Volatile
+    var koin: Koin? = null
+        private set
 
     fun init(dependencies: AppSettingsDependencies) {
-        koin.loadModules(
-            listOf(
-                appSettingModule(dependencies),
-                module {
-                    single<CoroutineScope> {
-                        CoroutineScope(
-                            SupervisorJob() + dependencies.dispatchers().mainDispatcher()
-                        )
-                    }
-                    factory<AppSettings> { AppSettingsImpl(get()) }
-                },
-            )
+        if (koin != null) return
+
+        runBlocking {
+            mutex.withLock {
+                if (koin == null) {
+                    koin = koinApplication { appsettingsModules(dependencies) }.koin
+                }
+            }
+        }
+    }
+
+    private fun KoinApplication.appsettingsModules(dependencies: AppSettingsDependencies)  {
+        modules(
+            appSettingModule(dependencies),
+            module {
+                single<CoroutineScope> {
+                    CoroutineScope(SupervisorJob() + dependencies.dispatchers().mainDispatcher())
+                }
+                factory<AppSettings> { AppSettingsImpl(get()) }
+            }
         )
     }
 }
 
 internal inline fun <reified T> inject(): T {
-    return KoinModules.koin.get()
+    return KoinModules.koin!!.get()
 }

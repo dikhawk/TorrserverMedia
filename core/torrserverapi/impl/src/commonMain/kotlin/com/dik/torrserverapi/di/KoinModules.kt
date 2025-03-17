@@ -9,15 +9,19 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.koinApplication
 
 object KoinModules {
+
     private val mutex = Mutex()
 
+    @Volatile
     var koin: Koin? = null
         private set
 
     fun init(dependencies: TorrserverDependencies) {
-        if (koin == null) {
-            runBlocking {
-                mutex.withLock {
+        if (koin != null) return
+
+        runBlocking {
+            mutex.withLock {
+                if (koin == null) {
                     koin = koinApplication {
                         koinConfiguration(dependencies).invoke(this)
                         torrserverModules(dependencies)

@@ -6,32 +6,48 @@ import com.dik.common.i18n.LocalizationResource
 import com.dik.torrserverapi.server.ServerSettingsApi
 import com.dik.torrserverapi.server.TorrserverCommands
 import com.dik.torrserverapi.server.TorrserverStuffApi
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.koin.core.Koin
+import org.koin.core.KoinApplication
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 
 object KoinModules {
 
-    val koin: Koin by lazy {
-        koinApplication {
+    private val mutex = Mutex()
 
-        }.koin
-    }
+    @Volatile
+    var koin: Koin? = null
+        private set
 
-    fun init(dependecies: SettingsDependencies): Koin {
-        koin.loadModules(listOf(module {
-            single<ServerSettingsApi> { dependecies.torrServerApi().serverSettingsApi() }
-            single<AppSettings> { dependecies.appSettings() }
-            single<AppDispatchers> { dependecies.dispatchers() }
-            single<TorrserverStuffApi> { dependecies.torrServerApi().torrserverStuffApi() }
-            single<TorrserverCommands> { dependecies.torrServerApi().torrserverCommands() }
-            single<LocalizationResource> { dependecies.localizationResource() }
-        }))
+    fun init(dependencies: SettingsDependencies) {
+        if (koin != null) return
 
-        return koin
+        runBlocking {
+            mutex.withLock {
+                if (koin == null) {
+                    koin = koinApplication { settingsListModules(dependencies) }.koin
+                }
+            }
+        }
     }
 }
 
+internal fun KoinApplication.settingsListModules(dependencies: SettingsDependencies) {
+    modules(
+        module {
+            single<ServerSettingsApi> { dependencies.torrServerApi().serverSettingsApi() }
+            single<AppSettings> { dependencies.appSettings() }
+            single<AppDispatchers> { dependencies.dispatchers() }
+            single<TorrserverStuffApi> { dependencies.torrServerApi().torrserverStuffApi() }
+            single<TorrserverCommands> { dependencies.torrServerApi().torrserverCommands() }
+            single<LocalizationResource> { dependencies.localizationResource() }
+        }
+    )
+}
+
 internal inline fun <reified T> inject(): T {
-    return KoinModules.koin.get()
+    return KoinModules.koin!!.get()
 }
