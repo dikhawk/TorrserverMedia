@@ -53,6 +53,7 @@ internal class DefaultMainComponent(
     private val appSettings: AppSettings = inject(),
     private val localization: LocalizationResource = inject(),
     private val torrServerStarter: TorrServerStarterPlatform = inject(),
+    private val findPosterForTorrent: FindPosterForTorrent = inject(),
     private val fileUtils: FileUtils = inject(),
     private val openSettingsScreen: () -> Unit = {},
     private val onClickPlayFile: suspend (contentFile: ContentFile) -> Unit,
@@ -135,6 +136,7 @@ internal class DefaultMainComponent(
             tvSeasonTmdb = tvSeasonTmdb,
             tvEpisodesTmdb = tvEpisodesTmdb,
             localization = localization,
+            findPosterForTorrent = findPosterForTorrent,
             screenFormat = DetailsComponentScreenFormat.PANE,
             onClickPlayFile = { torrent, contentFile ->
                 _uiState.update { it.copy(isShowDetails = true, isShowBufferization = true) }
