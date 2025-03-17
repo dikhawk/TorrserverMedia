@@ -60,13 +60,13 @@ object KoinModules {
     }
 }
 
-private fun useCasesModule() = module {
+internal fun useCasesModule() = module {
     factoryOf(::AddTorrentFile).bind<AddTorrentFile>()
     factoryOf(::FindPosterForTorrent).bind<FindPosterForTorrent>()
     factoryOf(::AddMagnetLink).bind<AddMagnetLink>()
 }
 
-private fun torrentListModule(dependencies: TorrentListDependencies) = module {
+internal fun torrentListModule(dependencies: TorrentListDependencies) = module {
     single<TorrserverApi> { dependencies.torrServerApi() }
     single<TorrserverStuffApi> { dependencies.torrServerApi().torrserverStuffApi() }
     single<TorrentApi> { dependencies.torrServerApi().torrentApi() }

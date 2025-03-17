@@ -7,18 +7,16 @@ import com.dik.common.player.platformPlayersCommands
 import com.dik.torrentlist.screens.main.torrserverbar.TorrServerStarterAndroidPlatform
 import com.dik.torrentlist.screens.main.torrserverbar.TorrServerStarterPlatform
 import com.dik.torrentlist.utils.FileUtils
+import com.dik.torrentlist.utils.FileUtilsAndroid
 import com.dik.torrserverapi.model.TorrserverServiceManager
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import com.dik.torrentlist.utils.FileUtilsAndroid
 
 
 internal actual fun platformModule(dependencies: TorrentListDependencies) = module {
     factory<PlatformPlayersDependencies> {
-        object : PlatformPlayersDependencies {
-            override fun context(): Context = get()
-        }
+        object : PlatformPlayersDependencies { override fun context(): Context = get() }
     }
     factory<PlayersCommands> { platformPlayersCommands(get()) }
     single<TorrserverServiceManager> { dependencies.torrserverServiceManager() }

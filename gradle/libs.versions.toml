@@ -115,4 +115,5 @@ testing = [
     "okio-fakefilesystem",
     "ktor-server-test-host",
     "ktor-client-mock",
+    "koin-test",
 ]
