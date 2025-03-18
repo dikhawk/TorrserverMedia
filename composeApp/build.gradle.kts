@@ -1,7 +1,6 @@
 
 import com.android.build.api.dsl.ManagedVirtualDevice
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -87,13 +86,6 @@ kotlin {
             implementation(libs.compose.adaptive)
         }
 
-        commonTest.dependencies {
-            implementation(kotlin("test"))
-            @OptIn(ExperimentalComposeLibrary::class)
-            implementation(compose.uiTest)
-            implementation(libs.kotlinx.coroutines.test)
-        }
-
         androidMain.dependencies {
             implementation(compose.uiTooling)
             implementation(compose.preview)
@@ -114,10 +106,10 @@ kotlin {
             implementation(libs.decompose.compose.ext)
         }
 
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
+        commonTest.dependencies {
+            implementation(libs.bundles.testing)
+            implementation(libs.kotlinx.coroutines.core)
         }
-
     }
 }
 

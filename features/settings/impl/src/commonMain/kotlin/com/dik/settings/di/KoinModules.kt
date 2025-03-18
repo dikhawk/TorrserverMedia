@@ -35,17 +35,19 @@ object KoinModules {
     }
 }
 
-internal fun KoinApplication.settingsListModules(dependencies: SettingsDependencies) {
+private fun KoinApplication.settingsListModules(dependencies: SettingsDependencies) {
     modules(
-        module {
-            single<ServerSettingsApi> { dependencies.torrServerApi().serverSettingsApi() }
-            single<AppSettings> { dependencies.appSettings() }
-            single<AppDispatchers> { dependencies.dispatchers() }
-            single<TorrserverStuffApi> { dependencies.torrServerApi().torrserverStuffApi() }
-            single<TorrserverCommands> { dependencies.torrServerApi().torrserverCommands() }
-            single<LocalizationResource> { dependencies.localizationResource() }
-        }
+        settingListModule(dependencies)
     )
+}
+
+internal fun settingListModule(dependencies: SettingsDependencies) = module {
+    single<ServerSettingsApi> { dependencies.torrServerApi().serverSettingsApi() }
+    single<AppSettings> { dependencies.appSettings() }
+    single<AppDispatchers> { dependencies.dispatchers() }
+    single<TorrserverStuffApi> { dependencies.torrServerApi().torrserverStuffApi() }
+    single<TorrserverCommands> { dependencies.torrServerApi().torrserverCommands() }
+    single<LocalizationResource> { dependencies.localizationResource() }
 }
 
 internal inline fun <reified T> inject(): T {

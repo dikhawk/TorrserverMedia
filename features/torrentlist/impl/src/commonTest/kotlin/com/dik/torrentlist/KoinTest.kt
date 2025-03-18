@@ -1,4 +1,4 @@
-package com.dik.torrentlist.details
+package com.dik.torrentlist
 
 import com.dik.torrentlist.di.TorrentListDependencies
 import com.dik.torrentlist.di.platformModule
@@ -15,19 +15,17 @@ class KoinTest {
 
     @OptIn(KoinExperimentalAPI::class)
     @Test
-    fun verifyModule() = runTest {
+    fun `Verify dependencies graph`() = runTest {
         val dependencies: TorrentListDependencies = mockk(relaxed = true)
-        val m = module {
+        val modules = module {
             includes(
-                platformModule(),
+                com.dik.torrentlist.details.platformModule(),
                 torrentListModule(dependencies),
                 useCasesModule(),
                 platformModule(dependencies)
             )
         }
 
-        m.verify()
+        modules.verify()
     }
-
-
 }

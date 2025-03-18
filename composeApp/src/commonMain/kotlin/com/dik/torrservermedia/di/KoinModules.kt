@@ -17,9 +17,11 @@ object KoinModules {
         private set
 
     fun init(config: KoinAppDeclaration? = null) {
-        if (koin == null) {
-            runBlocking {
-                mutex.withLock {
+        if (koin != null) return
+
+        runBlocking {
+            mutex.withLock {
+                if (koin == null) {
                     startKoin { }
                     koin = koinApplication {
                         config?.invoke(this)

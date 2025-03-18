@@ -35,14 +35,16 @@ object KoinModules {
     private fun KoinApplication.appsettingsModules(dependencies: AppSettingsDependencies)  {
         modules(
             appSettingModule(dependencies),
-            module {
-                single<CoroutineScope> {
-                    CoroutineScope(SupervisorJob() + dependencies.dispatchers().mainDispatcher())
-                }
-                factory<AppSettings> { AppSettingsImpl(get()) }
-            }
+            commonModule(dependencies)
         )
     }
+}
+
+internal fun commonModule(dependencies: AppSettingsDependencies) = module {
+    single<CoroutineScope> {
+        CoroutineScope(SupervisorJob() + dependencies.dispatchers().mainDispatcher())
+    }
+    factory<AppSettings> { AppSettingsImpl(get()) }
 }
 
 internal inline fun <reified T> inject(): T {

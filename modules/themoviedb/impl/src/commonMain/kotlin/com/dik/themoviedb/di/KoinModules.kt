@@ -34,11 +34,13 @@ internal object KoinModules {
         modules(
             theMovieDbModule,
             httpModule,
-            module {
-                single<AppDispatchers> { appDispatchers }
-            }
+            featureModule(appDispatchers)
         )
     }
+}
+
+internal fun featureModule(appDispatchers: AppDispatchers) = module {
+    single<AppDispatchers> { appDispatchers }
 }
 
 internal inline fun <reified T> inject(): T {

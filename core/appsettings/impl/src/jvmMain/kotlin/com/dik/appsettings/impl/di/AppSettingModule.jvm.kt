@@ -5,7 +5,7 @@ import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
 import org.koin.dsl.module
 
-actual fun appSettingModule(dependencies: AppSettingsDependencies) = module {
+internal actual fun appSettingModule(dependencies: AppSettingsDependencies) = module {
     single<AppDispatchers> { dependencies.dispatchers() }
     single<Settings> { PreferencesSettings.Factory().create("app_settings") }
 }
