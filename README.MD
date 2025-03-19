@@ -38,9 +38,9 @@ The project is built with **Kotlin Multiplatform (KMP)** using modern tools:
 
 ## 🖥️ Screens
 <div align="center">
-    <img src="screens/main_2pane.png" alt="2 pane mode" height="200">
-    <img src="screens/main.png" alt="Main screen" height="200">
-    <img src="screens/details.png" alt="Details" height="200">
+    <img src="screens/main_2pane.png" alt="2 pane mode" height="300">
+    <img src="screens/main.png" alt="Main screen" height="300">
+    <img src="screens/details.png" alt="Details" height="300">
 </div>
 
 ### ▶️ **Running the project**
