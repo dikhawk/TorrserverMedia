@@ -36,6 +36,11 @@ The project is built with **Kotlin Multiplatform (KMP)** using modern tools:
 2. **Set up Android Studio**
 3. **Add `local.properties` with the path to Android SDK**
 
+## 🖥️ Screens
+<img src="screens/main_2pane.png" alt="2 pane mode" width="50%">
+<img src="screens/main.png" alt="Main screen" width="50%">
+<img src="screens/details.png" alt="Details" width="50%">
+
 ### ▶️ **Running the project**
 
 #### **Android**
