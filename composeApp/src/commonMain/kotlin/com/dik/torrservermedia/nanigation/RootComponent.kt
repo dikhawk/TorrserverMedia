@@ -9,6 +9,8 @@ interface RootComponent : BackHandlerOwner {
 
     val stack: Value<ChildStack<*, Child>>
 
+    fun onOpenContent(config: ChildConfig)
+
     fun onBackClicked()
 
     sealed interface Child {

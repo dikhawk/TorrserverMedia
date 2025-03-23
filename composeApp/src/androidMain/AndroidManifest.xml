@@ -12,7 +12,7 @@
         <activity
             android:name=".AppActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTop"
             android:windowSoftInputMode="adjustPan"
             android:exported="true">
 
@@ -37,6 +37,16 @@
                 <data android:mimeType="application/x-bittorrent" />
                 <data android:host="*" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="magnet" />
+            </intent-filter>
+
         </activity>
     </application>
 

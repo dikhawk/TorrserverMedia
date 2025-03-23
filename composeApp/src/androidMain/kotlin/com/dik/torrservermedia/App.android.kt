@@ -86,6 +86,7 @@ class AppActivity : ComponentActivity() {
 
     private val torrserverService: TorrserverServiceManager = inject()
     private val appSettings: AppSettings = inject()
+    private lateinit var rootComponent: DefaultRootComponent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,8 +96,8 @@ class AppActivity : ComponentActivity() {
             setLocalization(appSettings.language)
         }
 
-        val root = DefaultRootComponent(
-            initialConfiguration = ChildConfig.TorrentList(pathToTorrent(intent)),
+        rootComponent = DefaultRootComponent(
+            initialConfiguration = initialConfiguration(intent) ?: ChildConfig.TorrentList,
             componentContext = defaultComponentContext(),
             featureTorrentListApi = inject(),
             featureSettingsApi = inject(),
@@ -114,7 +115,7 @@ class AppActivity : ComponentActivity() {
             val notificationPermission = rememberMultiplePermissionsState(permissions)
 
             AppTheme {
-                RootUi(component = root)
+                RootUi(component = rootComponent)
             }
 
             LaunchedEffect(Unit) {
@@ -123,18 +124,28 @@ class AppActivity : ComponentActivity() {
         }
     }
 
-    private fun pathToTorrent(intent: Intent): String? {
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+
+        val config = initialConfiguration(intent) ?: return
+
+        rootComponent.onOpenContent(config)
+    }
+
+    private fun initialConfiguration(intent: Intent): ChildConfig? {
         val action = intent.action
         val data: Uri? = intent.data
         val type = intent.type
+        val scheme = intent.scheme
         val torrentType = "application/x-bittorrent"
+        val magnetScheme = "magnet"
 
         if (action != Intent.ACTION_VIEW || data == null) return null
 
-        if (type == torrentType) {
-            return data.pathToFile(this)
+        return when {
+            type == torrentType -> ChildConfig.OpenTorrent(data.pathToFile(this) ?: "")
+            scheme == magnetScheme -> ChildConfig.OpenMagnet(data.toString())
+            else -> null
         }
-
-        return null
     }
 }

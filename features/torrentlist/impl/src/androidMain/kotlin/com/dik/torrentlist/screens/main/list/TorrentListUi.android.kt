@@ -50,15 +50,15 @@ internal actual fun SharedTransitionScope.TorrentListUi(
 ) {
     val uiState by component.uiState.collectAsState()
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier) {
         when {
             uiState.torrents.isEmpty() -> EmptyListStub(
-                modifier = modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center)
             )
 
             else -> Torrents(
                 torrents = uiState.torrents,
-                modifier = modifier,
+                modifier = Modifier,
                 isVisible = isVisible,
                 onClickItem = { component.onClickItem(it) }
             )

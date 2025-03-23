@@ -8,6 +8,7 @@ import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.i18n.LocalizationResource
 import com.dik.common.platform.WindowAdaptiveClient
+import com.dik.common.utils.repeatIf
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
 import com.dik.themoviedb.TvSeasonsTheMovieDbApi
@@ -32,7 +33,6 @@ import com.dik.torrserverapi.server.TorrserverCommands
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -174,24 +174,25 @@ internal class DefaultMainComponent(
     }
 
     fun addTorrentAndShowDetails(pathToTorrent: String) {
-        componentScope.launch {
-            var tries = 0
-            val maxTries = 100
-            val delay = 100L
+        componentScope.launch(dispatchers.mainDispatcher()) {
+            val result = suspend {
+                addTorrentFile.invoke(pathToTorrent)
+            }.repeatIf { _uiState.value.serverStatus != TorrserverStatus.STARTED }
 
-            while (tries < maxTries) {
-                tries++
+            if (result?.torrent != null) {
+                showDetails(result.torrent)
+            }
+        }
+    }
 
-                if (_uiState.value.serverStatus == TorrserverStatus.STARTED) {
-                    val result = addTorrentFile.invoke(pathToTorrent)
-                    if (result.torrent != null) {
-                        showDetails(result.torrent)
-                    }
+    fun addMagnetLinkAndShowDetails(magnetLink: String) {
+        componentScope.launch(dispatchers.mainDispatcher()) {
+            val result = suspend {
+                addMagnetLink.invoke(magnetLink)
+            }.repeatIf { _uiState.value.serverStatus != TorrserverStatus.STARTED }
 
-                    break
-                }
-
-                delay(delay)
+            if (result?.torrent != null) {
+                showDetails(result.torrent)
             }
         }
     }

@@ -98,7 +98,7 @@ internal fun SharedTransitionScope.MainTwoPaneUi(
 
         Row(modifier = Modifier.fillMaxSize()) {
             TorrentListUi(
-                modifier = Modifier.weight(1f).fillMaxHeight().padding(4.dp),
+                modifier = Modifier.weight(1f).fillMaxHeight().padding(6.dp),
                 component = component.torrentListComponent,
                 isVisible = isVisible
             )

@@ -5,7 +5,7 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.value.Value
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.player.PlayersCommands
@@ -20,7 +20,7 @@ import com.dik.torrserverapi.ContentFile
 
 internal class DefaultRootComponent(
     componentContext: ComponentContext,
-    private val initialConfiguration: ChildConfig = ChildConfig.Main(),
+    private val initialConfiguration: ChildConfig = ChildConfig.Main,
     private val settingsFeatureApi: SettingsFeatureApi = inject(),
     private val appSettings: AppSettings = inject(),
     private val playersCommands: PlayersCommands = inject(),
@@ -38,18 +38,20 @@ internal class DefaultRootComponent(
 
     override fun mainComponent(
         componentContext: ComponentContext,
-        pathToTorrent: String?
+        addContent: AddContent?
     ): MainComponent {
         return DefaultMainComponent(
             context = componentContext,
-            openSettingsScreen = { navigation.push(ChildConfig.Settings) },
+            openSettingsScreen = { navigation.pushNew(ChildConfig.Settings) },
             onClickPlayFile = { playFile(it) },
             navigateToDetails = { hash, poster ->
-                navigation.push(ChildConfig.Details(hash, poster))
+                navigation.pushNew(ChildConfig.Details(hash, poster))
             }
         ).apply {
-            if (pathToTorrent != null) {
-                addTorrentAndShowDetails(pathToTorrent)
+            when (addContent) {
+                is AddContent.Magnet -> addMagnetLinkAndShowDetails(addContent.magnetLink)
+                is AddContent.Torrent -> addTorrentAndShowDetails(addContent.path)
+                else -> return@apply
             }
         }
     }
@@ -82,8 +84,14 @@ internal class DefaultRootComponent(
         config: ChildConfig,
         componentContext: ComponentContext
     ): RootComponent.Child = when (config) {
-        is ChildConfig.Main -> RootComponent.Child.Main(
-            mainComponent(componentContext, config.pathToTorrent)
+        is ChildConfig.Main -> RootComponent.Child.Main(mainComponent(componentContext))
+
+        is ChildConfig.AddMagnet -> RootComponent.Child.Main(
+            mainComponent(componentContext, AddContent.Magnet(config.magnetLink))
+        )
+
+        is ChildConfig.AddTorrent ->
+            RootComponent.Child.Main(mainComponent(componentContext, AddContent.Torrent(config.pathToTorrent))
         )
 
         is ChildConfig.Details -> RootComponent.Child.Details(

@@ -1,3 +1,4 @@
+
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
@@ -26,7 +27,6 @@ import org.jetbrains.compose.resources.stringResource
 import torrservermedia.composeapp.generated.resources.Res
 import torrservermedia.composeapp.generated.resources.app_name
 import java.awt.Dimension
-import java.io.File
 
 
 fun main(args: Array<String>) {
@@ -41,7 +41,7 @@ fun main(args: Array<String>) {
     val scope = CoroutineScope(dispatchers.defaultDispatcher() + SupervisorJob())
     val root = runOnUiThread {
         DefaultRootComponent(
-            initialConfiguration = ChildConfig.TorrentList(pathToTorrent(pathToFile)),
+            initialConfiguration = ChildConfig.TorrentList,
             componentContext = DefaultComponentContext(lifecycle = lifecycle),
             featureTorrentListApi = inject(),
             featureSettingsApi = inject(),
@@ -70,17 +70,4 @@ fun main(args: Array<String>) {
             }
         }
     }
-}
-
-private fun pathToTorrent(pathToFile: String?): String? {
-    if (pathToFile == null) return null
-
-    val file = File(pathToFile)
-    val torrentExtension = "torrent"
-
-    if (!file.exists()) return null
-
-    if (file.extension == torrentExtension) return pathToFile
-
-    return null
 }

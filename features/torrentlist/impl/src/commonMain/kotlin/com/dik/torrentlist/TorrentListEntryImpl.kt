@@ -9,20 +9,34 @@ import com.dik.torrentlist.screens.navigation.RootUi
 
 class TorrentListEntryImpl() : TorrentListEntry() {
 
-    override fun root(
-        pathToTorrent: String?,
+    override fun openTorrent(
+        pathToTorrent: String,
         context: ComponentContext,
         onFinish: () -> Unit
     ): @Composable () -> Unit = {
         val rootComponent = remember {
             DefaultRootComponent(
                 componentContext = context,
-                initialConfiguration = ChildConfig.Main(pathToTorrent)
+                initialConfiguration = ChildConfig.AddTorrent(pathToTorrent)
             )
         }
 
         RootUi(rootComponent)
+    }
 
+    override fun openMagnet(
+        magnetLink: String,
+        context: ComponentContext,
+        onFinish: () -> Unit
+    ): @Composable () -> Unit = {
+        val rootComponent = remember {
+            DefaultRootComponent(
+                componentContext = context,
+                initialConfiguration = ChildConfig.AddMagnet(magnetLink)
+            )
+        }
+
+        RootUi(rootComponent)
     }
 
     override fun root(context: ComponentContext, onFinish: () -> Unit): @Composable () -> Unit = {

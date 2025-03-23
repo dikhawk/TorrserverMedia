@@ -6,7 +6,13 @@ import kotlinx.serialization.Serializable
 sealed interface ChildConfig {
 
     @Serializable
-    data class Main(val pathToTorrent: String? = null) : ChildConfig
+    data object Main : ChildConfig
+
+    @Serializable
+    data class AddTorrent(val pathToTorrent: String) : ChildConfig
+
+    @Serializable
+    data class AddMagnet(val magnetLink: String) : ChildConfig
 
     @Serializable
     data class Details(val torrentHash: String, val poster: String) : ChildConfig
