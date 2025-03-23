@@ -5,8 +5,15 @@ import com.arkivanov.decompose.ComponentContext
 import com.dik.common.navigation.FeatureEntry
 
 abstract class TorrentListEntry : FeatureEntry {
-    abstract fun root(
-        pathToTorrent: String? = null,
+
+    abstract fun openTorrent(
+        pathToTorrent: String,
+        context: ComponentContext,
+        onFinish: () -> Unit = {}
+    ): @Composable () -> Unit
+
+    abstract fun openMagnet(
+        magnetLink: String,
         context: ComponentContext,
         onFinish: () -> Unit = {}
     ): @Composable () -> Unit
