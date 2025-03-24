@@ -195,6 +195,7 @@ internal class DefaultMainComponent(
             val hash = result?.torrent?.hash
                 ?: return@launch
 
+            //waiting while magnet downloaded meta info
             val torrentResult = suspend { torrentApi.getTorrent(hash) }
                 .repeatIf(maxTries = 15) { it is Result.Error || it.successResult()?.size == 0L }
             val torrent = torrentResult?.successResult()
