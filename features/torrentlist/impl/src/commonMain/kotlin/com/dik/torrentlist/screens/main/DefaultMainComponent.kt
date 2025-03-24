@@ -6,9 +6,11 @@ import com.arkivanov.decompose.childContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
+import com.dik.common.Result
 import com.dik.common.i18n.LocalizationResource
 import com.dik.common.platform.WindowAdaptiveClient
 import com.dik.common.utils.repeatIf
+import com.dik.common.utils.successResult
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
 import com.dik.themoviedb.TvSeasonsTheMovieDbApi
@@ -177,7 +179,7 @@ internal class DefaultMainComponent(
         componentScope.launch(dispatchers.mainDispatcher()) {
             val result = suspend {
                 addTorrentFile.invoke(pathToTorrent)
-            }.repeatIf { _uiState.value.serverStatus != TorrserverStatus.STARTED }
+            }.repeatIf(maxTries = 15) { _uiState.value.serverStatus != TorrserverStatus.STARTED }
 
             if (result?.torrent != null) {
                 showDetails(result.torrent)
@@ -189,11 +191,16 @@ internal class DefaultMainComponent(
         componentScope.launch(dispatchers.mainDispatcher()) {
             val result = suspend {
                 addMagnetLink.invoke(magnetLink)
-            }.repeatIf { _uiState.value.serverStatus != TorrserverStatus.STARTED }
+            }.repeatIf(maxTries = 15) { _uiState.value.serverStatus != TorrserverStatus.STARTED }
+            val hash = result?.torrent?.hash
+                ?: return@launch
 
-            if (result?.torrent != null) {
-                showDetails(result.torrent)
-            }
+            val torrentResult = suspend { torrentApi.getTorrent(hash) }
+                .repeatIf(maxTries = 15) { it is Result.Error || it.successResult()?.size == 0L }
+            val torrent = torrentResult?.successResult()
+                ?: return@launch
+
+            showDetails(torrent)
         }
     }
 }
