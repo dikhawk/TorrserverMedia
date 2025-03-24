@@ -18,7 +18,7 @@ suspend fun <T, E : Error> Deferred<Result<T, E>>.repeatIfError(tries: Int = 3, 
 }
 
 suspend fun <T> (suspend () -> T).repeatIf(
-    maxTries: Int = 15, delay: Long = 1000L, predicate: (T) -> Boolean
+    maxTries: Int = 5, delay: Long = 1000L, predicate: (T) -> Boolean
 ): T? {
     for (t in 1..maxTries) {
         val result = invoke()
