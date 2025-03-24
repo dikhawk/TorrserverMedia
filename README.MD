@@ -59,3 +59,7 @@ To build the application bundle:
 - Compile Jar: `./gradlew packageUberJarForCurrentOS`
 - Compile AppImage: `./gradlew packageAppImage`
 - Compile EXE: `./gradlew packageExe`
+
+## License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT)
