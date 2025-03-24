@@ -1,1 +1,3 @@
 -fixed wrong url poster
+-fixed style for android
+-add intent magnet for android
