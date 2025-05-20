@@ -1,4 +1,4 @@
-
+package com.dik.torrservermedia
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
@@ -12,7 +12,6 @@ import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.i18n.setLocalization
 import com.dik.torrserverapi.di.TorrserverApi
-import com.dik.torrservermedia.RootUi
 import com.dik.torrservermedia.di.KoinModules
 import com.dik.torrservermedia.di.inject
 import com.dik.torrservermedia.nanigation.ChildConfig
