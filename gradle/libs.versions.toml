@@ -30,7 +30,7 @@ android-lifecycle = "2.9.0"
 commpose-adaptive = "1.1.0"
 mockk = "1.14.2"
 turbine = "1.2.0"
-hot-reload="1.0.0-alpha10"
+hot-reload="1.0.0-rc02"
 
 
 [libraries]
