@@ -1,9 +1,10 @@
 package com.dik.videofilenameparser
 
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 
 val reportTitleExp = listOf(
@@ -491,6 +492,7 @@ data class ParsedMatchCollection(
     var releaseTokens: String? = null
 )
 
+@OptIn(ExperimentalTime::class)
 fun parseMatchCollection(
     match: MatchResult,
     simpleTitle: String
@@ -600,9 +602,9 @@ fun parseMatchCollection(
         }
 
 //        val airDate = Date(airYear - 1900, airMonth - 1, airDay)
-        val airDate = LocalDateTime(year = airYear, monthNumber = airMonth, dayOfMonth = airDay, hour = 0, minute = 0)
+        val airDate = LocalDateTime(year = airYear, month = airMonth, day = airDay, hour = 0, minute = 0)
         val nowDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-        val date1970 = LocalDateTime(year = 1970, monthNumber = 1, dayOfMonth = 1, hour = 0, minute = 0)
+        val date1970 = LocalDateTime(year = 1970, month = 1, day = 1, hour = 0, minute = 0)
 
 
         if (airDate > nowDate) {
