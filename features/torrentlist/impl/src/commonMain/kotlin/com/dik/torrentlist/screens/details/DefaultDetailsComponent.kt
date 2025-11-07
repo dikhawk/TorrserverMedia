@@ -87,7 +87,7 @@ internal class DefaultDetailsComponent(
         componentContext = childContext("torrent_statistics"),
         dispatchers = dispatchers,
         componentScope = componentScope,
-        torrrentApi = torrentApi,
+        torrentApi = torrentApi,
         localization = localization,
     )
 

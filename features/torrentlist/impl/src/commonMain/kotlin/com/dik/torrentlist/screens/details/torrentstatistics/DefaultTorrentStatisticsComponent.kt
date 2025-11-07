@@ -19,11 +19,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+private const val STATISTICS_REFRESH_DELAY = 2_000L
+
 class DefaultTorrentStatisticsComponent(
     componentContext: ComponentContext,
     private val dispatchers: AppDispatchers,
     private val componentScope: CoroutineScope,
-    private val torrrentApi: TorrentApi,
+    private val torrentApi: TorrentApi,
     private val localization: LocalizationResource
 ) : TorrentStatisticsComponent, ComponentContext by componentContext {
 
@@ -37,13 +39,12 @@ class DefaultTorrentStatisticsComponent(
 
         showStatisticsJob = componentScope.launch(dispatchers.defaultDispatcher()) {
             while (true) {
-                val result = torrrentApi.getTorrent(hash)
-                when (val res = result) {
-                    is Result.Error -> showError(res.error)
-                    is Result.Success -> updateUiState(res.data)
+                when (val result = torrentApi.getTorrent(hash)) {
+                    is Result.Error -> showError(result.error)
+                    is Result.Success -> updateUiState(result.data)
                 }
 
-                delay(2000)
+                delay(STATISTICS_REFRESH_DELAY)
             }
         }
     }
@@ -65,9 +66,8 @@ class DefaultTorrentStatisticsComponent(
         }
     }
 
-    private fun showError(error: TorrserverError) {
-        componentScope.launch {
-            _uiState.update { it.copy(error = error.toMessage(localization)) }
-        }
+    private suspend fun showError(error: TorrserverError) {
+        val errorMessage = error.toMessage(localization)
+        _uiState.update { it.copy(error = errorMessage) }
     }
 }

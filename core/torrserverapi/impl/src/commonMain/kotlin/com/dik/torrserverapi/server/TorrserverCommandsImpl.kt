@@ -44,95 +44,72 @@ internal class TorrserverCommandsImpl(
         }
 
     override suspend fun startServer(): Result<Unit, TorrserverError> {
-        try {
-            torServerStatus.emit(TorrserverStatus.RUNNING)
-            Logger.i("Server is running")
-            var isStartedServer = isServerStarted().successResult() ?: false
+        return try {
+            emitStatus(TorrserverStatus.RUNNING, "Server is running")
 
-            if (isStartedServer) {
-                torServerStatus.emit(TorrserverStatus.STARTED)
-                Logger.i("Server is started")
-                startMonitorServerStatus()
-                return Result.Success(Unit)
+            if (isServerRunning()) {
+                onServerStarted()
+                Result.Success(Unit)
+            } else {
+                ensureServerInstalled()?.let { return it }
+
+                torserverRunner.run()
+
+                if (isServerRunning()) {
+                    onServerStarted()
+                    Result.Success(Unit)
+                } else {
+                    emitStatus(
+                        TorrserverStatus.NOT_STARTED,
+                        "Server not started",
+                        isError = true
+                    )
+                    Result.Error(TorrserverError.Server.NotStarted)
+                }
             }
-
-            val isServerInstalledResult = isServerInstalled()
-            val isServerInstalled = isServerInstalledResult.successResult() ?: false
-            if (!isServerInstalled || (isServerInstalledResult is Result.Error)) {
-                torServerStatus.emit(TorrserverStatus.NOT_INSTALLED)
-                Logger.i("Server file not exist")
-                return Result.Error(TorrserverError.Server.FileNotExist("Server file not exist"))
-            }
-
-            torserverRunner.run()
-
-            isStartedServer = isServerStarted().successResult() ?: false
-            if (isStartedServer) {
-                torServerStatus.emit(TorrserverStatus.STARTED)
-                Logger.i("Server is started")
-                startMonitorServerStatus()
-                return Result.Success(Unit)
-            }
-
-            torServerStatus.emit(TorrserverStatus.NOT_STARTED)
-            Logger.e("Server not started")
-            return Result.Error(TorrserverError.Server.NotStarted)
         } catch (e: Exception) {
-            torServerStatus.emit(TorrserverStatus.NOT_STARTED)
-            Logger.e(e.toString())
-            return Result.Error(TorrserverError.Unknown(e.message ?: ""))
+            emitStatus(TorrserverStatus.NOT_STARTED, e.toString(), isError = true)
+            Result.Error(TorrserverError.Unknown(e.message ?: ""))
         }
     }
 
     override suspend fun stopServer(): Result<Unit, TorrserverError> {
-        val result = withContext(appDispatchers.ioDispatcher()) {
-            torrserverStuffApi.stopServer()
-        }
+        val result = withIoContext { torrserverStuffApi.stopServer() }
 
         stopMonitorServerStatus()
 
-        //A waiting when server stopped
-        val tries = 5
-        for (t in 1..tries) {
-            val echoResult =
-                withContext(appDispatchers.ioDispatcher()) { torrserverStuffApi.echo() }
-            if (echoResult is Result.Error) break
+        waitUntilServerStops()
 
-            delay(1000)
-        }
-
-        torServerStatus.emit(TorrserverStatus.STOPPED)
+        emitStatus(TorrserverStatus.STOPPED, "Server is stopped")
         return result
     }
 
     override suspend fun isServerInstalled(): Result<Boolean, TorrserverError> {
-        val isServerInstalled = withContext(appDispatchers.ioDispatcher()) {
+        val isInstalled = withIoContext {
+            val path = config.pathToServerFile.toPath()
             try {
-                val path = config.pathToServerFile.toPath()
-                val fileSize = FileSystem.SYSTEM.metadata(path).size ?: 0L
-                val isFileExist = FileSystem.SYSTEM.exists(path)
+                if (!FileSystem.SYSTEM.exists(path)) return@withIoContext false
 
-                fileSize > 0 && isFileExist
+                val fileSize = FileSystem.SYSTEM.metadata(path).size ?: 0L
+                fileSize > 0
             } catch (e: FileNotFoundException) {
                 Logger.e(e.toString())
                 false
             }
         }
 
-        return Result.Success(isServerInstalled)
+        return Result.Success(isInstalled)
     }
 
     override suspend fun isServerStarted(): Result<Boolean, TorrserverError> {
         try {
-            val tries = 10
-            for (t in 1..tries) {
-                val echoResult =
-                    withContext(appDispatchers.ioDispatcher()) { torrserverStuffApi.echo() }
+            repeat(SERVER_START_RETRY_COUNT) {
+                val echoResult = withIoContext { torrserverStuffApi.echo() }
                 if (echoResult is Result.Success) {
                     return Result.Success(true)
                 }
 
-                delay(500)
+                delay(SERVER_START_RETRY_DELAY_MS)
             }
 
             return Result.Success(false)
@@ -144,9 +121,7 @@ internal class TorrserverCommandsImpl(
 
     override suspend fun isAvailableNewVersion(): Result<Boolean, TorrserverError> {
         try {
-            val serverStatusResult = withContext(appDispatchers.ioDispatcher()) {
-                torrserverStuffApi.echo()
-            }
+            val serverStatusResult = withIoContext { torrserverStuffApi.echo() }
 
             if (serverStatusResult is Result.Error) return Result.Error(serverStatusResult.error)
 
@@ -184,22 +159,80 @@ internal class TorrserverCommandsImpl(
         monitorServerStatus?.cancel()
         monitorServerStatus = scope.launch(appDispatchers.defaultDispatcher()) {
             while (true) {
-                val isServerInstalled = isServerInstalled().successResult() ?: false
-                val isServerStarted = isServerStarted().successResult() ?: false
+                val installed = isServerInstalled().successResult() ?: false
+                val started = isServerStarted().successResult() ?: false
 
-                if (!isServerInstalled && !isServerStarted) {
-                    torServerStatus.emit(TorrserverStatus.NOT_INSTALLED)
+                if (!installed && !started) {
+                    emitStatus(TorrserverStatus.NOT_INSTALLED, isError = true)
                     break
                 }
 
-                torServerStatus.emit(if (isServerStarted) TorrserverStatus.STARTED else TorrserverStatus.NOT_STARTED)
+                emitStatus(if (started) TorrserverStatus.STARTED else TorrserverStatus.NOT_STARTED)
 
-                delay(500)
+                delay(STATUS_POLL_DELAY_MS)
             }
         }
     }
 
     private fun stopMonitorServerStatus() {
         monitorServerStatus?.cancel()
+    }
+
+    private suspend fun waitUntilServerStops() {
+        repeat(SERVER_STOP_RETRY_COUNT) {
+            val echoResult = withIoContext { torrserverStuffApi.echo() }
+            if (echoResult is Result.Error) return
+
+            delay(SERVER_STOP_RETRY_DELAY_MS)
+        }
+    }
+
+    private suspend fun isServerRunning(): Boolean = isServerStarted().successResult() ?: false
+
+    private suspend fun ensureServerInstalled(): Result<Unit, TorrserverError>? {
+        val installResult = isServerInstalled()
+        val isInstalled = installResult.successResult() ?: false
+        return if (!isInstalled || installResult is Result.Error) {
+            emitStatus(
+                TorrserverStatus.NOT_INSTALLED,
+                SERVER_FILE_NOT_EXIST_MESSAGE,
+                isError = true
+            )
+            Result.Error(TorrserverError.Server.FileNotExist(SERVER_FILE_NOT_EXIST_MESSAGE))
+        } else {
+            null
+        }
+    }
+
+    private suspend fun onServerStarted() {
+        emitStatus(TorrserverStatus.STARTED, "Server is started")
+        startMonitorServerStatus()
+    }
+
+    private suspend fun emitStatus(
+        status: TorrserverStatus,
+        message: String? = null,
+        isError: Boolean = false
+    ) {
+        torServerStatus.emit(status)
+        message?.let {
+            if (isError) {
+                Logger.e(it)
+            } else {
+                Logger.i(it)
+            }
+        }
+    }
+
+    private suspend fun <T> withIoContext(block: suspend () -> T): T =
+        withContext(appDispatchers.ioDispatcher()) { block() }
+
+    private companion object {
+        const val SERVER_START_RETRY_COUNT = 10
+        const val SERVER_STOP_RETRY_COUNT = 5
+        const val SERVER_START_RETRY_DELAY_MS = 500L
+        const val SERVER_STOP_RETRY_DELAY_MS = 1000L
+        const val STATUS_POLL_DELAY_MS = 500L
+        const val SERVER_FILE_NOT_EXIST_MESSAGE = "Server file not exist"
     }
 }
