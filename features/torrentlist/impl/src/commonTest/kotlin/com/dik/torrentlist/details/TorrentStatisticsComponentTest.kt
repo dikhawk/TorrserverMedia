@@ -96,7 +96,7 @@ class TorrentStatisticsComponentTest {
         componentContext = mockk(relaxed = true),
         dispatchers = dispatchers,
         componentScope = testScope,
-        torrrentApi = torrrentApi,
+        torrentApi = torrrentApi,
         localization = localization
     )
 }
