@@ -6,10 +6,10 @@ import com.dik.common.Result
 import com.dik.common.ResultProgress
 import com.dik.common.utils.successResult
 import com.dik.torrserverapi.TorrserverError
+import com.dik.torrserverapi.domain.InstallTorrserverUseCase
+import com.dik.torrserverapi.domain.RestoreServerFromBackUpUseCase
 import com.dik.torrserverapi.model.TorrserverFile
-import com.dik.torrserverapi.model.TorrserverStatus
 import com.dik.torrserverapi.server.api.TorrserverStuffApi
-import com.dik.torrserverapi.server.installer.InstallTorrserver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -26,8 +26,8 @@ import okio.Path.Companion.toPath
 internal class TorrserverCommandsImpl(
     private val torserverRunner: TorrserverRunner,
     private val torrserverStuffApi: TorrserverStuffApi,
-    private val installTorrserver: InstallTorrserver,
-    private val restoreServerFromBackUp: RestoreServerFromBackUp,
+    private val installTorrserver: InstallTorrserverUseCase,
+    private val restoreServerFromBackUp: RestoreServerFromBackUpUseCase,
     private val appDispatchers: AppDispatchers,
     private val scope: CoroutineScope,
     private val config: ServerConfig

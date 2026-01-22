@@ -5,8 +5,8 @@ import com.dik.common.i18n.LocalizationResource
 import com.dik.torrentlist.screens.main.AddMagnetLink
 import com.dik.torrentlist.screens.main.AddTorrentFile
 import com.dik.torrentlist.utils.FileUtils
-import com.dik.torrserverapi.model.TorrserverStatus
 import com.dik.torrserverapi.server.TorrserverCommands
+import com.dik.torrserverapi.server.TorrserverStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

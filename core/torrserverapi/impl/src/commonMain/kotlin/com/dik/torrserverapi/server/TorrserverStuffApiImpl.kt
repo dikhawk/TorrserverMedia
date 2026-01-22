@@ -2,18 +2,16 @@ package com.dik.torrserverapi.server
 
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
-import com.dik.torrserverapi.LOCAL_TORRENT_SERVER
 import com.dik.torrserverapi.TorrserverError
+import com.dik.torrserverapi.data.mappers.mapRelease
+import com.dik.torrserverapi.data.response.ReleaseResponse
 import com.dik.torrserverapi.model.Release
 import com.dik.torrserverapi.server.api.TorrserverStuffApi
-import com.dik.torrserverapi.server.mappers.mapRelease
-import com.dik.torrserverapi.server.response.ReleaseResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.http.HttpStatusCode
-import kotlinx.coroutines.withContext
 import java.net.ConnectException
 
 class TorrserverStuffApiImpl(
@@ -23,9 +21,8 @@ class TorrserverStuffApiImpl(
 
     override suspend fun echo(): Result<String, TorrserverError> {
         try {
-            val request = withContext(appDispatchers.ioDispatcher()) {
-                client.get("$LOCAL_TORRENT_SERVER/echo")
-            }
+            val request = client.get("/echo")
+
 
             val result = request.body<String>()
 
@@ -41,9 +38,8 @@ class TorrserverStuffApiImpl(
 
     override suspend fun stopServer(): Result<Unit, TorrserverError> {
         try {
-            val request = withContext(appDispatchers.ioDispatcher()) {
-                client.get("$LOCAL_TORRENT_SERVER/shutdown")
-            }
+            val request = client.get("/shutdown")
+
 
             if (request.status != HttpStatusCode.OK) {
                 return Result.Error(
@@ -61,11 +57,10 @@ class TorrserverStuffApiImpl(
 
     override suspend fun checkLatestRelease(): Result<Release, TorrserverError> {
         try {
-            val request = withContext(appDispatchers.ioDispatcher()) {
-                client.get("https://api.github.com/repos/YouROK/TorrServer/releases") {
-                    parameter("per_page", 1)
-                }
+            val request = client.get("https://api.github.com/repos/YouROK/TorrServer/releases") {
+                parameter("per_page", 1)
             }
+
 
             val result = request.body<List<ReleaseResponse>>()
 

@@ -5,11 +5,14 @@ import com.dik.common.AppDispatchers
 import com.dik.common.Result
 import com.dik.common.ResultProgress
 import com.dik.torrserverapi.TorrserverError
+import com.dik.torrserverapi.domain.BackupFileUseCase
+import com.dik.torrserverapi.domain.DownloadFileUseCase
+import com.dik.torrserverapi.domain.RestoreServerFromBackUpUseCase
 import com.dik.torrserverapi.model.Asset
 import com.dik.torrserverapi.model.Release
 import com.dik.torrserverapi.model.TorrserverFile
 import com.dik.torrserverapi.server.api.TorrserverStuffApi
-import com.dik.torrserverapi.server.installer.InstallTorrserver
+import com.dik.torrserverapi.domain.InstallTorrserverUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -25,9 +28,9 @@ import kotlin.test.assertTrue
 class InstallTorrserverTest {
 
     private val torrserverStuffApi: TorrserverStuffApi = mockk(relaxed = true)
-    private val downloadFile: DownloadFile = mockk(relaxed = true)
-    private val backupFile: BackupFile = mockk(relaxed = true)
-    private val restoreServerFromBackUp: RestoreServerFromBackUp = mockk(relaxed = true)
+    private val downloadFile: DownloadFileUseCase = mockk(relaxed = true)
+    private val backupFile: BackupFileUseCase = mockk(relaxed = true)
+    private val restoreServerFromBackUp: RestoreServerFromBackUpUseCase = mockk(relaxed = true)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -144,7 +147,7 @@ class InstallTorrserverTest {
         }
     }
 
-    private fun getInstallTorrserver() = InstallTorrserver(
+    private fun getInstallTorrserver() = InstallTorrserverUseCase(
         torrserverStuffApi = torrserverStuffApi,
         downloadFile = downloadFile,
         backupFile = backupFile,

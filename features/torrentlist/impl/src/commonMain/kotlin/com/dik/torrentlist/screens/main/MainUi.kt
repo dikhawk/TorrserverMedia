@@ -23,7 +23,7 @@ import com.dik.torrentlist.screens.details.DetailsPaneUi
 import com.dik.torrentlist.screens.main.appbar.MainAppBarUi
 import com.dik.torrentlist.screens.main.list.TorrentListUi
 import com.dik.torrentlist.screens.main.torrserverbar.TorrserverBarUi
-import com.dik.torrserverapi.model.TorrserverStatus
+import com.dik.torrserverapi.server.TorrserverStatus
 import com.dik.uikit.utils.currentWindowSizeWidth
 
 @OptIn(ExperimentalSharedTransitionApi::class)

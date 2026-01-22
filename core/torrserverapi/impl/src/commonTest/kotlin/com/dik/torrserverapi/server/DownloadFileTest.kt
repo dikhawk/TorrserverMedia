@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import com.dik.common.AppDispatchers
 import com.dik.common.ResultProgress
 import com.dik.torrserverapi.TorrserverError
+import com.dik.torrserverapi.domain.DownloadFileUseCase
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -58,7 +59,8 @@ class DownloadFileTest {
         val outputPath = "downloaded.txt"
         val outputPathOkio = outputPath.toPath()
         val fileSystem = FakeFileSystem()
-        val downloadFile = DownloadFile(dispatchers = appDispatchers, fileSystem = fileSystem, ktor = ktor)
+        val downloadFile =
+            DownloadFileUseCase(dispatchers = appDispatchers, fileSystem = fileSystem, ktor = ktor)
 
         downloadFile.invoke(fileUrl, outputPath).test {
             assertTrue(awaitItem() is ResultProgress.Loading)
@@ -96,7 +98,8 @@ class DownloadFileTest {
         val ktor = HttpClient(mockEngine)
         val outputPath = "downloaded.txt"
         val fileSystem = FakeFileSystem()
-        val downloadFile = DownloadFile(dispatchers = appDispatchers, fileSystem = fileSystem, ktor = ktor)
+        val downloadFile =
+            DownloadFileUseCase(dispatchers = appDispatchers, fileSystem = fileSystem, ktor = ktor)
 
         downloadFile.invoke(fileUrl, outputPath).test {
             assertTrue(awaitItem() is ResultProgress.Loading)
@@ -130,7 +133,8 @@ class DownloadFileTest {
         val fileSystem: FileSystem = mockk(relaxed = true) {
             every { createDirectories(any()) } throws IOException("No access to read")
         }
-        val downloadFile = DownloadFile(dispatchers = appDispatchers, fileSystem = fileSystem, ktor = ktor)
+        val downloadFile =
+            DownloadFileUseCase(dispatchers = appDispatchers, fileSystem = fileSystem, ktor = ktor)
 
         downloadFile.invoke(fileUrl, outputPath).test {
             assertTrue(awaitItem() is ResultProgress.Loading)

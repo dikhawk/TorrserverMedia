@@ -2,6 +2,7 @@ package com.dik.torrserverapi.server
 
 import com.dik.common.Result
 import com.dik.torrserverapi.TorrserverError
+import com.dik.torrserverapi.domain.BackupFileUseCase
 import io.mockk.every
 import io.mockk.mockk
 import okio.FileSystem
@@ -17,7 +18,7 @@ class BackUpFileTest {
     @Test
     fun `Should create a backup when file exists`() {
         val fileSystem = FakeFileSystem()
-        val backupFile = BackupFile(fileSystem)
+        val backupFile = BackupFileUseCase(fileSystem)
 
         val file = "test.txt".toPath()
         val backup = "backup.txt".toPath()
@@ -34,7 +35,7 @@ class BackUpFileTest {
     @Test
     fun `Should return error when file does not exist`() {
         val fileSystem = FakeFileSystem()
-        val backupFile = BackupFile(fileSystem)
+        val backupFile = BackupFileUseCase(fileSystem)
 
         val result = backupFile("missing.txt", "backup.txt")
 
@@ -48,7 +49,7 @@ class BackUpFileTest {
             every { exists(any()) } returns true
             every { delete(any()) } throws IOException("Delete failed")
         }
-        val backupFile = BackupFile(fileSystem)
+        val backupFile = BackupFileUseCase(fileSystem)
 
         val file = "test.txt".toPath()
         fileSystem.write(file) { writeUtf8("Hello") }
@@ -66,7 +67,7 @@ class BackUpFileTest {
             every { delete(any()) } returns Unit
             every { copy(any(), any()) } throws IOException("Copy failed")
         }
-        val backupFile = BackupFile(fileSystem)
+        val backupFile = BackupFileUseCase(fileSystem)
 
         val file = "test.txt".toPath()
         fileSystem.write(file) { writeUtf8("Hello") }

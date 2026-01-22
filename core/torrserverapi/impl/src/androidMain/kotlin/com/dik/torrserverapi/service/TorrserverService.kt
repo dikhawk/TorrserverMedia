@@ -20,8 +20,8 @@ import com.dik.common.AppDispatchers
 import com.dik.common.utils.successResult
 import com.dik.torrserverapi.di.inject
 import com.dik.torrserverapi.impl.R
-import com.dik.torrserverapi.model.TorrserverStatus
 import com.dik.torrserverapi.server.TorrserverCommands
+import com.dik.torrserverapi.server.TorrserverStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel

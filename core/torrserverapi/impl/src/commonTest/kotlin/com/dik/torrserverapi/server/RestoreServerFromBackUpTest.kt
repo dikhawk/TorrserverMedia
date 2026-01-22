@@ -3,6 +3,7 @@ package com.dik.torrserverapi.server
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
 import com.dik.torrserverapi.TorrserverError
+import com.dik.torrserverapi.domain.RestoreServerFromBackUpUseCase
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineDispatcher
@@ -32,7 +33,8 @@ class RestoreServerFromBackUpTest {
         val fileSystem = FakeFileSystem()
         val pathToBackupFile = "backup_file"
         val pathToFile = "restored_backup_file"
-        val restoreServerFromBackUp = RestoreServerFromBackUp(dispatchers = dispatchers, fileSystem = fileSystem)
+        val restoreServerFromBackUp =
+            RestoreServerFromBackUpUseCase(dispatchers = dispatchers, fileSystem = fileSystem)
 
         fileSystem.write(pathToBackupFile.toPath()) { writeUtf8("original file") }
 
@@ -47,7 +49,8 @@ class RestoreServerFromBackUpTest {
         val fileSystem = FakeFileSystem()
         val pathToBackupFile = "backup_file"
         val pathToFile = "original_file"
-        val restoreServerFromBackUp = RestoreServerFromBackUp(dispatchers = dispatchers, fileSystem = fileSystem)
+        val restoreServerFromBackUp =
+            RestoreServerFromBackUpUseCase(dispatchers = dispatchers, fileSystem = fileSystem)
         val result = restoreServerFromBackUp.invoke(pathToBackupFile, pathToFile)
 
         assertTrue(result is Result.Error)
@@ -62,7 +65,8 @@ class RestoreServerFromBackUpTest {
             every { exists(any()) } returns true
             every { copy(pathToBackupFile.toPath(), pathToFile.toPath()) } throws IOException("Permission error")
         }
-        val restoreServerFromBackUp = RestoreServerFromBackUp(dispatchers = dispatchers, fileSystem = fileSystem)
+        val restoreServerFromBackUp =
+            RestoreServerFromBackUpUseCase(dispatchers = dispatchers, fileSystem = fileSystem)
         val result = restoreServerFromBackUp.invoke(pathToBackupFile, pathToFile)
 
         assertTrue(result is Result.Error)
