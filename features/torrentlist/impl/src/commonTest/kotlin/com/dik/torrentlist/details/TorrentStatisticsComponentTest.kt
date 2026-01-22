@@ -10,7 +10,7 @@ import com.dik.torrentlist.screens.details.torrentstatistics.DefaultTorrentStati
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.PlayStatistics
 import com.dik.torrserverapi.model.Torrent
-import com.dik.torrserverapi.server.TorrentApi
+import com.dik.torrserverapi.server.api.TorrentApi
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk

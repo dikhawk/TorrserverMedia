@@ -7,7 +7,7 @@ import com.dik.torrentlist.screens.main.AddTorrentResult
 import com.dik.torrentlist.screens.main.list.DefaultTorrentListComponent
 import com.dik.torrentlist.utils.FileUtils
 import com.dik.torrserverapi.TorrserverError
-import com.dik.torrserverapi.server.TorrentApi
+import com.dik.torrserverapi.server.api.TorrentApi
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.mockk

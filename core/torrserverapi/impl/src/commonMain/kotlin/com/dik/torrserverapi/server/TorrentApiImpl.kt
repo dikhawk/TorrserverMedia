@@ -7,6 +7,7 @@ import com.dik.torrserverapi.LOCAL_TORRENT_SERVER
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.model.Viewed
+import com.dik.torrserverapi.server.api.TorrentApi
 import com.dik.torrserverapi.server.mappers.mapToTorrent
 import com.dik.torrserverapi.server.mappers.mapToTorrentList
 import com.dik.torrserverapi.server.mappers.mapToViewedList

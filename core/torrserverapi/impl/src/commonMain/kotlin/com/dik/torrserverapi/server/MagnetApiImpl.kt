@@ -5,6 +5,7 @@ import com.dik.common.Result
 import com.dik.torrserverapi.LOCAL_TORRENT_SERVER
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.Torrent
+import com.dik.torrserverapi.server.api.MagnetApi
 import com.dik.torrserverapi.server.mappers.mapToTorrent
 import com.dik.torrserverapi.server.model.Body
 import com.dik.torrserverapi.server.response.TorrentResponse

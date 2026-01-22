@@ -8,6 +8,8 @@ import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.Asset
 import com.dik.torrserverapi.model.Release
 import com.dik.torrserverapi.model.TorrserverFile
+import com.dik.torrserverapi.server.api.TorrserverStuffApi
+import com.dik.torrserverapi.server.installer.InstallTorrserver
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

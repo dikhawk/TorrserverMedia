@@ -1,10 +1,10 @@
 package com.dik.torrserverapi.di
 
-import com.dik.torrserverapi.server.MagnetApi
-import com.dik.torrserverapi.server.ServerSettingsApi
-import com.dik.torrserverapi.server.TorrentApi
 import com.dik.torrserverapi.server.TorrserverCommands
-import com.dik.torrserverapi.server.TorrserverStuffApi
+import com.dik.torrserverapi.server.api.MagnetApi
+import com.dik.torrserverapi.server.api.ServerSettingsApi
+import com.dik.torrserverapi.server.api.TorrentApi
+import com.dik.torrserverapi.server.api.TorrserverStuffApi
 
 internal actual fun torrserverComponent(
     dependencies: TorrserverDependencies

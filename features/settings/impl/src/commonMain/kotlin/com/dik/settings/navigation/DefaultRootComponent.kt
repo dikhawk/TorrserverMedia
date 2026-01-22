@@ -12,9 +12,9 @@ import com.dik.common.i18n.LocalizationResource
 import com.dik.settings.di.inject
 import com.dik.settings.main.DefaultMainComponent
 import com.dik.settings.main.MainComponent
-import com.dik.torrserverapi.server.ServerSettingsApi
+import com.dik.torrserverapi.server.api.ServerSettingsApi
 import com.dik.torrserverapi.server.TorrserverCommands
-import com.dik.torrserverapi.server.TorrserverStuffApi
+import com.dik.torrserverapi.server.api.TorrserverStuffApi
 
 internal class DefaultRootComponent(
     context: ComponentContext,

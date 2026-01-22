@@ -5,6 +5,7 @@ import com.dik.common.Result
 import com.dik.torrserverapi.LOCAL_TORRENT_SERVER
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.ServerSettings
+import com.dik.torrserverapi.server.api.ServerSettingsApi
 import com.dik.torrserverapi.server.mappers.mapToServerSettings
 import com.dik.torrserverapi.server.mappers.mapToSettings
 import com.dik.torrserverapi.server.model.Body

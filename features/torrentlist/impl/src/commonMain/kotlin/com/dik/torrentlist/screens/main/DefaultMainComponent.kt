@@ -27,10 +27,10 @@ import com.dik.torrentlist.screens.main.torrserverbar.DefaultTorrserverBarCompon
 import com.dik.torrentlist.screens.main.torrserverbar.TorrServerStarterPlatform
 import com.dik.torrentlist.screens.main.torrserverbar.TorrserverBarComponent
 import com.dik.torrentlist.utils.FileUtils
-import com.dik.torrserverapi.ContentFile
+import com.dik.torrserverapi.model.ContentFile
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.model.TorrserverStatus
-import com.dik.torrserverapi.server.TorrentApi
+import com.dik.torrserverapi.server.api.TorrentApi
 import com.dik.torrserverapi.server.TorrserverCommands
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob

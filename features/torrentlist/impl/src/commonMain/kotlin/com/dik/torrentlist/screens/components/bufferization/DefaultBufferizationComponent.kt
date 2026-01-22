@@ -13,9 +13,9 @@ import com.dik.themoviedb.model.TvShow
 import com.dik.torrentlist.converters.bytesToBits
 import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrentlist.utils.fileName
-import com.dik.torrserverapi.ContentFile
+import com.dik.torrserverapi.model.ContentFile
 import com.dik.torrserverapi.model.Torrent
-import com.dik.torrserverapi.server.TorrentApi
+import com.dik.torrserverapi.server.api.TorrentApi
 import com.dik.videofilenameparser.ParsedBase
 import com.dik.videofilenameparser.ParsedShow
 import com.dik.videofilenameparser.parseFileNameBase

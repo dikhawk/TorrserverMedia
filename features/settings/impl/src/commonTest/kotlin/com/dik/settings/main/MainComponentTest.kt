@@ -17,9 +17,9 @@ import com.dik.settings.utils.toLongOrZero
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.ServerSettings
 import com.dik.torrserverapi.model.TorrserverFile
-import com.dik.torrserverapi.server.ServerSettingsApi
+import com.dik.torrserverapi.server.api.ServerSettingsApi
 import com.dik.torrserverapi.server.TorrserverCommands
-import com.dik.torrserverapi.server.TorrserverStuffApi
+import com.dik.torrserverapi.server.api.TorrserverStuffApi
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every

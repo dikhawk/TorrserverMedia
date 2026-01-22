@@ -1,4 +1,4 @@
-package com.dik.torrserverapi.server
+package com.dik.torrserverapi.server.api
 
 import com.dik.common.Result
 import com.dik.torrserverapi.TorrserverError

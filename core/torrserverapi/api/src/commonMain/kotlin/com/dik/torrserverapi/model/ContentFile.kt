@@ -1,4 +1,4 @@
-package com.dik.torrserverapi
+package com.dik.torrserverapi.model
 
 data class ContentFile(
     val id: Int,

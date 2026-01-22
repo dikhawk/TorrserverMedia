@@ -6,7 +6,7 @@ import com.dik.torrentlist.screens.main.AddTorrentFile
 import com.dik.torrentlist.screens.main.AddTorrentResult
 import com.dik.torrentlist.utils.FileUtils
 import com.dik.torrserverapi.model.Torrent
-import com.dik.torrserverapi.server.TorrentApi
+import com.dik.torrserverapi.server.api.TorrentApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job

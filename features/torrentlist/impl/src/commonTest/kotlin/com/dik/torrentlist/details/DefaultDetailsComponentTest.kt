@@ -20,9 +20,9 @@ import com.dik.torrentlist.screens.details.DetailsComponentScreenFormat
 import com.dik.torrentlist.screens.main.FindPosterForTorrent
 import com.dik.torrentlist.screens.main.Poster
 import com.dik.torrentlist.utils.fileName
-import com.dik.torrserverapi.ContentFile
+import com.dik.torrserverapi.model.ContentFile
 import com.dik.torrserverapi.model.Torrent
-import com.dik.torrserverapi.server.TorrentApi
+import com.dik.torrserverapi.server.api.TorrentApi
 import com.dik.videofilenameparser.parseFileNameBase
 import com.dik.videofilenameparser.parseFileNameTvShow
 import io.mockk.coEvery

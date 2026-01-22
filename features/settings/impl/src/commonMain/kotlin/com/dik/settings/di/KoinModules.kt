@@ -3,9 +3,9 @@ package com.dik.settings.di
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.i18n.LocalizationResource
-import com.dik.torrserverapi.server.ServerSettingsApi
+import com.dik.torrserverapi.server.api.ServerSettingsApi
 import com.dik.torrserverapi.server.TorrserverCommands
-import com.dik.torrserverapi.server.TorrserverStuffApi
+import com.dik.torrserverapi.server.api.TorrserverStuffApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

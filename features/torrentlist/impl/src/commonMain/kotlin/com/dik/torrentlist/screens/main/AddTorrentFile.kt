@@ -6,7 +6,7 @@ import com.dik.common.utils.successResult
 import com.dik.torrentlist.error.toMessage
 import com.dik.torrentlist.utils.FileUtils
 import com.dik.torrserverapi.model.Torrent
-import com.dik.torrserverapi.server.TorrentApi
+import com.dik.torrserverapi.server.api.TorrentApi
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.main_torrent_list_add_torrent_file_not_exist
 

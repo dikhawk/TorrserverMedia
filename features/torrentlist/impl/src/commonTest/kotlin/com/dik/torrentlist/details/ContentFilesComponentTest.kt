@@ -3,7 +3,7 @@ package com.dik.torrentlist.details
 import app.cash.turbine.test
 import com.dik.common.AppDispatchers
 import com.dik.torrentlist.screens.details.files.DefaultContentFilesComponent
-import com.dik.torrserverapi.ContentFile
+import com.dik.torrserverapi.model.ContentFile
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi

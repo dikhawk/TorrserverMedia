@@ -16,10 +16,10 @@ import com.dik.torrentlist.converters.bytesToBits
 import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrentlist.screens.components.bufferization.DefaultBufferizationComponent
 import com.dik.torrentlist.utils.fileName
-import com.dik.torrserverapi.ContentFile
+import com.dik.torrserverapi.model.ContentFile
 import com.dik.torrserverapi.model.PlayStatistics
 import com.dik.torrserverapi.model.Torrent
-import com.dik.torrserverapi.server.TorrentApi
+import com.dik.torrserverapi.server.api.TorrentApi
 import com.dik.videofilenameparser.parseFileNameBase
 import com.dik.videofilenameparser.parseFileNameTvShow
 import io.mockk.coEvery

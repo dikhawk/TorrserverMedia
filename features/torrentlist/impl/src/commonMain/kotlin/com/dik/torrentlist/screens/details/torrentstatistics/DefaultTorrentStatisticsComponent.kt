@@ -9,7 +9,7 @@ import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrentlist.error.toMessage
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.Torrent
-import com.dik.torrserverapi.server.TorrentApi
+import com.dik.torrserverapi.server.api.TorrentApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

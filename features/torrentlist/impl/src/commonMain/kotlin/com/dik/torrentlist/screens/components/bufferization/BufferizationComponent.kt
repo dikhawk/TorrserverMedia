@@ -1,7 +1,7 @@
 package com.dik.torrentlist.screens.components.bufferization
 
 import androidx.compose.runtime.Stable
-import com.dik.torrserverapi.ContentFile
+import com.dik.torrserverapi.model.ContentFile
 import com.dik.torrserverapi.model.Torrent
 import kotlinx.coroutines.flow.StateFlow
 

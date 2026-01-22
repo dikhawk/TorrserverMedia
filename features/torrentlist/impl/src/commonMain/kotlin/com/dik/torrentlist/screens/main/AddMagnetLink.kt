@@ -6,8 +6,8 @@ import com.dik.common.utils.successResult
 import com.dik.torrentlist.error.toMessage
 import com.dik.torrentlist.utils.isValidMagnetLink
 import com.dik.torrserverapi.model.Torrent
-import com.dik.torrserverapi.server.MagnetApi
-import com.dik.torrserverapi.server.TorrentApi
+import com.dik.torrserverapi.server.api.MagnetApi
+import com.dik.torrserverapi.server.api.TorrentApi
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.main_add_dialog_error_invalid_magnet
 

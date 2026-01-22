@@ -16,10 +16,10 @@ import com.dik.torrentlist.screens.main.AddMagnetLink
 import com.dik.torrentlist.screens.main.AddTorrentFile
 import com.dik.torrentlist.screens.main.FindPosterForTorrent
 import com.dik.torrserverapi.di.TorrserverApi
-import com.dik.torrserverapi.server.MagnetApi
-import com.dik.torrserverapi.server.TorrentApi
+import com.dik.torrserverapi.server.api.MagnetApi
+import com.dik.torrserverapi.server.api.TorrentApi
 import com.dik.torrserverapi.server.TorrserverCommands
-import com.dik.torrserverapi.server.TorrserverStuffApi
+import com.dik.torrserverapi.server.api.TorrserverStuffApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

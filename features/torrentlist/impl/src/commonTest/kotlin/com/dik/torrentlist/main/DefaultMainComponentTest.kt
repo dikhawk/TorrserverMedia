@@ -24,7 +24,7 @@ import com.dik.torrentlist.screens.main.FindPosterForTorrent
 import com.dik.torrentlist.screens.main.torrserverbar.TorrServerStarterPlatform
 import com.dik.torrentlist.utils.FileUtils
 import com.dik.torrserverapi.model.TorrserverStatus
-import com.dik.torrserverapi.server.TorrentApi
+import com.dik.torrserverapi.server.api.TorrentApi
 import com.dik.torrserverapi.server.TorrserverCommands
 import io.mockk.coEvery
 import io.mockk.every

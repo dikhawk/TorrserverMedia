@@ -5,6 +5,7 @@ import com.dik.common.Result
 import com.dik.torrserverapi.LOCAL_TORRENT_SERVER
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.Release
+import com.dik.torrserverapi.server.api.TorrserverStuffApi
 import com.dik.torrserverapi.server.mappers.mapRelease
 import com.dik.torrserverapi.server.response.ReleaseResponse
 import io.ktor.client.HttpClient

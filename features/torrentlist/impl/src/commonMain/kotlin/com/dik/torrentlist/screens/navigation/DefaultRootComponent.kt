@@ -16,7 +16,7 @@ import com.dik.torrentlist.screens.details.DetailsComponent
 import com.dik.torrentlist.screens.details.DetailsComponentScreenFormat
 import com.dik.torrentlist.screens.main.DefaultMainComponent
 import com.dik.torrentlist.screens.main.MainComponent
-import com.dik.torrserverapi.ContentFile
+import com.dik.torrserverapi.model.ContentFile
 
 internal class DefaultRootComponent(
     componentContext: ComponentContext,

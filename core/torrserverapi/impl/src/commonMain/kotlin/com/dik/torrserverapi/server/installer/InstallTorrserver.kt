@@ -1,4 +1,4 @@
-package com.dik.torrserverapi.server
+package com.dik.torrserverapi.server.installer
 
 import co.touchlab.kermit.Logger
 import com.dik.common.AppDispatchers
@@ -11,6 +11,10 @@ import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.Asset
 import com.dik.torrserverapi.model.Release
 import com.dik.torrserverapi.model.TorrserverFile
+import com.dik.torrserverapi.server.BackupFile
+import com.dik.torrserverapi.server.DownloadFile
+import com.dik.torrserverapi.server.RestoreServerFromBackUp
+import com.dik.torrserverapi.server.api.TorrserverStuffApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -28,7 +32,7 @@ internal class InstallTorrserver(
     operator fun invoke(
         outputFilePath: String, outputBackupFilePath: String
     ): Flow<ResultProgress<TorrserverFile, TorrserverError>> = flow {
-        Logger.i("$tag started installing")
+        Logger.Companion.i("$tag started installing")
         val latestRelease = torrserverStuffApi.checkLatestRelease()
 
         if (latestRelease is Result.Error) {
@@ -40,11 +44,11 @@ internal class InstallTorrserver(
         val platform = platformName()
         val asset = if (latestRelease is Result.Success)
             latestRelease.data.findSupportedAsset(cpuArh, platform) else null
-        Logger.i("$tag platform: $asset")
+        Logger.Companion.i("$tag platform: $asset")
 
         if (asset == null) {
             emit(ResultProgress.Error(TorrserverError.Server.PlatformNotSupported("Not supported os: ${platform.osname} or arch $cpuArh")))
-            Logger.i("$tag Not supported os: ${platform.osname} or arch $cpuArh")
+            Logger.Companion.i("$tag Not supported os: ${platform.osname} or arch $cpuArh")
             return@flow
         }
 
@@ -60,7 +64,7 @@ internal class InstallTorrserver(
             }
         }
     }.catch { e ->
-        Logger.e("$tag $e")
+        Logger.Companion.e("$tag $e")
         emit(ResultProgress.Error(TorrserverError.Unknown(e.toString())))
     }.flowOn(dispatchers.defaultDispatcher())
 
@@ -71,4 +75,3 @@ internal class InstallTorrserver(
         }
     }
 }
-

@@ -1,7 +1,7 @@
 package com.dik.torrentlist.screens.details.files
 
 import androidx.compose.runtime.Stable
-import com.dik.torrserverapi.ContentFile
+import com.dik.torrserverapi.model.ContentFile
 import kotlinx.coroutines.flow.StateFlow
 
 internal interface ContentFilesComponent {

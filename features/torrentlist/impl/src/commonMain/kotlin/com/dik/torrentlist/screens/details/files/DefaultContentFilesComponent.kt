@@ -3,7 +3,7 @@ package com.dik.torrentlist.screens.details.files
 import com.arkivanov.decompose.ComponentContext
 import com.dik.common.AppDispatchers
 import com.dik.torrentlist.converters.toReadableSize
-import com.dik.torrserverapi.ContentFile
+import com.dik.torrserverapi.model.ContentFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

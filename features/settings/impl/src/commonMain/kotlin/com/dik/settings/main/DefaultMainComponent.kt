@@ -18,9 +18,9 @@ import com.dik.settings.utils.mbToBytes
 import com.dik.settings.utils.toIntOrZero
 import com.dik.settings.utils.toLongOrZero
 import com.dik.torrserverapi.model.ServerSettings
-import com.dik.torrserverapi.server.ServerSettingsApi
+import com.dik.torrserverapi.server.api.ServerSettingsApi
 import com.dik.torrserverapi.server.TorrserverCommands
-import com.dik.torrserverapi.server.TorrserverStuffApi
+import com.dik.torrserverapi.server.api.TorrserverStuffApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel

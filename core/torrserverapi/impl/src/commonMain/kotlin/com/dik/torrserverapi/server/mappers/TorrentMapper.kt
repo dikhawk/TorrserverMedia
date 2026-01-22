@@ -1,6 +1,6 @@
 package com.dik.torrserverapi.server.mappers
 
-import com.dik.torrserverapi.ContentFile
+import com.dik.torrserverapi.model.ContentFile
 import com.dik.torrserverapi.model.PlayStatistics
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.model.Viewed
