@@ -4,7 +4,7 @@ import com.dik.common.Result
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.Release
 
-interface TorrserverStuffApi {
+interface TorrserverApiClient {
 
     /**
      * Tests whether server is alive or not
