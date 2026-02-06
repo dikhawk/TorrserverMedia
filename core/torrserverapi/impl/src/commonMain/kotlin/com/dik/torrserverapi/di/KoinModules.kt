@@ -13,7 +13,6 @@ object KoinModules {
 
     private val mutex = Mutex()
 
-    @Volatile
     var koin: Koin? = null
         private set
 
