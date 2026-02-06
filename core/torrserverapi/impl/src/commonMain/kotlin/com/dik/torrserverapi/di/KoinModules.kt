@@ -1,5 +1,6 @@
 package com.dik.torrserverapi.di
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -19,7 +20,7 @@ object KoinModules {
     fun init(dependencies: TorrserverDependencies) {
         if (koin != null) return
 
-        runBlocking {
+        runBlocking(Dispatchers.Default) {
             mutex.withLock {
                 if (koin == null) {
                     koin = koinApplication {
@@ -35,6 +36,7 @@ object KoinModules {
         modules(
             torrserverModule,
             httpModule,
+            useCasesModule,
             dependencyModule(dependencies),
             platformModule()
         )

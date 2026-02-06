@@ -1,5 +1,6 @@
 package com.dik.torrserverapi.di
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -7,21 +8,21 @@ import kotlinx.coroutines.sync.withLock
 abstract class TorrserverComponent : TorrserverApi {
 
     companion object {
-        private var torrserverComponent: TorrserverComponent? = null
+        private var component: TorrserverComponent? = null
         private val mutex = Mutex()
 
         fun get(dependencies: TorrserverDependencies): TorrserverComponent {
-            if (torrserverComponent == null) {
-                runBlocking {
+            if (component == null) {
+                runBlocking(Dispatchers.Default) {
                     mutex.withLock {
-                        if (torrserverComponent == null) {
-                            torrserverComponent = torrserverComponent(dependencies)
+                        if (component == null) {
+                            component = torrserverComponent(dependencies)
                         }
                     }
                 }
             }
 
-            return torrserverComponent!!
+            return component!!
         }
     }
 }

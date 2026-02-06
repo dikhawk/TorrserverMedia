@@ -7,20 +7,28 @@ import com.dik.torrserverapi.SettingsConst
 import com.dik.torrserverapi.data.MagnetApiImpl
 import com.dik.torrserverapi.data.ServerSettingsApiImpl
 import com.dik.torrserverapi.data.TorrentApiImpl
+import com.dik.torrserverapi.data.TorrserverManagerImpl
+import com.dik.torrserverapi.data.FileManagerImpl
+import com.dik.torrserverapi.data.filedownloader.FileDownloaderImpl
 import com.dik.torrserverapi.data.http.createHttpClient
-import com.dik.torrserverapi.domain.BackupFileUseCase
-import com.dik.torrserverapi.domain.DownloadFileUseCase
-import com.dik.torrserverapi.domain.InstallTorrserverUseCase
-import com.dik.torrserverapi.domain.RestoreServerFromBackUpUseCase
+import com.dik.torrserverapi.domain.filedownloader.FileDownloader
+import com.dik.torrserverapi.domain.filemanager.FileManager
+import com.dik.torrserverapi.domain.usecases.BackupFileUseCase
+import com.dik.torrserverapi.domain.usecases.CheckNewVersionUseCase
+import com.dik.torrserverapi.domain.usecases.DownloadFileUseCase
+import com.dik.torrserverapi.domain.usecases.InstallTorrserverUseCase
+import com.dik.torrserverapi.domain.usecases.RestartServerUseCase
+import com.dik.torrserverapi.domain.usecases.RestoreServerFromBackUpUseCase
+import com.dik.torrserverapi.domain.usecases.StartServerUseCase
+import com.dik.torrserverapi.domain.usecases.StopServerUseCase
 import com.dik.torrserverapi.server.ServerConfig
-import com.dik.torrserverapi.server.TorrserverCommands
-import com.dik.torrserverapi.server.TorrserverCommandsImpl
 import com.dik.torrserverapi.server.TorrserverConfig
-import com.dik.torrserverapi.server.TorrserverStuffApiImpl
+import com.dik.torrserverapi.server.TorrserverManager
+import com.dik.torrserverapi.server.TorrserverApiClientImpl
 import com.dik.torrserverapi.server.api.MagnetApi
 import com.dik.torrserverapi.server.api.ServerSettingsApi
 import com.dik.torrserverapi.server.api.TorrentApi
-import com.dik.torrserverapi.server.api.TorrserverStuffApi
+import com.dik.torrserverapi.server.api.TorrserverApiClient
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.cache.HttpCache
@@ -42,13 +50,23 @@ internal val torrserverModule = module {
     factory<FileSystem> { FileSystem.SYSTEM }
     singleOf(::MagnetApiImpl).bind<MagnetApi>()
     singleOf(::TorrentApiImpl).bind<TorrentApi>()
-    singleOf(::TorrserverStuffApiImpl).bind<TorrserverStuffApi>()
-    singleOf(::TorrserverCommandsImpl).bind<TorrserverCommands>()
+    singleOf(::TorrserverApiClientImpl).bind<TorrserverApiClient>()
+//    singleOf(::TorrserverCommandsImpl).bind<TorrserverCommands>()
     singleOf(::ServerSettingsApiImpl).bind<ServerSettingsApi>()
+    singleOf(::TorrserverManagerImpl).bind<TorrserverManager>()
+    singleOf(::FileDownloaderImpl).bind<FileDownloader>()
+    singleOf(::FileManagerImpl).bind<FileManager>()
+}
+
+internal val useCasesModule = module {
+    factoryOf(::BackupFileUseCase).bind<BackupFileUseCase>()
+    factoryOf(::CheckNewVersionUseCase).bind<CheckNewVersionUseCase>()
     factoryOf(::DownloadFileUseCase).bind<DownloadFileUseCase>()
     factoryOf(::InstallTorrserverUseCase).bind<InstallTorrserverUseCase>()
-    factoryOf(::BackupFileUseCase).bind<BackupFileUseCase>()
+    factoryOf(::RestartServerUseCase).bind<RestartServerUseCase>()
     factoryOf(::RestoreServerFromBackUpUseCase).bind<RestoreServerFromBackUpUseCase>()
+    factoryOf(::StartServerUseCase).bind<StartServerUseCase>()
+    factoryOf(::StopServerUseCase).bind<StopServerUseCase>()
 }
 
 internal val httpModule = module {
