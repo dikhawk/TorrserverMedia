@@ -3,6 +3,8 @@ package com.dik.torrserverapi.domain.usecases
 import co.touchlab.kermit.Logger
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
+import com.dik.common.onError
+import com.dik.common.onSuccess
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.server.TorrserverRunner
 import com.dik.torrserverapi.server.TorrserverStatus
@@ -21,18 +23,13 @@ internal class StartServerUseCase(
 
         val result: Result<Unit, TorrserverError> = torserverRunner.run()
 
-        when(result) {
-            is Result.Error -> {
-                emit(result.error.toStatusServer())
-                Logger.e("Server have error: ${result.error}")
-            }
-            is Result.Success -> {
-                emit(TorrserverStatus.General.Started)
-                Logger.i("Server is started")
-            }
+        result.onSuccess {
+            emit(TorrserverStatus.General.Started)
+            Logger.i("Server is started")
+        }.onError { error ->
+            emit(error.toStatusServer())
+            Logger.e("Server have error: $error")
         }
-
-        return@flow
     }.flowOn(appDispatchers.defaultDispatcher())
 
     private fun TorrserverError.toStatusServer(): TorrserverStatus {

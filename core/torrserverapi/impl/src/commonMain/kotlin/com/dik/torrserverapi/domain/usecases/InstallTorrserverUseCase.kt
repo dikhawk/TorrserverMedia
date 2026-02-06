@@ -3,6 +3,7 @@ package com.dik.torrserverapi.domain.usecases
 import co.touchlab.kermit.Logger
 import com.dik.common.Platform
 import com.dik.common.Result
+import com.dik.common.onSuccess
 import com.dik.common.utils.cpuArch
 import com.dik.common.utils.platformName
 import com.dik.torrserverapi.TorrserverError
@@ -86,24 +87,27 @@ internal class InstallTorrserverUseCase(
         latestRelease: Result<Release, TorrserverError>,
         cpuArch: String,
         platform: Platform
-    ): Asset? = (latestRelease as? Result.Success)?.data?.assets?.find {
-        it.name.contains(cpuArch, ignoreCase = true) &&
-                it.name.contains(platform.osname, ignoreCase = true)
+    ): Asset? {
+        latestRelease.onSuccess { release ->
+            val asset = release.assets.find { asset ->
+                val isSupportedArch = asset.name.contains(cpuArch, ignoreCase = true)
+                val isSupportedOs = asset.name.contains(platform.osname, ignoreCase = true)
+
+                isSupportedArch && isSupportedOs
+            }
+
+            return asset
+        }
+
+        return null
     }
 
     private fun DownloadFileRusult.mapToTorrserverStatus(): TorrserverStatus {
         return when (this) {
-            is DownloadFileRusult.Erorr ->
-                TorrserverStatus.Install.Error(type.toString())
-
-            is DownloadFileRusult.Progress ->
-                TorrserverStatus.Install.Progress(value)
-
-            is DownloadFileRusult.Done ->
-                TorrserverStatus.Install.Installed
-
-            DownloadFileRusult.Starting ->
-                TorrserverStatus.Install.Installing
+            is DownloadFileRusult.Erorr -> TorrserverStatus.Install.Error(type.toString())
+            is DownloadFileRusult.Progress -> TorrserverStatus.Install.Progress(value)
+            is DownloadFileRusult.Done -> TorrserverStatus.Install.Installed
+            DownloadFileRusult.Starting -> TorrserverStatus.Install.Installing
         }
     }
 }

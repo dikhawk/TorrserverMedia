@@ -10,13 +10,13 @@ internal class CheckNewVersionUseCase(
     private val torrserverApiClient: TorrserverApiClient,
 ) {
     operator fun invoke(): Flow<TorrserverStatus> = flow {
-        emit(TorrserverStatus.CheckLatesVersion.Checking)
+        emit(TorrserverStatus.CheckLatestVersion.Checking)
         val serverStatusResult = torrserverApiClient.echo()
 
         val latestVersionResult = torrserverApiClient.checkLatestRelease()
 
         if (latestVersionResult is Result.Error) {
-            emit(TorrserverStatus.CheckLatesVersion.Error(latestVersionResult.error.toString()))
+            emit(TorrserverStatus.CheckLatestVersion.Error(latestVersionResult.error.toString()))
             return@flow
         }
 
@@ -25,9 +25,9 @@ internal class CheckNewVersionUseCase(
             val latestServerVersion = latestVersionResult.data.tagName
 
             if (localServerVersion != latestServerVersion) {
-                emit(TorrserverStatus.CheckLatesVersion.AvaliableNewVersion(latestServerVersion))
+                emit(TorrserverStatus.CheckLatestVersion.AvailableNewVersion(latestServerVersion))
             } else {
-                emit(TorrserverStatus.CheckLatesVersion.VersionIsActual)
+                emit(TorrserverStatus.CheckLatestVersion.VersionIsActual)
             }
         }
     }
