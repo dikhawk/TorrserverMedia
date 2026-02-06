@@ -4,11 +4,11 @@ import com.dik.common.AppDispatchers
 import com.dik.common.cmd.CmdRunner
 import com.dik.common.cmd.KmpCmdRunner
 import com.dik.torrserverapi.SettingsConst
+import com.dik.torrserverapi.data.FileManagerImpl
 import com.dik.torrserverapi.data.MagnetApiImpl
 import com.dik.torrserverapi.data.ServerSettingsApiImpl
 import com.dik.torrserverapi.data.TorrentApiImpl
 import com.dik.torrserverapi.data.TorrserverManagerImpl
-import com.dik.torrserverapi.data.FileManagerImpl
 import com.dik.torrserverapi.data.filedownloader.FileDownloaderImpl
 import com.dik.torrserverapi.data.http.createHttpClient
 import com.dik.torrserverapi.domain.filedownloader.FileDownloader
@@ -19,12 +19,11 @@ import com.dik.torrserverapi.domain.usecases.DownloadFileUseCase
 import com.dik.torrserverapi.domain.usecases.InstallTorrserverUseCase
 import com.dik.torrserverapi.domain.usecases.RestartServerUseCase
 import com.dik.torrserverapi.domain.usecases.RestoreServerFromBackUpUseCase
+import com.dik.torrserverapi.domain.usecases.ServerStatusUseCase
 import com.dik.torrserverapi.domain.usecases.StartServerUseCase
 import com.dik.torrserverapi.domain.usecases.StopServerUseCase
-import com.dik.torrserverapi.server.ServerConfig
-import com.dik.torrserverapi.server.TorrserverConfig
-import com.dik.torrserverapi.server.TorrserverManager
 import com.dik.torrserverapi.server.TorrserverApiClientImpl
+import com.dik.torrserverapi.server.TorrserverManager
 import com.dik.torrserverapi.server.api.MagnetApi
 import com.dik.torrserverapi.server.api.ServerSettingsApi
 import com.dik.torrserverapi.server.api.TorrentApi
@@ -46,12 +45,10 @@ import org.koin.dsl.module
 
 internal val torrserverModule = module {
     factory<CmdRunner> { KmpCmdRunner }
-    factory<ServerConfig> { TorrserverConfig }
     factory<FileSystem> { FileSystem.SYSTEM }
     singleOf(::MagnetApiImpl).bind<MagnetApi>()
     singleOf(::TorrentApiImpl).bind<TorrentApi>()
     singleOf(::TorrserverApiClientImpl).bind<TorrserverApiClient>()
-//    singleOf(::TorrserverCommandsImpl).bind<TorrserverCommands>()
     singleOf(::ServerSettingsApiImpl).bind<ServerSettingsApi>()
     singleOf(::TorrserverManagerImpl).bind<TorrserverManager>()
     singleOf(::FileDownloaderImpl).bind<FileDownloader>()
@@ -67,6 +64,7 @@ internal val useCasesModule = module {
     factoryOf(::RestoreServerFromBackUpUseCase).bind<RestoreServerFromBackUpUseCase>()
     factoryOf(::StartServerUseCase).bind<StartServerUseCase>()
     factoryOf(::StopServerUseCase).bind<StopServerUseCase>()
+    factoryOf(::ServerStatusUseCase).bind<ServerStatusUseCase>()
 }
 
 internal val httpModule = module {
