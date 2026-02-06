@@ -1,4 +1,4 @@
-package com.dik.torrserverapi.domain.gateway.filedownloader
+package com.dik.torrserverapi.domain.filedownloader
 
 import kotlinx.coroutines.flow.Flow
 

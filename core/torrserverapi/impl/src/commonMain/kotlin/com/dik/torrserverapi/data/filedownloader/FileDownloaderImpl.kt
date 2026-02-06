@@ -1,9 +1,9 @@
-package com.dik.torrserverapi.data.gateway.filedownloader
+package com.dik.torrserverapi.data.filedownloader
 
 import com.dik.common.utils.round
 import com.dik.torrserverapi.TorrserverError
-import com.dik.torrserverapi.domain.gateway.filedownloader.DownloadFileRusult
-import com.dik.torrserverapi.domain.gateway.filedownloader.FileDownloader
+import com.dik.torrserverapi.domain.filedownloader.DownloadFileRusult
+import com.dik.torrserverapi.domain.filedownloader.FileDownloader
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.timeout
@@ -30,7 +30,7 @@ import okio.use
 
 internal class FileDownloaderImpl(
     private val ktor: HttpClient,
-    private val fileSystem: FileSystem = FileSystem.SYSTEM,
+    private val fileSystem: FileSystem,
 ) : FileDownloader {
 
     override fun downloadFile(
@@ -71,11 +71,6 @@ internal class FileDownloaderImpl(
         if (!response.status.isSuccess()) {
             throw ResponseException(response, response.status.description)
         }
-    }
-
-    private fun prepareFile(path: Path) {
-        fileSystem.createDirectories(path.parent!!)
-        fileSystem.delete(path)
     }
 
     private suspend fun SendChannel<DownloadFileRusult>.writeChannelToSink(
@@ -139,5 +134,10 @@ internal class FileDownloaderImpl(
                 sink = sink
             )
         }
+    }
+
+    private fun prepareFile(path: Path) {
+        fileSystem.createDirectories(path.parent!!)
+        fileSystem.delete(path)
     }
 }
