@@ -1,0 +1,41 @@
+package com.dik.torrserverapi.server
+
+import com.dik.common.AppDispatchers
+import com.dik.common.Result
+import com.dik.common.cmd.KmpCmdRunner
+import com.dik.torrserverapi.TorrserverError
+import io.ktor.utils.io.CancellationException
+import kotlinx.coroutines.withContext
+import java.io.File
+
+internal class TorrserverRunnerLinux(
+    private val config: ServerConfig,
+    private val appDispatchers: AppDispatchers
+) : TorrserverRunner {
+
+    override suspend fun run(): Result<Unit, TorrserverError> =
+        withContext(appDispatchers.ioDispatcher()) {
+            try {
+                if (config.pathToServerFile.isEmpty())
+                    return@withContext Result.Error(
+                        TorrserverError.Server
+                            .WrongConfiguration("Path to file is empty ${config.pathToServerFile}")
+                    )
+
+                val serverFile = File(config.pathToServerFile)
+                if (!serverFile.exists())
+                    return@withContext Result.Error(TorrserverError.Server.FileNotExist("File not found"))
+
+                val makeExecutableCommand = "chmod +x '${config.pathToServerFile}'"
+                val startServerCommand = "cd '${serverFile.parent}' && ./${serverFile.name} -k"
+
+                KmpCmdRunner.run("$makeExecutableCommand && $startServerCommand")
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                return@withContext Result.Error(TorrserverError.Unknown(e.message ?: ""))
+            }
+
+            return@withContext Result.Success(Unit)
+        }
+}
