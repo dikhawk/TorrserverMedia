@@ -22,8 +22,8 @@ internal actual fun platformModule() = module {
     }
     factory<TorrserverRunner> {
         when (platformName()) {
-            Platform.LINUX -> TorrserverRunnerLinux(get(), get())
-            Platform.WINDOWS -> TorrserverRunnerWindows(get(), get())
+            Platform.LINUX -> TorrserverRunnerLinux(get(), get(), get())
+            Platform.WINDOWS -> TorrserverRunnerWindows(get(), get(), get())
             else -> throw UnsupportedOperationException("Platform not supported ${platformName()}")
         }
     }

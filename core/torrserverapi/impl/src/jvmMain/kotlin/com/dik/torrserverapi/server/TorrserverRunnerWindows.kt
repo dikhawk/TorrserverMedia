@@ -2,7 +2,7 @@ package com.dik.torrserverapi.server
 
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
-import com.dik.common.cmd.KmpCmdRunner
+import com.dik.common.cmd.CommandExecutor
 import com.dik.torrserverapi.TorrserverError
 import io.ktor.utils.io.CancellationException
 import kotlinx.coroutines.withContext
@@ -10,7 +10,8 @@ import java.io.File
 
 internal class TorrserverRunnerWindows(
     private val config: ServerConfig,
-    private val dispatchers: AppDispatchers
+    private val dispatchers: AppDispatchers,
+    private val commandExecutor: CommandExecutor
 ) : TorrserverRunner {
 
     override suspend fun run(): Result<Unit, TorrserverError> = withContext(dispatchers.ioDispatcher()) {
@@ -30,7 +31,7 @@ internal class TorrserverRunnerWindows(
 
             val startServerCommand = "cd \"${serverFile.parent}\" && start /MIN .\\${serverFile.name} -k"
 
-            KmpCmdRunner.run(startServerCommand)
+            commandExecutor.run(startServerCommand)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

@@ -1,8 +1,7 @@
 package com.dik.torrserverapi.di
 
 import com.dik.common.AppDispatchers
-import com.dik.common.cmd.CmdRunner
-import com.dik.common.cmd.KmpCmdRunner
+import com.dik.common.cmd.CommandExecutor
 import com.dik.torrserverapi.SettingsConst
 import com.dik.torrserverapi.data.FileManagerImpl
 import com.dik.torrserverapi.data.MagnetApiImpl
@@ -44,7 +43,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 internal val torrserverModule = module {
-    factory<CmdRunner> { KmpCmdRunner }
+    factory<CommandExecutor> { CommandExecutor.instance() }
     factory<FileSystem> { FileSystem.SYSTEM }
     singleOf(::MagnetApiImpl).bind<MagnetApi>()
     singleOf(::TorrentApiImpl).bind<TorrentApi>()

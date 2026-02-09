@@ -2,7 +2,7 @@ package com.dik.torrserverapi.server
 
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
-import com.dik.common.cmd.KmpCmdRunner
+import com.dik.common.cmd.CommandExecutor
 import com.dik.torrserverapi.TorrserverError
 import io.ktor.utils.io.CancellationException
 import kotlinx.coroutines.withContext
@@ -10,7 +10,8 @@ import java.io.File
 
 internal class TorrserverRunnerLinux(
     private val config: ServerConfig,
-    private val appDispatchers: AppDispatchers
+    private val appDispatchers: AppDispatchers,
+    private val commandExecutor: CommandExecutor
 ) : TorrserverRunner {
 
     override suspend fun run(): Result<Unit, TorrserverError> =
@@ -24,12 +25,14 @@ internal class TorrserverRunnerLinux(
 
                 val serverFile = File(config.pathToServerFile)
                 if (!serverFile.exists())
-                    return@withContext Result.Error(TorrserverError.Server.FileNotExist("File not found"))
+                    return@withContext Result.Error(
+                        TorrserverError.Server.FileNotExist("File not found")
+                    )
 
                 val makeExecutableCommand = "chmod +x '${config.pathToServerFile}'"
                 val startServerCommand = "cd '${serverFile.parent}' && ./${serverFile.name} -k"
 
-                KmpCmdRunner.run("$makeExecutableCommand && $startServerCommand")
+                commandExecutor.run("$makeExecutableCommand && $startServerCommand")
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
