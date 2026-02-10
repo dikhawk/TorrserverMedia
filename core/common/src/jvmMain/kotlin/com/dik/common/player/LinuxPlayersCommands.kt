@@ -1,10 +1,12 @@
 package com.dik.common.player
 
 import com.dik.common.Platform
-import com.dik.common.cmd.KmpCmdRunner
+import com.dik.common.cmd.CommandExecutor
 
 
 class LinuxPlayersCommands : PlayersCommands {
+
+    private val commandExecutor: CommandExecutor = CommandExecutor.instance()
 
     override suspend fun playFileInDefaultPlayer(fileName: String, fileUrl: String) {
         val defaultProgrammName = getDefaultProgrammName(fileName)
@@ -49,7 +51,7 @@ class LinuxPlayersCommands : PlayersCommands {
 
     private suspend fun playFile(fileUrl: String, programmName: String) {
         val command = "$programmName \'$fileUrl\'"
-        KmpCmdRunner.run(command)
+        commandExecutor.run(command)
     }
 
     private fun getPlayersForLinux(): List<Player> =
@@ -64,13 +66,13 @@ class LinuxPlayersCommands : PlayersCommands {
     }
 
     private suspend fun which(playerName: String): String? {
-        val output = KmpCmdRunner.runAndWaitResult("which $playerName")
+        val output = commandExecutor.runAndWaitResult("which $playerName")
 
         return if (output.isNullOrEmpty()) null else playerName
     }
 
     private suspend fun flatpackAplicationId(playerName: String): String? {
-        val output = KmpCmdRunner.runAndWaitResult("flatpak list")
+        val output = commandExecutor.runAndWaitResult("flatpak list")
 
         if (output.isNullOrEmpty()) return null
 
@@ -83,7 +85,7 @@ class LinuxPlayersCommands : PlayersCommands {
 
     private suspend fun getDefaultProgrammName(fileName: String): String? {
         val command = "xdg-mime query default \$(mimetype -b $fileName)"
-        var programmName = prepareProgrammName(KmpCmdRunner.runAndWaitResult(command))
+        var programmName = prepareProgrammName(commandExecutor.runAndWaitResult(command))
 
         if (programmName.isEmpty()) return null
 
