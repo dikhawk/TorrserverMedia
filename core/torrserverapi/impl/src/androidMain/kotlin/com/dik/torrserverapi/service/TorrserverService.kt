@@ -9,18 +9,17 @@ import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
-import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import co.touchlab.kermit.Logger
 import com.dik.common.AppDispatchers
-import com.dik.common.utils.successResult
 import com.dik.torrserverapi.di.inject
 import com.dik.torrserverapi.impl.R
-import com.dik.torrserverapi.server.TorrserverCommands
+import com.dik.torrserverapi.server.TorrserverManager
 import com.dik.torrserverapi.server.TorrserverStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -34,7 +33,7 @@ class TorrserverService : Service() {
     private val notificationId = System.currentTimeMillis().toInt()
     private val channelId = "channel_torrserver_service"
     private val channelTorrserver = "Torrserver"
-    private val torrserverCommands: TorrserverCommands = inject()
+    private val torrserverManager: TorrserverManager = inject()
     private val appDispatchers: AppDispatchers = inject()
     private val coroutineScope =
         CoroutineScope(appDispatchers.defaultDispatcher() + SupervisorJob())
@@ -85,24 +84,19 @@ class TorrserverService : Service() {
 
     private fun starTorrServer() {
         coroutineScope.launch {
-            torrserverCommands.startServer()
-            val isServerStarted = torrserverCommands.isServerStarted().successResult() ?: false
-            if (!isServerStarted) {
-                stopForeground(notificationId)
-                return@launch
-            }
-
-            Logger.i("$tag Service is working")
-
-            torrserverCommands.serverStatus().collect { status: TorrserverStatus ->
-                startForeground(createServerNotification(status.asString(), true))
+            torrserverManager.observeTorrserverStatus().collect { status ->
+                when (status) {
+                    is TorrserverStatus.General.Stopped -> stopForeground(notificationId)
+                    is TorrserverStatus.General.NotInstalled -> stopForeground(notificationId)
+                    else -> startForeground(createServerNotification(status.asString(), true))
+                }
             }
         }
     }
 
     private fun TorrserverStatus.asString(): String = when (this) {
-        TorrserverStatus.STARTED -> getString(R.string.torserver_server_is_working)
-        TorrserverStatus.RUNNING -> getString(R.string.torserver_running_server)
+        TorrserverStatus.General.Started -> getString(R.string.torserver_server_is_working)
+        TorrserverStatus.General.Running -> getString(R.string.torserver_running_server)
         else -> this.toString()
     }
 
@@ -147,9 +141,12 @@ class TorrserverService : Service() {
      * After completing these steps, the deeplink "app://torrserver?action=open_home"
      * will correctly launch MainActivity and allow handling of any associated parameters.
      */
-    private fun createServerNotification(text: String, isShowActions: Boolean = false): Notification {
-        val openHomeUri = Uri.parse(TorrserverServiceDeepLink.URL +
-                "?${TorrserverServiceDeepLink.ACTION}=${TorrserverServiceDeepLink.OPEN_HOME_ACTION}")
+    private fun createServerNotification(
+        text: String,
+        isShowActions: Boolean = false
+    ): Notification {
+        val openHomeUri = (TorrserverServiceDeepLink.URL +
+                "?${TorrserverServiceDeepLink.ACTION}=${TorrserverServiceDeepLink.OPEN_HOME_ACTION}").toUri()
         val openAppIntent = Intent(Intent.ACTION_VIEW, openHomeUri).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }

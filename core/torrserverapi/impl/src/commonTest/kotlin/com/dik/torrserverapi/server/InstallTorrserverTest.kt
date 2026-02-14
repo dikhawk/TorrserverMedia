@@ -5,14 +5,14 @@ import com.dik.common.AppDispatchers
 import com.dik.common.Result
 import com.dik.common.ResultProgress
 import com.dik.torrserverapi.TorrserverError
-import com.dik.torrserverapi.domain.BackupFileUseCase
-import com.dik.torrserverapi.domain.DownloadFileUseCase
-import com.dik.torrserverapi.domain.RestoreServerFromBackUpUseCase
+import com.dik.torrserverapi.domain.usecases.BackupFileUseCase
+import com.dik.torrserverapi.domain.usecases.DownloadFileUseCase
+import com.dik.torrserverapi.domain.usecases.RestoreServerFromBackUpUseCase
 import com.dik.torrserverapi.model.Asset
 import com.dik.torrserverapi.model.Release
 import com.dik.torrserverapi.model.TorrserverFile
-import com.dik.torrserverapi.server.api.TorrserverStuffApi
-import com.dik.torrserverapi.domain.InstallTorrserverUseCase
+import com.dik.torrserverapi.server.api.TorrserverApiClient
+import com.dik.torrserverapi.domain.usecases.InstallTorrserverUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -27,7 +27,7 @@ import kotlin.test.assertTrue
 
 class InstallTorrserverTest {
 
-    private val torrserverStuffApi: TorrserverStuffApi = mockk(relaxed = true)
+    private val torrserverApiClient: TorrserverApiClient = mockk(relaxed = true)
     private val downloadFile: DownloadFileUseCase = mockk(relaxed = true)
     private val backupFile: BackupFileUseCase = mockk(relaxed = true)
     private val restoreServerFromBackUp: RestoreServerFromBackUpUseCase = mockk(relaxed = true)
@@ -59,7 +59,7 @@ class InstallTorrserverTest {
                 )
             )
         )
-        coEvery { torrserverStuffApi.checkLatestRelease() } returns Result.Success(release)
+        coEvery { torrserverApiClient.checkLatestRelease() } returns Result.Success(release)
         coEvery { downloadFile.invoke(any(), any()) } returns downloadFileState
 
         installTorrserver(outputFilePath, outputBackupFilePath).test {
@@ -87,7 +87,7 @@ class InstallTorrserverTest {
             )
         )
 
-        coEvery { torrserverStuffApi.checkLatestRelease() } returns Result.Success(release)
+        coEvery { torrserverApiClient.checkLatestRelease() } returns Result.Success(release)
         coEvery { downloadFile.invoke(any(), any()) } returns downloadFileState
 
         installTorrserver(outputFilePath, outputBackupFilePath).test {
@@ -106,7 +106,7 @@ class InstallTorrserverTest {
         val outputFilePath = "torrserver_file"
         val outputBackupFilePath = "backup_file"
 
-        coEvery { torrserverStuffApi.checkLatestRelease() } returns
+        coEvery { torrserverApiClient.checkLatestRelease() } returns
                 Result.Error(TorrserverError.HttpError.ResponseReturnError("Response return error 404"))
 
         installTorrserver(outputFilePath, outputBackupFilePath).test {
@@ -137,7 +137,7 @@ class InstallTorrserverTest {
             )
         )
 
-        coEvery { torrserverStuffApi.checkLatestRelease() } returns Result.Success(release)
+        coEvery { torrserverApiClient.checkLatestRelease() } returns Result.Success(release)
         coEvery { downloadFile.invoke(any(), any()) } returns downloadFileState
 
         installTorrserver(outputFilePath, outputBackupFilePath).test {
@@ -148,7 +148,7 @@ class InstallTorrserverTest {
     }
 
     private fun getInstallTorrserver() = InstallTorrserverUseCase(
-        torrserverStuffApi = torrserverStuffApi,
+        torrserverApiClient = torrserverApiClient,
         downloadFile = downloadFile,
         backupFile = backupFile,
         restoreServerFromBackUp = restoreServerFromBackUp,

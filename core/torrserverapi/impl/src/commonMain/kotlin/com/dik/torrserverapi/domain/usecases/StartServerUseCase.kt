@@ -34,13 +34,9 @@ internal class StartServerUseCase(
 
     private fun TorrserverError.toStatusServer(): TorrserverStatus {
         return when(this) {
-            is TorrserverError.Server.FileNotExist ->
-                TorrserverStatus.General.NotInstalled
-            is TorrserverError.Server.WrongConfiguration ->
-                TorrserverStatus.General.Error(this.message)
-            else -> {
-                TorrserverStatus.General.Stopped
-            }
+            is TorrserverError.Server.FileNotExist -> TorrserverStatus.General.NotInstalled
+            is TorrserverError.Server.WrongConfiguration -> TorrserverStatus.General.Error(this.message)
+            else -> { TorrserverStatus.General.Stopped }
         }
     }
 }

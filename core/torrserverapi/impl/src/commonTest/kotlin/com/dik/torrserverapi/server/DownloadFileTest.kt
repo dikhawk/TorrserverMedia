@@ -4,7 +4,7 @@ import app.cash.turbine.test
 import com.dik.common.AppDispatchers
 import com.dik.common.ResultProgress
 import com.dik.torrserverapi.TorrserverError
-import com.dik.torrserverapi.domain.DownloadFileUseCase
+import com.dik.torrserverapi.domain.usecases.DownloadFileUseCase
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond

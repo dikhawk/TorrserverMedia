@@ -2,7 +2,7 @@ package com.dik.torrserverapi.server
 
 import com.dik.common.Result
 import com.dik.torrserverapi.TorrserverError
-import com.dik.torrserverapi.domain.BackupFileUseCase
+import com.dik.torrserverapi.domain.usecases.BackupFileUseCase
 import io.mockk.every
 import io.mockk.mockk
 import okio.FileSystem
