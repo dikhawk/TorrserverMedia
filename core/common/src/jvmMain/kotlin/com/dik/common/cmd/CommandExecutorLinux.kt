@@ -1,11 +1,9 @@
 package com.dik.common.cmd
 
-import com.dik.common.Platform
-import com.dik.common.utils.platformName
 import com.dik.common.utils.readOutput
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-actual object KmpCmdRunner : CmdRunner {
+internal class CommandExecutorLinux : CommandExecutor{
+
     private val runnedProcesses = mutableListOf<Process>()
 
     override fun run(command: String) {
@@ -24,15 +22,11 @@ actual object KmpCmdRunner : CmdRunner {
         return process.readOutput()
     }
 
-    override fun stopRunnedProcesses() {
+    override fun stopRunedProcesses() {
         runnedProcesses.forEach { it.destroy() }
     }
 
     private fun prepareCommand(command: String): List<String> {
-        return when(platformName()) {
-            Platform.LINUX -> listOf("sh", "-c", command)
-            Platform.WINDOWS -> listOf("cmd", "/c", "\"$command\"")
-            else -> throw UnsupportedOperationException("Unsupported platform")
-        }
+        return listOf("sh", "-c", command)
     }
 }
