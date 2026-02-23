@@ -3,9 +3,9 @@ package com.dik.torrentlist.screens.details.torrentstatistics
 import com.arkivanov.decompose.ComponentContext
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
+import com.dik.common.converter.bytesToBits
+import com.dik.common.converter.toReadableSize
 import com.dik.common.i18n.LocalizationResource
-import com.dik.torrentlist.converters.bytesToBits
-import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrentlist.error.toMessage
 import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.Torrent

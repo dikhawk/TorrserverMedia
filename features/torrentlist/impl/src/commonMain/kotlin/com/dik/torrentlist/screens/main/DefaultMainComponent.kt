@@ -1,6 +1,5 @@
 package com.dik.torrentlist.screens.main
 
-import androidx.window.core.layout.WindowWidthSizeClass
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
@@ -8,7 +7,8 @@ import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
 import com.dik.common.i18n.LocalizationResource
-import com.dik.common.platform.WindowAdaptiveClient
+import com.dik.common.onError
+import com.dik.common.onSuccess
 import com.dik.common.utils.repeatIf
 import com.dik.common.utils.successResult
 import com.dik.themoviedb.SearchTheMovieDbApi
@@ -21,15 +21,18 @@ import com.dik.torrentlist.screens.details.DefaultDetailsComponent
 import com.dik.torrentlist.screens.details.DetailsComponentScreenFormat
 import com.dik.torrentlist.screens.main.appbar.DefaultMainAppBarComponent
 import com.dik.torrentlist.screens.main.appbar.MainAppBarComponent
+import com.dik.torrentlist.screens.main.domain.AddMagnetLinkUseCase
+import com.dik.torrentlist.screens.main.domain.AddTorrentFileUseCase
+import com.dik.torrentlist.screens.main.domain.FindPosterUseCase
 import com.dik.torrentlist.screens.main.list.DefaultTorrentListComponent
 import com.dik.torrentlist.screens.main.list.TorrentListComponent
 import com.dik.torrentlist.screens.main.torrserverbar.DefaultTorrserverBarComponent
-import com.dik.torrentlist.screens.main.torrserverbar.TorrServerStarterPlatform
 import com.dik.torrentlist.screens.main.torrserverbar.TorrserverBarComponent
+import com.dik.torrentlist.screens.mappers.toTorrentUiState
+import com.dik.torrentlist.screens.model.ContentFileUiState
+import com.dik.torrentlist.screens.model.TorrentUiState
 import com.dik.torrentlist.utils.FileUtils
-import com.dik.torrserverapi.model.ContentFile
-import com.dik.torrserverapi.model.Torrent
-import com.dik.torrserverapi.server.TorrserverCommands
+import com.dik.torrserverapi.server.TorrserverManager
 import com.dik.torrserverapi.server.TorrserverStatus
 import com.dik.torrserverapi.server.api.TorrentApi
 import kotlinx.coroutines.CoroutineScope
@@ -45,20 +48,18 @@ internal class DefaultMainComponent(
     context: ComponentContext,
     private val torrentApi: TorrentApi = inject(),
     private val dispatchers: AppDispatchers = inject(),
-    private val torrserverCommands: TorrserverCommands = inject(),
+    private val torrserverManager: TorrserverManager = inject(),
     private val searchingTmdb: SearchTheMovieDbApi = inject(),
-    private val addTorrentFile: AddTorrentFile = inject(),
-    private val addMagnetLink: AddMagnetLink = inject(),
+    private val addTorrentFileUseCase: AddTorrentFileUseCase = inject(),
+    private val addMagnetLinkUseCase: AddMagnetLinkUseCase = inject(),
     private val tvEpisodesTmdb: TvEpisodesTheMovieDbApi = inject(),
-    private val windowAdaptiveClient: WindowAdaptiveClient = inject(),
     private val tvSeasonTmdb: TvSeasonsTheMovieDbApi = inject(),
     private val appSettings: AppSettings = inject(),
     private val localization: LocalizationResource = inject(),
-    private val torrServerStarter: TorrServerStarterPlatform = inject(),
-    private val findPosterForTorrent: FindPosterForTorrent = inject(),
+    private val findPosterUseCase: FindPosterUseCase = inject(),
     private val fileUtils: FileUtils = inject(),
     private val openSettingsScreen: () -> Unit = {},
-    private val onClickPlayFile: suspend (contentFile: ContentFile) -> Unit,
+    private val onClickPlayFile: suspend (contentFile: ContentFileUiState) -> Unit,
     private val navigateToDetails: (torrentHash: String, poster: String) -> Unit
 ) : MainComponent, ComponentContext by context {
 
@@ -76,9 +77,9 @@ internal class DefaultMainComponent(
         context = childContext("main_app_bar"),
         componentScope = componentScope,
         openSettingsScreen = openSettingsScreen,
-        torrserverCommands = torrserverCommands,
-        addTorrentFile = addTorrentFile,
-        addMagnetLink = addMagnetLink,
+        torrserverManager = torrserverManager,
+        addTorrentFileUseCase = addTorrentFileUseCase,
+        addMagnetLinkUseCase = addMagnetLinkUseCase,
         localization = localization,
         fileUtils = fileUtils
     )
@@ -86,43 +87,36 @@ internal class DefaultMainComponent(
     override val torrserverBarComponent: TorrserverBarComponent =
         DefaultTorrserverBarComponent(
             context = childContext("torrserver_bar"),
-            torrserverCommands = torrserverCommands,
+            torrserverManager = torrserverManager,
             dispatchers = dispatchers,
             componentScope = componentScope,
             localization = localization,
-            torrServerStarter = torrServerStarter
         )
 
     override val torrentListComponent: TorrentListComponent = DefaultTorrentListComponent(
         context = childContext("torrserverbar"),
-        onTorrentClick = { torrent -> showDetails(torrent) },
+        onTorrentClick = ::showDetails,
+        onNavigateToDetails = ::navigateToDetails,
         onTorrentsIsEmpty = { isEmpty ->
             if (isEmpty) _uiState.update { it.copy(isShowDetails = false) }
         },
         torrentApi = torrentApi,
         componentScope = componentScope,
-        addTorrentFile = addTorrentFile,
+        addTorrentFileUseCase = addTorrentFileUseCase,
+        addMagnetLinkUseCase = addMagnetLinkUseCase,
         fileUtils = fileUtils
     )
 
-    private fun showDetails(torrent: Torrent) {
-        val windowAdaptiveFlow = windowAdaptiveClient.windowAdaptiveFlow()
-        val windowWidthSizeClass = windowAdaptiveFlow.value
-            ?.windowSizeClass?.windowWidthSizeClass ?: return
-
-        when (windowWidthSizeClass) {
-            WindowWidthSizeClass.COMPACT -> {
-                navigateToDetails(torrent.hash, torrent.poster)
-            }
-
-            else -> {
-                detailsComponent.showDetails(torrent.hash)
-                _uiState.update { it.copy(isShowDetails = true) }
-            }
-        }
+    private fun showDetails(torrent: TorrentUiState) {
+        detailsComponent.showDetails(torrent.hash)
+        _uiState.update { it.copy(isShowDetails = true) }
     }
 
-    private fun playFile(contentFile: ContentFile) {
+    private fun navigateToDetails(torrent: TorrentUiState) {
+        navigateToDetails(torrent.hash, torrent.poster)
+    }
+
+    private fun playFile(contentFile: ContentFileUiState) {
         componentScope.launch(dispatchers.defaultDispatcher()) {
             onClickPlayFile(contentFile)
         }
@@ -138,14 +132,14 @@ internal class DefaultMainComponent(
             tvSeasonTmdb = tvSeasonTmdb,
             tvEpisodesTmdb = tvEpisodesTmdb,
             localization = localization,
-            findPosterForTorrent = findPosterForTorrent,
+            findPosterUseCase = findPosterUseCase,
             screenFormat = DetailsComponentScreenFormat.PANE,
             onClickPlayFile = { torrent, contentFile ->
                 _uiState.update { it.copy(isShowDetails = true, isShowBufferization = true) }
-                bufferizationComponent.startBufferezation(
+                bufferizationComponent.startBufferization(
                     torrent = torrent,
                     contentFile = contentFile,
-                    runAferBuferazation = { playFile(contentFile) }
+                    runAfterBufferization = { playFile(contentFile) }
                 )
             }
         )
@@ -169,7 +163,7 @@ internal class DefaultMainComponent(
 
     private fun observeServerStatus() {
         componentScope.launch {
-            torrserverCommands.serverStatus().collect { status ->
+            torrserverManager.observeTorrserverStatus().collect { status ->
                 _uiState.update { it.copy(serverStatus = status) }
             }
         }
@@ -177,31 +171,33 @@ internal class DefaultMainComponent(
 
     fun addTorrentAndShowDetails(pathToTorrent: String) {
         componentScope.launch(dispatchers.mainDispatcher()) {
-            val result = suspend {
-                addTorrentFile.invoke(pathToTorrent)
-            }.repeatIf(maxTries = 15) { _uiState.value.serverStatus != TorrserverStatus.STARTED }
-
-            if (result?.torrent != null) {
-                showDetails(result.torrent)
+            suspend {
+                addTorrentFileUseCase.invoke(pathToTorrent)
+            }.repeatIf(maxTries = 15) {
+                _uiState.value.serverStatus != TorrserverStatus.General.Started
+            }?.onSuccess { torrent ->
+                showDetails(torrent.toTorrentUiState())
+            }?.onError { error ->
+                _uiState.update { it.copy(error = error.toString()) }
             }
         }
     }
 
     fun addMagnetLinkAndShowDetails(magnetLink: String) {
         componentScope.launch(dispatchers.mainDispatcher()) {
-            val result = suspend {
-                addMagnetLink.invoke(magnetLink)
-            }.repeatIf(maxTries = 15) { _uiState.value.serverStatus != TorrserverStatus.STARTED }
-            val hash = result?.torrent?.hash
-                ?: return@launch
-
-            //waiting while magnet downloaded meta info
-            val torrentResult = suspend { torrentApi.getTorrent(hash) }
-                .repeatIf(maxTries = 15) { it is Result.Error || it.successResult()?.size == 0L }
-            val torrent = torrentResult?.successResult()
-                ?: return@launch
-
-            showDetails(torrent)
+            suspend {
+                addMagnetLinkUseCase.invoke(magnetLink)
+            }.repeatIf(maxTries = 15) {
+                _uiState.value.serverStatus != TorrserverStatus.General.Started
+            }?.onSuccess { torrent ->
+                suspend { torrentApi.getTorrent(torrent.hash) }
+                    .repeatIf(maxTries = 15) { it is Result.Error || it.successResult()?.size == 0L }
+                    ?.onSuccess { torrent ->
+                        showDetails(torrent.toTorrentUiState())
+                    }
+            }?.onError { error ->
+                _uiState.update { it.copy(error = error.toString()) }
+            }
         }
     }
 }

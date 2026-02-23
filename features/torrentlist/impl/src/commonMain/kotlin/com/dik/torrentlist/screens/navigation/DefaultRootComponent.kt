@@ -16,7 +16,7 @@ import com.dik.torrentlist.screens.details.DetailsComponent
 import com.dik.torrentlist.screens.details.DetailsComponentScreenFormat
 import com.dik.torrentlist.screens.main.DefaultMainComponent
 import com.dik.torrentlist.screens.main.MainComponent
-import com.dik.torrserverapi.model.ContentFile
+import com.dik.torrentlist.screens.model.ContentFileUiState
 
 internal class DefaultRootComponent(
     componentContext: ComponentContext,
@@ -72,7 +72,7 @@ internal class DefaultRootComponent(
         }
     }
 
-    private suspend fun playFile(contentFile: ContentFile) {
+    private suspend fun playFile(contentFile: ContentFileUiState) {
         playersCommands.playFile(
             fileName = contentFile.path,
             fileUrl = contentFile.url,
@@ -91,8 +91,9 @@ internal class DefaultRootComponent(
         )
 
         is ChildConfig.AddTorrent ->
-            RootComponent.Child.Main(mainComponent(componentContext, AddContent.Torrent(config.pathToTorrent))
-        )
+            RootComponent.Child.Main(
+                mainComponent(componentContext, AddContent.Torrent(config.pathToTorrent))
+            )
 
         is ChildConfig.Details -> RootComponent.Child.Details(
             component = detailsComponent(componentContext, config.torrentHash),

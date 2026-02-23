@@ -69,7 +69,7 @@ private fun DirectoryItem(name: String, modifier: Modifier = Modifier) {
 
 @Composable
 private fun FileItem(
-    file: File,
+    file: FileState,
     directoryName: String,
     onClickItem: () -> Unit,
     modifier: Modifier = Modifier

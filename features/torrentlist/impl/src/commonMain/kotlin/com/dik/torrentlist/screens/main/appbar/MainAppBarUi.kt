@@ -24,7 +24,10 @@ import torrservermedia.features.torrentlist.impl.generated.resources.ic_settings
 import torrservermedia.features.torrentlist.impl.generated.resources.main_app_bar_title
 
 @Composable
-internal fun MainAppBarUi(component: MainAppBarComponent, modifier: Modifier = Modifier) {
+internal fun MainAppBarUi(
+    component: MainAppBarComponent,
+    modifier: Modifier = Modifier
+) {
     val uiState by component.uiState.collectAsState()
 
     AppTopBar(
@@ -53,7 +56,8 @@ internal fun MainAppBarUi(component: MainAppBarComponent, modifier: Modifier = M
 
     if (uiState.action == MainAppBarAction.ShowAddLinkDialog) {
         val errorLink = uiState.errorLink
-        AddLlinkDialog(link = uiState.link,
+        AddLinkDialog(
+            link = uiState.link,
             linkError = errorLink,
             onDismissRequest = { component.dismissDialog() },
             onClickOkButton = { component.addLink() },

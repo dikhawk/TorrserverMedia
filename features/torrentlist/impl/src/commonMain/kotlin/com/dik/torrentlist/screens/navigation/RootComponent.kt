@@ -11,7 +11,10 @@ internal interface RootComponent {
 
     val childStack: Value<ChildStack<*, Child>>
 
-    fun mainComponent(componentContext: ComponentContext, addContent: AddContent? = null): MainComponent
+    fun mainComponent(
+        componentContext: ComponentContext,
+        addContent: AddContent? = null
+    ): MainComponent
 
     fun detailsComponent(
         componentContext: ComponentContext,

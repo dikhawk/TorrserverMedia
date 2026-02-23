@@ -4,17 +4,20 @@ import com.arkivanov.decompose.ComponentContext
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
+import com.dik.common.converter.bytesToBits
+import com.dik.common.converter.toReadableSize
 import com.dik.common.i18n.LocalizationResource
+import com.dik.common.onError
+import com.dik.common.onSuccess
 import com.dik.common.utils.successResult
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
 import com.dik.themoviedb.model.Movie
 import com.dik.themoviedb.model.TvShow
-import com.dik.torrentlist.converters.bytesToBits
-import com.dik.torrentlist.converters.toReadableSize
+import com.dik.torrentlist.screens.mappers.toTorrentUiState
+import com.dik.torrentlist.screens.model.ContentFileUiState
+import com.dik.torrentlist.screens.model.TorrentUiState
 import com.dik.torrentlist.utils.fileName
-import com.dik.torrserverapi.model.ContentFile
-import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.api.TorrentApi
 import com.dik.videofilenameparser.ParsedBase
 import com.dik.videofilenameparser.ParsedShow
@@ -49,10 +52,10 @@ internal class DefaultBufferizationComponent(
     private var preloadJob: Job? = null
     private var torrentStatistics: Job? = null
 
-    override fun startBufferezation(
-        torrent: Torrent,
-        contentFile: ContentFile,
-        runAferBuferazation: () -> Unit
+    override fun startBufferization(
+        torrent: TorrentUiState,
+        contentFile: ContentFileUiState,
+        runAfterBufferization: () -> Unit
     ) {
         preloadJob?.cancel()
         resetUiStateTorrentStatistics()
@@ -64,7 +67,7 @@ internal class DefaultBufferizationComponent(
             when (result) {
                 is Result.Success -> {
                     torrentStatistics?.cancel()
-                    runAferBuferazation()
+                    runAfterBufferization()
                     onClickDismiss()
                 }
 
@@ -75,7 +78,7 @@ internal class DefaultBufferizationComponent(
         torrentStatistics(torrent)
     }
 
-    private fun showTorrentInfo(contentFile: ContentFile) {
+    private fun showTorrentInfo(contentFile: ContentFileUiState) {
         _uiState.update {
             it.copy(
                 fileName = contentFile.path,
@@ -84,22 +87,23 @@ internal class DefaultBufferizationComponent(
         }
     }
 
-    private fun torrentStatistics(torrent: Torrent) {
+    private fun torrentStatistics(torrent: TorrentUiState) {
         torrentStatistics?.cancel()
         torrentStatistics = componentScope.launch {
             while (true) {
-                val result = torrentApi.getTorrent(torrent.hash)
+                torrentApi.getTorrent(torrent.hash)
+                    .onSuccess { torrent ->
+                        showTorrentStatistics(torrent.toTorrentUiState())
+                    }.onError {
+                        this.cancel()
+                    }
 
-                when (result) {
-                    is Result.Error -> this.cancel()
-                    is Result.Success -> showTorrentStatistics(result.data)
-                }
                 delay(2000)
             }
         }
     }
 
-    private fun showTorrentStatistics(torrent: Torrent) {
+    private fun showTorrentStatistics(torrent: TorrentUiState) {
         val preloadSize = torrent.statistics?.preloadSize ?: 0L
         val preloadedBytes = torrent.statistics?.preloadedBytes ?: 0L
         val progress = calculateProgress(preloadedBytes, preloadSize)
@@ -141,7 +145,7 @@ internal class DefaultBufferizationComponent(
         _uiState.update { BufferizationState() }
     }
 
-    private fun loadOverviewForFile(contentFile: ContentFile) {
+    private fun loadOverviewForFile(contentFile: ContentFileUiState) {
         val fileName = contentFile.path.fileName()
         val tv: ParsedShow? = parseFileNameTvShow(fileName)
         val movie: ParsedBase = parseFileNameBase(fileName)

@@ -28,15 +28,15 @@ internal fun TorrserverBarUi(
     val uiState by component.uiState.collectAsState()
     Column(modifier = modifier) {
         when (torrserverStatus) {
-            TorrserverStatus.RUNNING -> {
+            TorrserverStatus.General.Running -> {
                 RunningServer()
             }
 
-            TorrserverStatus.NOT_STARTED -> {
+            TorrserverStatus.General.Stopped -> {
                 RestartTorrserver(onClickRestart = { component.onClickStartServer() })
             }
 
-            TorrserverStatus.NOT_INSTALLED -> {
+            TorrserverStatus.General.NotInstalled -> {
                 InstallServer(
                     isShowProgress = uiState.isShowProgress,
                     progressValue = uiState.progressValue,

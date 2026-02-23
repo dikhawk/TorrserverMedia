@@ -2,10 +2,11 @@ package com.dik.torrentlist.screens.main.appbar
 
 import com.arkivanov.decompose.ComponentContext
 import com.dik.common.i18n.LocalizationResource
-import com.dik.torrentlist.screens.main.AddMagnetLink
-import com.dik.torrentlist.screens.main.AddTorrentFile
+import com.dik.common.onError
+import com.dik.torrentlist.screens.main.domain.AddMagnetLinkUseCase
+import com.dik.torrentlist.screens.main.domain.AddTorrentFileUseCase
 import com.dik.torrentlist.utils.FileUtils
-import com.dik.torrserverapi.server.TorrserverCommands
+import com.dik.torrserverapi.server.TorrserverManager
 import com.dik.torrserverapi.server.TorrserverStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,9 +20,9 @@ import torrservermedia.features.torrentlist.impl.generated.resources.main_app_ba
 internal class DefaultMainAppBarComponent(
     context: ComponentContext,
     private val componentScope: CoroutineScope,
-    private val addTorrentFile: AddTorrentFile,
-    private val addMagnetLink: AddMagnetLink,
-    private val torrserverCommands: TorrserverCommands,
+    private val addTorrentFileUseCase: AddTorrentFileUseCase,
+    private val addMagnetLinkUseCase: AddMagnetLinkUseCase,
+    private val torrserverManager: TorrserverManager,
     private val localization: LocalizationResource,
     private val fileUtils: FileUtils,
     private val openSettingsScreen: () -> Unit,
@@ -37,7 +38,9 @@ internal class DefaultMainAppBarComponent(
     override fun openFilePickTorrent() {
         if (!_uiState.value.isServerStarted) {
             componentScope.launch {
-                _uiState.update { it.copy(error = localization.getString(Res.string.main_app_bar_error_server_not_started)) }
+                _uiState.update {
+                    it.copy(error = localization.getString(Res.string.main_app_bar_error_server_not_started))
+                }
             }
 
             return
@@ -50,14 +53,16 @@ internal class DefaultMainAppBarComponent(
         componentScope.launch {
             _uiState.update { it.copy(action = MainAppBarAction.Undefined) }
             val absolutePath = fileUtils.absolutPath(path)
-            addTorrentFile.invoke(absolutePath)
+            addTorrentFileUseCase.invoke(absolutePath)
         }
     }
 
     override fun openAddLinkDialog() {
         if (!_uiState.value.isServerStarted) {
             componentScope.launch {
-                _uiState.update { it.copy(error = localization.getString(Res.string.main_app_bar_error_server_not_started)) }
+                _uiState.update {
+                    it.copy(error = localization.getString(Res.string.main_app_bar_error_server_not_started))
+                }
             }
 
             return
@@ -70,12 +75,8 @@ internal class DefaultMainAppBarComponent(
         componentScope.launch {
             if (_uiState.value.link.isEmpty()) return@launch
 
-            val result = addMagnetLink.invoke(_uiState.value.link)
-
-            if (!result.error.isNullOrEmpty()) {
-                _uiState.update { it.copy(errorLink = result.error) }
-                return@launch
-            }
+            addMagnetLinkUseCase.invoke(_uiState.value.link)
+                .onError { error -> _uiState.update { it.copy(errorLink = error.toString()) } }
 
             dismissDialog()
         }
@@ -114,8 +115,8 @@ internal class DefaultMainAppBarComponent(
 
     private fun observeServerStatus() {
         componentScope.launch {
-            torrserverCommands.serverStatus().collect { status ->
-                _uiState.update { it.copy(isServerStarted = status == TorrserverStatus.STARTED) }
+            torrserverManager.observeTorrserverStatus().collect { status ->
+                _uiState.update { it.copy(isServerStarted = status == TorrserverStatus.General.Started) }
             }
         }
     }

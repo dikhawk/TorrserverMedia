@@ -1,14 +1,19 @@
 package com.dik.torrentlist.screens.components.bufferization
 
 import androidx.compose.runtime.Stable
-import com.dik.torrserverapi.model.ContentFile
-import com.dik.torrserverapi.model.Torrent
+import com.dik.torrentlist.screens.model.ContentFileUiState
+import com.dik.torrentlist.screens.model.TorrentUiState
 import kotlinx.coroutines.flow.StateFlow
 
 internal interface BufferizationComponent {
     val uiState: StateFlow<BufferizationState>
 
-    fun startBufferezation(torrent: Torrent, contentFile: ContentFile, runAferBuferazation: () -> Unit)
+    fun startBufferization(
+        torrent: TorrentUiState,
+        contentFile: ContentFileUiState,
+        runAfterBufferization: () -> Unit
+    )
+
     fun onClickCancel()
 }
 

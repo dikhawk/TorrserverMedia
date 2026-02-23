@@ -43,8 +43,11 @@ import torrservermedia.features.torrentlist.impl.generated.resources.main_buffer
 import torrservermedia.features.torrentlist.impl.generated.resources.main_bufferization_pears_mask
 
 @Composable
-internal fun BufferizationUi(component: BufferizationComponent, modifier: Modifier = Modifier) {
-    val uiState = component.uiState.collectAsState()
+internal fun BufferizationUi(
+    component: BufferizationComponent,
+    modifier: Modifier = Modifier
+) {
+    val uiState by component.uiState.collectAsState()
     val localDensity = LocalDensity.current
     var bottomPadding by remember { mutableStateOf(0.dp) }
 
@@ -62,54 +65,26 @@ internal fun BufferizationUi(component: BufferizationComponent, modifier: Modifi
                         modifier = Modifier.heightIn(max = maxHeight - 100.dp)
                             .align(Alignment.TopCenter)
                     ) {
-                        AppNormalText(text = uiState.value.fileName)
-                        if (uiState.value.title.isNotEmpty())
-                            AppNormalBoldText(uiState.value.title)
-                        if (uiState.value.titleSecond.isNotEmpty())
-                            AppNormaBoldlItalicText(uiState.value.titleSecond)
-                        AppMiddleVerticalSpacer()
-                        Row {
-                            AppNormalItalicText(text = stringResource(Res.string.main_bufferization_downloading_speed))
-                            AppNormalHorizontalSpacer()
-                            AppNormalBoldText(text = uiState.value.downloadSpeed)
-                            Spacer(modifier = Modifier.weight(1f))
-                            AppNormalItalicText(text = stringResource(Res.string.main_bufferization_file_size))
-                            AppNormalHorizontalSpacer()
-                            AppNormalBoldText(text = uiState.value.fileSize)
-                        }
-                        AppNormalVerticalSpacer()
-                        LinearProgressIndicator(
-                            progress = { uiState.value.downloadProgress },
-                            modifier = Modifier.fillMaxWidth(),
+                        Header(
+                            fileName = uiState.fileName,
+                            title = uiState.title,
+                            titleSecond = uiState.titleSecond
                         )
-                        AppNormalVerticalSpacer()
-                        Row {
-                            if (uiState.value.activePeers.isNotEmpty()) {
-                                AppNormalItalicText(text = stringResource(Res.string.main_bufferization_active_pears))
-                                AppNormalHorizontalSpacer()
-                                AppNormalBoldText(
-                                    text = stringResource(Res.string.main_bufferization_pears_mask).format(
-                                        uiState.value.activePeers,
-                                        uiState.value.totalPeers
-                                    )
-                                )
-                            }
-                            Spacer(modifier = Modifier.weight(1f))
-                            if (uiState.value.downloadProgressText.isNotEmpty()) {
-                                AppNormalItalicText(text = stringResource(Res.string.main_bufferization_buffer_size))
-                                AppNormalHorizontalSpacer()
-                                AppNormalBoldText(text = uiState.value.downloadProgressText)
-                            }
-                        }
 
-                        if (uiState.value.overview.isNotEmpty()) {
-                            Column(
+                        TorrentStatistics(
+                            downloadSpeed = uiState.downloadSpeed,
+                            fileSize = uiState.fileSize,
+                            downloadProgress = uiState.downloadProgress,
+                            activePeers = uiState.activePeers,
+                            totalPeers = uiState.totalPeers,
+                            downloadProgressText = uiState.downloadProgressText
+                        )
+
+                        if (uiState.overview.isNotEmpty()) {
+                            Overview(
+                                overview = uiState.overview,
                                 modifier = Modifier.fillMaxWidth().padding(bottom = bottomPadding)
-                                    .verticalScroll(rememberScrollState())
-                            ) {
-                                AppNormalVerticalSpacer()
-                                AppNormalItalicText(text = uiState.value.overview)
-                            }
+                            )
                         } else {
                             Spacer(modifier = Modifier.height(bottomPadding))
                         }
@@ -132,5 +107,80 @@ internal fun BufferizationUi(component: BufferizationComponent, modifier: Modifi
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun Header(
+    fileName: String,
+    title: String,
+    titleSecond: String
+) {
+    AppNormalText(text = fileName)
+    if (title.isNotEmpty())
+        AppNormalBoldText(title)
+
+    if (titleSecond.isNotEmpty())
+        AppNormaBoldlItalicText(titleSecond)
+
+    AppMiddleVerticalSpacer()
+}
+
+@Composable
+private fun TorrentStatistics(
+    downloadSpeed: String,
+    fileSize: String,
+    downloadProgress: Float,
+    activePeers: String,
+    totalPeers: String,
+    downloadProgressText: String
+) {
+    Row {
+        AppNormalItalicText(text = stringResource(Res.string.main_bufferization_downloading_speed))
+        AppNormalHorizontalSpacer()
+        AppNormalBoldText(text = downloadSpeed)
+        Spacer(modifier = Modifier.weight(1f))
+        AppNormalItalicText(text = stringResource(Res.string.main_bufferization_file_size))
+        AppNormalHorizontalSpacer()
+        AppNormalBoldText(text = fileSize)
+    }
+
+    AppNormalVerticalSpacer()
+    LinearProgressIndicator(
+        progress = { downloadProgress },
+        modifier = Modifier.fillMaxWidth(),
+    )
+    AppNormalVerticalSpacer()
+    Row {
+        if (activePeers.isNotEmpty()) {
+            AppNormalItalicText(text = stringResource(Res.string.main_bufferization_active_pears))
+            AppNormalHorizontalSpacer()
+            AppNormalBoldText(
+                text = stringResource(Res.string.main_bufferization_pears_mask).format(
+                    activePeers,
+                    totalPeers
+                )
+            )
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        if (downloadProgressText.isNotEmpty()) {
+            AppNormalItalicText(text = stringResource(Res.string.main_bufferization_buffer_size))
+            AppNormalHorizontalSpacer()
+            AppNormalBoldText(text = downloadProgressText)
+        }
+    }
+}
+
+@Composable
+private fun Overview(
+    overview: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+    ) {
+        AppNormalVerticalSpacer()
+        AppNormalItalicText(text = overview)
     }
 }

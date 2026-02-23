@@ -26,7 +26,8 @@ internal interface MainComponent {
 
 @Stable
 internal data class MainComponentState(
-    val serverStatus: TorrserverStatus = TorrserverStatus.UNKNOWN,
+    val serverStatus: TorrserverStatus = TorrserverStatus.Unknown("Init state"),
     val isShowDetails: Boolean = false,
     val isShowBufferization: Boolean = false,
+    val error: String? = null
 )

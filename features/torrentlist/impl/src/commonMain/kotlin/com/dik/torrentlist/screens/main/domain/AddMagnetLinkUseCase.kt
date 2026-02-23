@@ -8,11 +8,9 @@ import com.dik.common.onSuccess
 import com.dik.torrentlist.error.toMessage
 import com.dik.torrentlist.utils.isValidMagnetLink
 import com.dik.torrserverapi.model.Torrent
-import com.dik.torrserverapi.server.api.MagnetApi
 import com.dik.torrserverapi.server.api.TorrentApi
 
 internal class AddMagnetLinkUseCase(
-    private val magnetApi: MagnetApi,
     private val torrentApi: TorrentApi,
     private val findThumbnailForTorrent: FindPosterUseCase,
     private val localization: LocalizationResource
@@ -21,7 +19,7 @@ internal class AddMagnetLinkUseCase(
         if (!magnetLink.isValidMagnetLink())
             return Result.Error(AddMagnetLinkErrors.InvalidMagnet)
 
-        magnetApi.addMagnet(magnetUrl = magnetLink)
+        torrentApi.addMagnet(magnetUrl = magnetLink)
             .onError { error ->
                 return Result.Error(AddMagnetLinkErrors.UnknownError(error.toMessage(localization)))
             }.onSuccess { resultData ->

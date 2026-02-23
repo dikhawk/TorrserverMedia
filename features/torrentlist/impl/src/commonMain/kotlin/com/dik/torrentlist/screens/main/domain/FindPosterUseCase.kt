@@ -51,17 +51,19 @@ internal class FindPosterUseCase(
         return Result.Error(FindPosterErrors.PosterNotFound)
     }
 
-    private fun getPoster(content: Content): Poster? = when(content) {
+    private fun getPoster(content: Content): Poster? = when (content) {
         is Movie -> Poster(
             poster300 = content.poster300,
             poster500 = content.poster500,
             posterOriginal = content.posterOriginal,
         )
+
         is TvShow -> Poster(
             poster300 = content.poster300,
             poster500 = content.poster500,
             posterOriginal = content.posterOriginal,
         )
+
         else -> null
     }
 }

@@ -2,43 +2,55 @@ package com.dik.torrentlist.screens.main.list
 
 import com.arkivanov.decompose.ComponentContext
 import com.dik.common.Result
-import com.dik.torrentlist.screens.main.AddTorrentFile
-import com.dik.torrentlist.screens.main.AddTorrentResult
+import com.dik.common.onError
+import com.dik.common.onSuccess
+import com.dik.torrentlist.screens.main.domain.AddMagnetLinkUseCase
+import com.dik.torrentlist.screens.main.domain.AddTorrentFileErrors
+import com.dik.torrentlist.screens.main.domain.AddTorrentFileUseCase
+import com.dik.torrentlist.screens.mappers.toTorrentUiStateList
+import com.dik.torrentlist.screens.model.TorrentUiState
 import com.dik.torrentlist.utils.FileUtils
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.api.TorrentApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class DefaultTorrentListComponent(
     context: ComponentContext,
-    private val onTorrentClick: (Torrent) -> Unit,
+    private val onTorrentClick: (TorrentUiState) -> Unit,
+    private val onNavigateToDetails: (TorrentUiState) -> Unit,
     private val onTorrentsIsEmpty: (Boolean) -> Unit,
     private val torrentApi: TorrentApi,
-    private val addTorrentFile: AddTorrentFile,
+    private val addTorrentFileUseCase: AddTorrentFileUseCase,
+    private val addMagnetLinkUseCase: AddMagnetLinkUseCase,
     private val componentScope: CoroutineScope,
     private val fileUtils: FileUtils
 ) : ComponentContext by context, TorrentListComponent {
 
     private val _uiState: MutableStateFlow<TorrentListState> = MutableStateFlow(TorrentListState())
     override val uiState: StateFlow<TorrentListState> = _uiState.asStateFlow()
-    private var torrentListObserver: Job? = null
 
 
-    override fun onClickItem(torrent: Torrent) {
-        onTorrentClick(torrent)
+    override fun onClickItem(torrent: TorrentUiState) {
+        onTorrentClick.invoke(torrent)
     }
 
-    override fun onClickDeleteItem(torrent: Torrent) {
+    override fun onNavigateToDetails(torrent: TorrentUiState) {
+        onNavigateToDetails.invoke(torrent)
+    }
+
+    override fun onClickDeleteItem(torrent: TorrentUiState) {
         componentScope.launch {
             torrentApi.removeTorrent(torrent.hash)
         }
@@ -47,36 +59,41 @@ internal class DefaultTorrentListComponent(
     override fun addTorrents(paths: List<String>) {
         _uiState.update { it.copy(isShowProgress = true) }
         componentScope.launch {
-            val tasks = mutableListOf<Deferred<AddTorrentResult>>()
+            val tasks = mutableListOf<Deferred<Result<Torrent, AddTorrentFileErrors>>>()
+
             paths.forEach { uri ->
                 val path = fileUtils.uriToPath(uri)
-                tasks.add(async { addTorrentFile.invoke(path) })
+                tasks.add(async { addTorrentFileUseCase.invoke(path) })
             }
             tasks.awaitAll()
             _uiState.update { it.copy(isShowProgress = false) }
         }
     }
-
-    override fun startObserveTorrentList() {
-        torrentListObserver?.cancel()
-        torrentListObserver = componentScope.launch {
-            while (true) {
-                when(val result = torrentApi.getTorrents()) {
-                    is Result.Error -> _uiState.update {
-                        it.copy(error = result.error.toString())
-                    }
-                    is Result.Success -> {
-                        _uiState.value.torrents.clear()
-                        _uiState.value.torrents.addAll(result.data)
-                        onTorrentsIsEmpty(result.data.isEmpty())
+    
+    override fun addMagnet(magnetLink: String) {
+        _uiState.update { it.copy(isShowProgress = true) }
+        componentScope.launch {
+            addMagnetLinkUseCase.invoke(magnetLink)
+                .onSuccess {
+                    // Список обновится автоматически через observeTorrentsList
+                }
+                .onError { error ->
+                    _uiState.update {
+                        it.copy(error = error.toString())
                     }
                 }
-                delay(1000)
-            }
+            _uiState.update { it.copy(isShowProgress = false) }
         }
     }
-
-    fun stopObservingTorrentList() {
-        torrentListObserver?.cancel()
-    }
+    
+    override fun observeTorrentsList(): Flow<List<TorrentUiState>> =
+        torrentApi.observeTorrents().flatMapLatest { result ->
+            if (result is Result.Success) {
+                flow {
+                    emit(result.data.toTorrentUiStateList())
+                }
+            } else {
+                awaitCancellation()
+            }
+        }
 }

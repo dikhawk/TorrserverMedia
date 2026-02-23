@@ -1,7 +1,6 @@
 package com.dik.torrentlist.screens.navigation
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -22,27 +21,24 @@ internal fun RootUi(
 ) {
     val stack by component.childStack.subscribeAsState()
 
-    SharedTransitionLayout {
-        Children(
-            stack = stack,
-            modifier = modifier,
-            animation = stackAnimation(fade() + scale()),
-        ) { child ->
-            when (val instance = child.instance) {
-                is RootComponent.Child.Main -> MainAdaptiveUi(
-                    instance.component,
-                    stack.active.instance is RootComponent.Child.Main
-                )
+    Children(
+        stack = stack,
+        modifier = modifier,
+        animation = stackAnimation(fade() + scale()),
+    ) { child ->
+        when (val instance = child.instance) {
+            is RootComponent.Child.Main -> MainAdaptiveUi(
+                instance.component,
+                modifier = modifier
+            )
 
-                is RootComponent.Child.Details -> DetailsUi(
-                    component = instance.component,
-                    torrentHash = instance.torrentHash,
-                    poster = instance.poster,
-                    isVisible = stack.active.instance is RootComponent.Child.Details
-                )
+            is RootComponent.Child.Details -> DetailsUi(
+                component = instance.component,
+                modifier = modifier,
+                poster = instance.poster
+            )
 
-                is RootComponent.Child.Settings -> instance.composable.invoke()
-            }
+            is RootComponent.Child.Settings -> instance.composable.invoke()
         }
     }
 }

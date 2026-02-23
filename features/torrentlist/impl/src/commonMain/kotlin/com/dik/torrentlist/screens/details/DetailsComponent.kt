@@ -4,8 +4,8 @@ import androidx.compose.runtime.Stable
 import com.dik.torrentlist.screens.components.bufferization.BufferizationComponent
 import com.dik.torrentlist.screens.details.files.ContentFilesComponent
 import com.dik.torrentlist.screens.details.torrentstatistics.TorrentStatisticsComponent
-import com.dik.torrserverapi.model.ContentFile
-import com.dik.torrserverapi.model.Torrent
+import com.dik.torrentlist.screens.model.ContentFileUiState
+import com.dik.torrentlist.screens.model.TorrentUiState
 import kotlinx.coroutines.flow.StateFlow
 
 internal interface DetailsComponent {
@@ -19,7 +19,11 @@ internal interface DetailsComponent {
     fun onClickBack()
     fun onClickDeleteTorrent()
     fun showDetails(hash: String)
-    fun runBufferization(torrent: Torrent, contentFile: ContentFile, runAferBuferazation: () -> Unit)
+    fun runBufferization(
+        torrent: TorrentUiState,
+        contentFile: ContentFileUiState,
+        runAferBuferazation: () -> Unit
+    )
 }
 
 @Stable

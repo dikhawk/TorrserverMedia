@@ -13,7 +13,7 @@ import torrservermedia.features.torrentlist.impl.generated.resources.main_add_di
 import torrservermedia.features.torrentlist.impl.generated.resources.main_add_dialog_placeholder_past_link
 
 @Composable
-internal fun AddLlinkDialog(
+internal fun AddLinkDialog(
     link: String,
     modifier: Modifier = Modifier,
     linkError: String? = null,

@@ -30,5 +30,5 @@ internal data class MainAppBarState(
 internal sealed interface MainAppBarAction {
     data object ShowAddLinkDialog : MainAppBarAction
     data object ShowFilePicker : MainAppBarAction
-    data object Undefined: MainAppBarAction
+    data object Undefined : MainAppBarAction
 }

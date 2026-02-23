@@ -5,23 +5,26 @@ import com.arkivanov.decompose.childContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
-import com.dik.common.Result
+import com.dik.common.converter.toReadableSize
 import com.dik.common.i18n.LocalizationResource
+import com.dik.common.onSuccess
 import com.dik.common.utils.successResult
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
 import com.dik.themoviedb.TvSeasonsTheMovieDbApi
 import com.dik.themoviedb.model.Movie
 import com.dik.themoviedb.model.TvShow
-import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrentlist.di.inject
 import com.dik.torrentlist.screens.components.bufferization.BufferizationComponent
 import com.dik.torrentlist.screens.components.bufferization.DefaultBufferizationComponent
 import com.dik.torrentlist.screens.details.files.DefaultContentFilesComponent
 import com.dik.torrentlist.screens.details.torrentstatistics.DefaultTorrentStatisticsComponent
-import com.dik.torrentlist.screens.main.FindPosterForTorrent
+import com.dik.torrentlist.screens.main.domain.FindPosterUseCase
+import com.dik.torrentlist.screens.mappers.toContetFileList
+import com.dik.torrentlist.screens.mappers.toTorrentUiState
+import com.dik.torrentlist.screens.model.ContentFileUiState
+import com.dik.torrentlist.screens.model.TorrentUiState
 import com.dik.torrentlist.utils.fileName
-import com.dik.torrserverapi.model.ContentFile
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.api.TorrentApi
 import com.dik.videofilenameparser.parseFileNameBase
@@ -39,23 +42,23 @@ import torrservermedia.features.torrentlist.impl.generated.resources.main_detail
 
 internal class DefaultDetailsComponent(
     componentContext: ComponentContext,
+    private val screenFormat: DetailsComponentScreenFormat,
     private val dispatchers: AppDispatchers = inject(),
     private val torrentApi: TorrentApi = inject(),
     private val appSettings: AppSettings = inject(),
     private val searchingTmdb: SearchTheMovieDbApi = inject(),
     private val tvSeasonTmdb: TvSeasonsTheMovieDbApi = inject(),
     private val tvEpisodesTmdb: TvEpisodesTheMovieDbApi = inject(),
-    private val screenFormat: DetailsComponentScreenFormat = inject(),
     private val localization: LocalizationResource = inject(),
-    private val findPosterForTorrent: FindPosterForTorrent = inject(),
-    private val onClickPlayFile: suspend (torrent: Torrent, contentFile: ContentFile) -> Unit,
+    private val findPosterUseCase: FindPosterUseCase = inject(),
+    private val onClickPlayFile: suspend (torrent: TorrentUiState, contentFile: ContentFileUiState) -> Unit,
     private val onClickBack: () -> Unit = {}
 ) : ComponentContext by componentContext, DetailsComponent {
 
     private val componentScope = CoroutineScope(dispatchers.mainDispatcher() + SupervisorJob())
     private val _uiState = MutableStateFlow(DetailsState())
     override val uiState: StateFlow<DetailsState> = _uiState.asStateFlow()
-    private var selectedTorrent: Torrent? = null
+    private var selectedTorrent: TorrentUiState? = null
 
     init {
         lifecycle.doOnDestroy { componentScope.cancel() }
@@ -77,7 +80,11 @@ internal class DefaultDetailsComponent(
                     runBufferization(
                         torrent,
                         contentFile,
-                        { componentScope.launch { onClickPlayFile.invoke(torrent, contentFile) } }
+                        {
+                            componentScope.launch {
+                                onClickPlayFile.invoke(torrent, contentFile)
+                            }
+                        }
                     )
             }
         }
@@ -109,9 +116,7 @@ internal class DefaultDetailsComponent(
         componentScope.launch {
             val hash = selectedTorrent?.hash ?: return@launch
 
-            val result = torrentApi.removeTorrent(hash)
-
-            if (result is Result.Success) {
+            torrentApi.removeTorrent(hash).onSuccess {
                 onClickBack()
             }
         }
@@ -122,21 +127,21 @@ internal class DefaultDetailsComponent(
 
         clearUiState()
         componentScope.launch {
-            val torrent = torrentApi.getTorrent(hash).successResult() ?: return@launch
+            torrentApi.getTorrent(hash).onSuccess { torrent ->
+                findAndAddThumbnail(torrent)
 
-            findAndAddThumbnail(torrent)
-            this@DefaultDetailsComponent.selectedTorrent = torrent
-
-            contentFilesComponent.showFiles(torrent.files)
-            torrentStatisticsComponent.showStatistics(torrent.hash)
-            _uiState.update {
-                it.copy(
-                    torrentName = torrent.title,
-                    poster = torrent.poster,
-                    size = torrent.size.toReadableSize()
-                )
+                selectedTorrent = torrent.toTorrentUiState()
+                contentFilesComponent.showFiles(torrent.files.toContetFileList())
+                torrentStatisticsComponent.showStatistics(torrent.hash)
+                _uiState.update {
+                    it.copy(
+                        torrentName = torrent.title,
+                        poster = torrent.poster,
+                        size = torrent.size.toReadableSize()
+                    )
+                }
+                loadTmdbDetails(torrent)
             }
-            loadTmdbDetails(torrent)
         }
     }
 
@@ -147,7 +152,7 @@ internal class DefaultDetailsComponent(
     private suspend fun findAndAddThumbnail(torrent: Torrent): Torrent {
         if (torrent.poster.isNotEmpty()) return torrent
 
-        val findResult = findPosterForTorrent.invoke(torrent).successResult()
+        val findResult = findPosterUseCase.invoke(torrent).successResult()
         val poster = findResult?.poster300 ?: return torrent
 
         val updatedTorrent = torrent.copy(poster = poster)
@@ -157,14 +162,14 @@ internal class DefaultDetailsComponent(
     }
 
     override fun runBufferization(
-        torrent: Torrent,
-        contentFile: ContentFile,
+        torrent: TorrentUiState,
+        contentFile: ContentFileUiState,
         runAferBuferazation: () -> Unit
     ) {
-        bufferizationComponent.startBufferezation(
+        bufferizationComponent.startBufferization(
             torrent = torrent,
             contentFile = contentFile,
-            runAferBuferazation = runAferBuferazation
+            runAfterBufferization = runAferBuferazation
         )
         _uiState.update { it.copy(isShowBufferization = true) }
     }

@@ -2,15 +2,14 @@ package com.dik.torrentlist.screens.main.torrserverbar
 
 import com.arkivanov.decompose.ComponentContext
 import com.dik.common.AppDispatchers
-import com.dik.common.ResultProgress
 import com.dik.common.i18n.LocalizationResource
-import com.dik.torrentlist.error.toMessage
-import com.dik.torrserverapi.TorrserverError
-import com.dik.torrserverapi.server.TorrserverCommands
+import com.dik.torrserverapi.server.TorrserverManager
+import com.dik.torrserverapi.server.TorrserverStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
@@ -18,11 +17,10 @@ import torrservermedia.features.torrentlist.impl.generated.resources.main_torrse
 
 internal class DefaultTorrserverBarComponent(
     context: ComponentContext,
-    private val torrserverCommands: TorrserverCommands,
+    private val torrserverManager: TorrserverManager,
     private val dispatchers: AppDispatchers,
     private val componentScope: CoroutineScope,
     private val localization: LocalizationResource,
-    private val torrServerStarter: TorrServerStarterPlatform
 ) : TorrserverBarComponent, ComponentContext by context {
 
     private val _uiState = MutableStateFlow(TorrserverBarState())
@@ -32,11 +30,12 @@ internal class DefaultTorrserverBarComponent(
     override fun onClickInstallServer() {
         _uiState.update { it.copy(isShowProgress = true) }
         componentScope.launch(dispatchers.defaultDispatcher()) {
-            torrserverCommands.installServer().collect { result ->
+            torrserverManager.installOrUpdate().collect { result ->
                 when (result) {
-                    is ResultProgress.Loading -> showProgress(result.progress.progress.toFloat())
-                    is ResultProgress.Error -> showError(result.error)
-                    is ResultProgress.Success -> serverInstalled()
+                    is TorrserverStatus.Install.Progress -> showProgress(result.progress.toFloat())
+                    is TorrserverStatus.Install.Error -> showError(result.msg)
+                    is TorrserverStatus.Install.Installed -> serverInstalled()
+                    else -> println("Server status: $result")
                 }
             }
         }
@@ -52,18 +51,18 @@ internal class DefaultTorrserverBarComponent(
         }
     }
 
-    private suspend fun showError(error: TorrserverError) {
-        _uiState.update { it.copy(isShowProgress = false, error = error.toMessage(localization)) }
+    private fun showError(error: String) {
+        _uiState.update { it.copy(isShowProgress = false, error = error) }
     }
 
     private suspend fun serverInstalled() {
         _uiState.update { it.copy(isShowProgress = false, isServerInstalled = true) }
-        torrServerStarter.startTorrServer()
+        torrserverManager.start().last()
     }
 
     override fun onClickStartServer() {
         componentScope.launch(dispatchers.defaultDispatcher()) {
-            torrServerStarter.startTorrServer()
+            torrserverManager.start().last()
         }
     }
 }

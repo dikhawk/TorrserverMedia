@@ -16,7 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -42,11 +42,14 @@ import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.main_details_torrent_size
 
 @Composable
-internal fun DetailsPaneUi(component: DetailsComponent, modifier: Modifier = Modifier) {
+internal fun DetailsPaneUi(
+    component: DetailsComponent,
+    modifier: Modifier = Modifier
+) {
     val uiState by component.uiState.collectAsState()
     val scrollState = rememberScrollState()
-    var imageHeight by remember { mutableStateOf(0) }
-    var torrentInfoHeight by remember { mutableStateOf(0) }
+    var imageHeight by remember { mutableIntStateOf(0) }
+    var torrentInfoHeight by remember { mutableIntStateOf(0) }
 
     Card(modifier = modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -64,7 +67,8 @@ internal fun DetailsPaneUi(component: DetailsComponent, modifier: Modifier = Mod
 
                 AppAsyncImage(
                     url = uiState.poster,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 400.dp).align(Alignment.Center),
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 400.dp)
+                        .align(Alignment.Center),
                     contentScale = ContentScale.Fit,
                 )
             }
