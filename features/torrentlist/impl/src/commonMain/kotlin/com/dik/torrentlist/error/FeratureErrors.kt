@@ -9,6 +9,7 @@ import torrservermedia.features.torrentlist.impl.generated.resources.main_error_
 import torrservermedia.features.torrentlist.impl.generated.resources.main_error_msg_response_return_null
 import torrservermedia.features.torrentlist.impl.generated.resources.main_error_msg_server_file_not_exist
 import torrservermedia.features.torrentlist.impl.generated.resources.main_error_msg_server_not_started
+import torrservermedia.features.torrentlist.impl.generated.resources.main_error_msg_wrong_server_config
 
 suspend fun TorrserverError.toMessage(localization: LocalizationResource): String {
     return when (this) {
@@ -24,6 +25,8 @@ suspend fun TorrserverError.toMessage(localization: LocalizationResource): Strin
             Res.string.main_error_msg_platform_not_supported.asString(localization)
         is TorrserverError.Unknown -> this.message
         is TorrserverError.HttpError.ResponseReturnError -> this.message
+        is TorrserverError.Server.WrongConfiguration ->
+            Res.string.main_error_msg_wrong_server_config.asString(localization)
     }
 }
 

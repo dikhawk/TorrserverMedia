@@ -2,8 +2,7 @@ package com.dik.torrentlist.di
 
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
-import com.dik.common.cmd.CmdRunner
-import com.dik.common.cmd.KmpCmdRunner
+import com.dik.common.cmd.CommandExecutor
 import com.dik.common.i18n.LocalizationResource
 import com.dik.common.platform.PlatformEvents
 import com.dik.common.platform.WindowAdaptiveClient
@@ -12,14 +11,14 @@ import com.dik.themoviedb.MoviesTheMovieDbApi
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
 import com.dik.themoviedb.TvSeasonsTheMovieDbApi
-import com.dik.torrentlist.screens.main.AddMagnetLink
-import com.dik.torrentlist.screens.main.AddTorrentFile
-import com.dik.torrentlist.screens.main.FindPosterForTorrent
+import com.dik.torrentlist.screens.main.domain.AddMagnetLinkUseCase
+import com.dik.torrentlist.screens.main.domain.AddTorrentFileUseCase
+import com.dik.torrentlist.screens.main.domain.FindPosterUseCase
 import com.dik.torrserverapi.di.TorrserverApi
-import com.dik.torrserverapi.server.api.MagnetApi
+import com.dik.torrserverapi.server.TorrserverManager
 import com.dik.torrserverapi.server.api.TorrentApi
-import com.dik.torrserverapi.server.TorrserverCommands
-import com.dik.torrserverapi.server.api.TorrserverStuffApi
+import com.dik.torrserverapi.server.api.TorrserverApiClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -35,14 +34,13 @@ object KoinModules {
 
     private val mutex = Mutex()
 
-    @Volatile
     var koin: Koin? = null
         private set
 
     fun init(dependencies: TorrentListDependencies) {
         if (koin != null) return
 
-        runBlocking {
+        runBlocking(Dispatchers.Default) {
             mutex.withLock {
                 if (koin == null) {
                     koin = koinApplication {
@@ -64,19 +62,18 @@ object KoinModules {
 }
 
 internal fun useCasesModule() = module {
-    factoryOf(::AddTorrentFile).bind<AddTorrentFile>()
-    factoryOf(::FindPosterForTorrent).bind<FindPosterForTorrent>()
-    factoryOf(::AddMagnetLink).bind<AddMagnetLink>()
+    factoryOf(::AddTorrentFileUseCase).bind<AddTorrentFileUseCase>()
+    factoryOf(::FindPosterUseCase).bind<FindPosterUseCase>()
+    factoryOf(::AddMagnetLinkUseCase).bind<AddMagnetLinkUseCase>()
 }
 
 internal fun torrentListModule(dependencies: TorrentListDependencies) = module {
     single<TorrserverApi> { dependencies.torrServerApi() }
-    single<TorrserverStuffApi> { dependencies.torrServerApi().torrserverStuffApi() }
+    single<TorrserverApiClient> { dependencies.torrServerApi().torrserverApiClient() }
     single<TorrentApi> { dependencies.torrServerApi().torrentApi() }
-    single<MagnetApi> { dependencies.torrServerApi().magnetApi() }
-    single<TorrserverCommands> { dependencies.torrServerApi().torrserverCommands() }
+    single<TorrserverManager> { dependencies.torrServerApi().torrserverManager() }
     single<AppDispatchers> { dependencies.dispatchers() }
-    factory<CmdRunner> { KmpCmdRunner }
+    factory<CommandExecutor> { CommandExecutor.instance() }
     factory<SettingsFeatureApi> { dependencies.settingsFeatureApi() }
     single<AppSettings> { dependencies.appSettings() }
     single<SearchTheMovieDbApi> { dependencies.theMovieDbApi().searchApi() }

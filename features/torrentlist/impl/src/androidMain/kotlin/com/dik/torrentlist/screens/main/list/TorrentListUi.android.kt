@@ -1,7 +1,6 @@
 package com.dik.torrentlist.screens.main.list
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -19,7 +18,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -30,8 +28,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.dik.torrentlist.converters.toReadableSize
-import com.dik.torrserverapi.model.Torrent
+import com.dik.common.converter.toReadableSize
+import com.dik.torrentlist.screens.model.TorrentUiState
 import com.dik.uikit.theme.AppTheme
 import com.dik.uikit.widgets.AppAsyncImage
 import com.dik.uikit.widgets.AppNormalBoldText
@@ -41,65 +39,64 @@ import torrservermedia.features.torrentlist.impl.generated.resources.Res
 import torrservermedia.features.torrentlist.impl.generated.resources.main_torrent_list_files_count
 import torrservermedia.features.torrentlist.impl.generated.resources.main_torrent_list_is_empty
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal actual fun SharedTransitionScope.TorrentListUi(
+internal actual fun TorrentListUi(
     component: TorrentListComponent,
-    modifier: Modifier,
-    isVisible: Boolean
+    isMultiPane: Boolean,
+    modifier: Modifier
 ) {
     val uiState by component.uiState.collectAsState()
+    val observeTorrents by component.observeTorrentsList().collectAsState(emptyList())
 
     Box(modifier = modifier.fillMaxSize()) {
         when {
-            uiState.torrents.isEmpty() -> EmptyListStub(
+            observeTorrents.isEmpty() -> EmptyListStub(
                 modifier = Modifier.align(Alignment.Center)
             )
 
             else -> Torrents(
-                torrents = uiState.torrents,
+                torrentsProvider = { observeTorrents },
                 modifier = Modifier,
-                isVisible = isVisible,
-                onClickItem = { component.onClickItem(it) }
+                onClickItem = { torrent ->
+                    if (isMultiPane) {
+                        component.onClickItem(torrent)
+                    } else {
+                        component.onNavigateToDetails(torrent)
+                    }
+                }
             )
         }
     }
-
-    LaunchedEffect(Unit) {
-        component.startObserveTorrentList()
-    }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.Torrents(
-    torrents: List<Torrent>,
+private fun Torrents(
+    torrentsProvider: () -> List<TorrentUiState>,
     modifier: Modifier = Modifier,
-    isVisible: Boolean,
-    onClickItem: (Torrent) -> Unit
+    onClickItem: (TorrentUiState) -> Unit
 ) {
     LazyVerticalGrid(modifier = modifier, columns = GridCells.Adaptive(150.dp)) {
-        items(torrents) { torrent ->
-            TorrentItem(torrent = torrent, onClickItem = onClickItem, isVisible = isVisible)
+        items(torrentsProvider()) { torrent ->
+            TorrentItem(torrent = torrent, onClickItem = onClickItem)
         }
     }
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.TorrentItem(
-    torrent: Torrent,
+private fun TorrentItem(
+    torrent: TorrentUiState,
     modifier: Modifier = Modifier,
-    isVisible: Boolean,
-    onClickItem: (Torrent) -> Unit = {}
+    onClickItem: (TorrentUiState) -> Unit = {}
 ) {
     val torrentSize = remember { torrent.size.toReadableSize() }
 
-    Card(modifier = modifier
-        .padding(2.dp)
-        .clip(RoundedCornerShape(16.dp, 16.dp, 16.dp, 16.dp))
-        .clickable { onClickItem(torrent) }
-        .fillMaxSize()
+    Card(
+        modifier = modifier
+            .padding(2.dp)
+            .clip(RoundedCornerShape(16.dp, 16.dp, 16.dp, 16.dp))
+            .clickable { onClickItem(torrent) }
+            .fillMaxSize()
     ) {
         Box(
             modifier = Modifier
@@ -107,11 +104,7 @@ private fun SharedTransitionScope.TorrentItem(
         ) {
             AppAsyncImage(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .sharedElementWithCallerManagedVisibility(
-                        sharedContentState = rememberSharedContentState(key = torrent.hash),
-                        visible = isVisible
-                    ),
+                    .fillMaxSize(),
                 url = torrent.poster,
                 contentScale = ContentScale.Crop
             )

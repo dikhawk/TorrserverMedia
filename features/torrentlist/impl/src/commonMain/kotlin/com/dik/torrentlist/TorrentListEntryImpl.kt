@@ -7,7 +7,7 @@ import com.dik.torrentlist.screens.navigation.ChildConfig
 import com.dik.torrentlist.screens.navigation.DefaultRootComponent
 import com.dik.torrentlist.screens.navigation.RootUi
 
-class TorrentListEntryImpl() : TorrentListEntry() {
+class TorrentListEntryImpl : TorrentListEntry() {
 
     override fun openTorrent(
         pathToTorrent: String,

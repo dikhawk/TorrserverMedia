@@ -17,3 +17,11 @@ internal fun String.toPlatform(): Platform {
         else -> Platform.NOT_SUPPORTED_OS
     }
 }
+
+fun Platform.isDesktop(): Boolean {
+    return this == Platform.LINUX || this == Platform.WINDOWS || this == Platform.MAC
+}
+
+fun Platform.isMobile(): Boolean {
+    return this == Platform.ANDROID
+}

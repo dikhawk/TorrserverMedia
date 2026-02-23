@@ -3,9 +3,9 @@ package com.dik.settings.di
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.i18n.LocalizationResource
+import com.dik.torrserverapi.server.TorrserverManager
 import com.dik.torrserverapi.server.api.ServerSettingsApi
-import com.dik.torrserverapi.server.TorrserverCommands
-import com.dik.torrserverapi.server.api.TorrserverStuffApi
+import com.dik.torrserverapi.server.api.TorrserverApiClient
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -45,8 +45,8 @@ internal fun settingListModule(dependencies: SettingsDependencies) = module {
     single<ServerSettingsApi> { dependencies.torrServerApi().serverSettingsApi() }
     single<AppSettings> { dependencies.appSettings() }
     single<AppDispatchers> { dependencies.dispatchers() }
-    single<TorrserverStuffApi> { dependencies.torrServerApi().torrserverStuffApi() }
-    single<TorrserverCommands> { dependencies.torrServerApi().torrserverCommands() }
+    single<TorrserverApiClient> { dependencies.torrServerApi().torrserverApiClient() }
+    single<TorrserverManager> { dependencies.torrServerApi().torrserverManager() }
     single<LocalizationResource> { dependencies.localizationResource() }
 }
 

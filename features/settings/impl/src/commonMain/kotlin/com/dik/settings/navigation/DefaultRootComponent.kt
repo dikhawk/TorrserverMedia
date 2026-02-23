@@ -12,17 +12,17 @@ import com.dik.common.i18n.LocalizationResource
 import com.dik.settings.di.inject
 import com.dik.settings.main.DefaultMainComponent
 import com.dik.settings.main.MainComponent
+import com.dik.torrserverapi.server.TorrserverManager
 import com.dik.torrserverapi.server.api.ServerSettingsApi
-import com.dik.torrserverapi.server.TorrserverCommands
-import com.dik.torrserverapi.server.api.TorrserverStuffApi
+import com.dik.torrserverapi.server.api.TorrserverApiClient
 
 internal class DefaultRootComponent(
     context: ComponentContext,
     private val serverSettingsApi: ServerSettingsApi = inject(),
     private val dispatchers: AppDispatchers = inject(),
     private val appSettings: AppSettings = inject(),
-    private val torrserverStuffApi: TorrserverStuffApi = inject(),
-    private val torrserverCommands: TorrserverCommands = inject(),
+    private val torrserverApiClient: TorrserverApiClient = inject(),
+    private val torrserverManager: TorrserverManager = inject(),
     private val localization: LocalizationResource = inject(),
     private val onFinish: () -> Unit,
 ) : RootComponent, ComponentContext by context {
@@ -48,8 +48,8 @@ internal class DefaultRootComponent(
             serverSettingsApi = serverSettingsApi,
             dispatchers = dispatchers,
             appSettings = appSettings,
-            torrserverStuffApi = torrserverStuffApi,
-            torrserverCommands = torrserverCommands,
+            torrserverApiClient = torrserverApiClient,
+            torrserverManager = torrserverManager,
             localization = localization
         )
 

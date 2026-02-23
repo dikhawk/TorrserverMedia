@@ -9,6 +9,7 @@ import com.dik.common.Platform.WINDOWS
 
 const val PATH_TO_FILE = "%pathToFile%"
 
+@Deprecated("Use PlayerManager")
 enum class Player(
     val shortName: String,
     val title: String,

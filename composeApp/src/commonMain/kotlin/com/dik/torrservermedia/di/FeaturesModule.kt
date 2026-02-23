@@ -19,13 +19,17 @@ val featuresModule = module {
     }
 
     factory<SettingsFeatureApi> {
-        SettingsComponentHolder.init(object : SettingsDependencies {
-            override fun torrServerApi(): TorrserverApi = get()
-            override fun dispatchers(): AppDispatchers = get()
-            override fun appSettings(): AppSettings = get()
-            override fun localizationResource(): LocalizationResource = get()
-        })
+        SettingsComponentHolder.init(settingsDependencies())
         SettingsComponentHolder.get()
+    }
+}
+
+private fun settingsDependencies(): SettingsDependencies {
+    return object : SettingsDependencies {
+        override fun torrServerApi(): TorrserverApi = inject()
+        override fun dispatchers(): AppDispatchers = inject()
+        override fun appSettings(): AppSettings = inject()
+        override fun localizationResource(): LocalizationResource = inject()
     }
 }
 
