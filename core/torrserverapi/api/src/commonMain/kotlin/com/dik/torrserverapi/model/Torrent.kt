@@ -1,7 +1,5 @@
 package com.dik.torrserverapi.model
 
-import com.dik.torrserverapi.model.ContentFile
-
 data class Torrent(
     val hash: String,
     val title: String,

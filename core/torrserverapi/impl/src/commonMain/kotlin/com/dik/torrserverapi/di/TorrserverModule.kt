@@ -4,7 +4,6 @@ import com.dik.common.AppDispatchers
 import com.dik.common.cmd.CommandExecutor
 import com.dik.torrserverapi.SettingsConst
 import com.dik.torrserverapi.data.FileManagerImpl
-import com.dik.torrserverapi.data.MagnetApiImpl
 import com.dik.torrserverapi.data.ServerSettingsApiImpl
 import com.dik.torrserverapi.data.TorrentApiImpl
 import com.dik.torrserverapi.data.TorrserverManagerImpl
@@ -23,7 +22,6 @@ import com.dik.torrserverapi.domain.usecases.StartServerUseCase
 import com.dik.torrserverapi.domain.usecases.StopServerUseCase
 import com.dik.torrserverapi.server.TorrserverApiClientImpl
 import com.dik.torrserverapi.server.TorrserverManager
-import com.dik.torrserverapi.server.api.MagnetApi
 import com.dik.torrserverapi.server.api.ServerSettingsApi
 import com.dik.torrserverapi.server.api.TorrentApi
 import com.dik.torrserverapi.server.api.TorrserverApiClient
@@ -45,7 +43,6 @@ import org.koin.dsl.module
 internal val torrserverModule = module {
     factory<CommandExecutor> { CommandExecutor.instance() }
     factory<FileSystem> { FileSystem.SYSTEM }
-    singleOf(::MagnetApiImpl).bind<MagnetApi>()
     singleOf(::TorrentApiImpl).bind<TorrentApi>()
     singleOf(::TorrserverApiClientImpl).bind<TorrserverApiClient>()
     singleOf(::ServerSettingsApiImpl).bind<ServerSettingsApi>()

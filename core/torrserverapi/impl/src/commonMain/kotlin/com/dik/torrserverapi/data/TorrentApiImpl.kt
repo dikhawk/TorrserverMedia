@@ -29,12 +29,38 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.merge
 import kotlinx.serialization.json.Json
 
 class TorrentApiImpl(
     private val client: HttpClient,
     private val dispatchers: AppDispatchers
 ) : TorrentApi {
+
+    private val manualRefresh = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
+    @ExperimentalCoroutinesApi
+    override fun observeTorrents(interval: Long): Flow<Result<List<Torrent>, TorrserverError>> {
+        val ticker = flow {
+            while (true) {
+                emit(Unit)
+                delay(interval)
+            }
+        }
+
+        return merge(ticker, manualRefresh).flatMapLatest {
+            flow {
+                emit(getTorrents())
+            }
+        }
+    }
+
 
     override suspend fun getTorrents(): Result<List<Torrent>, TorrserverError> {
         return runCatchingKtor {
@@ -93,6 +119,7 @@ class TorrentApiImpl(
 
             return if (request.status.isSuccess()) {
                 val response = request.body<TorrentResponse>()
+                manualRefresh.tryEmit(Unit)
 
                 Result.Success(response.mapToTorrent())
             } else {
@@ -114,7 +141,11 @@ class TorrentApiImpl(
                 contentType(ContentType.Application.Json)
             }
 
-            if (request.status.isSuccess()) return Result.Success(Unit)
+            if (request.status.isSuccess()) {
+                manualRefresh.tryEmit(Unit)
+
+                return Result.Success(Unit)
+            }
 
             return Result.Error(TorrserverError.HttpError.ResponseReturnError(request.status.description))
         }
@@ -161,22 +192,40 @@ class TorrentApiImpl(
 
     override suspend fun removeTorrent(hash: String): Result<Unit, TorrserverError> {
         return runCatchingKtor {
-            try {
-                val body = Body(action = TorrentsAction.REM.asString, hash = hash)
-                val request = client.post("/torrents") {
-                    setBody(Json.encodeToString(Body.serializer(), body))
+            val body = Body(action = TorrentsAction.REM.asString, hash = hash)
+            val request = client.post("/torrents") {
+                setBody(Json.encodeToString(Body.serializer(), body))
+                contentType(ContentType.Application.Json)
+            }
+
+            if (request.status.isSuccess()) {
+                manualRefresh.tryEmit(Unit)
+
+                return Result.Success(Unit)
+            }
+
+            return Result.Error(
+                TorrserverError.HttpError
+                    .ResponseReturnError("Response return error: ${request.status.value}")
+            )
+        }
+    }
+
+    override suspend fun addMagnet(magnetUrl: String): Result<Torrent, TorrserverError> {
+        return runCatchingKtor {
+            val body = Body(action = TorrentsAction.ADD.asString, link = magnetUrl, saveToDb = true)
+            val response =
+                client.post("/torrents") {
+                    setBody(body)
                     contentType(ContentType.Application.Json)
                 }
 
-                if (request.status.isSuccess()) return Result.Success(Unit)
-
-                return Result.Error(
-                    TorrserverError.HttpError
-                        .ResponseReturnError("Response return error: ${request.status.value}")
-                )
-            } catch (e: Exception) {
-                return Result.Error(TorrserverError.Unknown(e.toString()))
+            if (!response.status.isSuccess()) {
+                return Result.Error(TorrserverError.HttpError.ResponseReturnError(response.status.description))
             }
+
+            manualRefresh.tryEmit(Unit)
+            response.body<TorrentResponse>().mapToTorrent()
         }
     }
 }

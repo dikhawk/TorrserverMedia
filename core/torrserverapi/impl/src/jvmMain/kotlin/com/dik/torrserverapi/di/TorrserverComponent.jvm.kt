@@ -1,7 +1,6 @@
 package com.dik.torrserverapi.di
 
 import com.dik.torrserverapi.server.TorrserverManager
-import com.dik.torrserverapi.server.api.MagnetApi
 import com.dik.torrserverapi.server.api.ServerSettingsApi
 import com.dik.torrserverapi.server.api.TorrentApi
 import com.dik.torrserverapi.server.api.TorrserverApiClient
@@ -13,7 +12,6 @@ internal actual fun torrserverComponent(
         KoinModules.init(dependencies)
     }
 
-    override fun magnetApi(): MagnetApi = inject()
     override fun torrentApi(): TorrentApi = inject()
     override fun torrserverApiClient(): TorrserverApiClient = inject()
     override fun serverSettingsApi(): ServerSettingsApi = inject()
