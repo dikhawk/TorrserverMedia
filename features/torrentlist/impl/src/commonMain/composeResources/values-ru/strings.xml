@@ -39,4 +39,5 @@
     <string name="main_bufferization_file_size">Размер:</string>
     <string name="main_bufferization_buffer_size">Буфер:</string>
     <string name="main_app_bar_error_server_not_started">TorrServer не запущен</string>
+    <string name="main_error_msg_wrong_server_config">Ошибка конфигурации сервера</string>
 </resources>
