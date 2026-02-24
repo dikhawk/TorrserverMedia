@@ -51,6 +51,7 @@ import com.dik.common.converter.toReadableSize
 import com.dik.torrentlist.screens.model.TorrentUiState
 import com.dik.uikit.theme.AppTheme
 import com.dik.uikit.widgets.AppAsyncImage
+import com.dik.uikit.widgets.AppCircularProgressIndicator
 import com.dik.uikit.widgets.AppNormalBoldText
 import com.dik.uikit.widgets.AppNormalText
 import org.jetbrains.compose.resources.painterResource
@@ -71,7 +72,7 @@ internal actual fun TorrentListUi(
     modifier: Modifier
 ) {
     val uiState by component.uiState.collectAsState()
-    val observeTorrents by component.observeTorrentsList().collectAsState(emptyList())
+//    val observeTorrents by component.observeTorrentsList().collectAsState(emptyList())
 
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         DragAndDropFile(
@@ -79,9 +80,11 @@ internal actual fun TorrentListUi(
             contentAlignment = Alignment.Center,
             onDropFiles = { files -> component.addTorrents(files) }) {
             when {
-                observeTorrents.isEmpty() -> EmptyListStub()
+                uiState.isShowProgress ->
+                    AppCircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                uiState.torrents.isEmpty() && !uiState.isShowProgress -> EmptyListStub()
                 else -> Torrents(
-                    listProvider = { observeTorrents },
+                    listProvider = { uiState.torrents },
                     onClickDeleteItem = { component.onClickDeleteItem(it)},
                     onClickItem = { torrent ->
                         if (isMultiPane) {

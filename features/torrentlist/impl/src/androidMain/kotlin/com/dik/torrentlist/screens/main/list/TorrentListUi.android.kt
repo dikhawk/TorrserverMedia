@@ -32,6 +32,7 @@ import com.dik.common.converter.toReadableSize
 import com.dik.torrentlist.screens.model.TorrentUiState
 import com.dik.uikit.theme.AppTheme
 import com.dik.uikit.widgets.AppAsyncImage
+import com.dik.uikit.widgets.AppCircularProgressIndicator
 import com.dik.uikit.widgets.AppNormalBoldText
 import com.dik.uikit.widgets.AppNormalText
 import org.jetbrains.compose.resources.stringResource
@@ -46,16 +47,19 @@ internal actual fun TorrentListUi(
     modifier: Modifier
 ) {
     val uiState by component.uiState.collectAsState()
-    val observeTorrents by component.observeTorrentsList().collectAsState(emptyList())
 
     Box(modifier = modifier.fillMaxSize()) {
         when {
-            observeTorrents.isEmpty() -> EmptyListStub(
-                modifier = Modifier.align(Alignment.Center)
-            )
+            uiState.isShowProgress ->
+                AppCircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+
+            uiState.torrents.isEmpty() && !uiState.isShowProgress ->
+                EmptyListStub(
+                    modifier = Modifier.align(Alignment.Center)
+                )
 
             else -> Torrents(
-                torrentsProvider = { observeTorrents },
+                torrentsProvider = { uiState.torrents },
                 modifier = Modifier,
                 onClickItem = { torrent ->
                     if (isMultiPane) {
