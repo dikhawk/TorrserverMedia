@@ -3,6 +3,7 @@ package com.dik.torrentlist.screens.main.appbar
 import com.arkivanov.decompose.ComponentContext
 import com.dik.common.i18n.LocalizationResource
 import com.dik.common.onError
+import com.dik.common.onSuccess
 import com.dik.torrentlist.screens.main.domain.AddMagnetLinkUseCase
 import com.dik.torrentlist.screens.main.domain.AddTorrentFileUseCase
 import com.dik.torrentlist.utils.FileUtils
@@ -76,9 +77,11 @@ internal class DefaultMainAppBarComponent(
             if (_uiState.value.link.isEmpty()) return@launch
 
             addMagnetLinkUseCase.invoke(_uiState.value.link)
-                .onError { error -> _uiState.update { it.copy(errorLink = error.toString()) } }
-
-            dismissDialog()
+                .onError { error ->
+                    _uiState.update { it.copy(errorLink = error.toString()) }
+                }.onSuccess {
+                    dismissDialog()
+                }
         }
     }
 
