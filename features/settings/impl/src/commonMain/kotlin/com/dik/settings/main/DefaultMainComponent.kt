@@ -5,28 +5,28 @@ import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
-import com.dik.common.ResultProgress
 import com.dik.common.i18n.AppLanguage
 import com.dik.common.i18n.LocalizationResource
 import com.dik.common.i18n.setLocalization
 import com.dik.common.player.Player
 import com.dik.common.utils.cpuArch
 import com.dik.common.utils.platformName
-import com.dik.common.utils.successResult
 import com.dik.settings.utils.bytesToMb
 import com.dik.settings.utils.mbToBytes
 import com.dik.settings.utils.toIntOrZero
 import com.dik.settings.utils.toLongOrZero
 import com.dik.torrserverapi.model.ServerSettings
+import com.dik.torrserverapi.server.TorrserverManager
+import com.dik.torrserverapi.server.TorrserverStatus
 import com.dik.torrserverapi.server.api.ServerSettingsApi
-import com.dik.torrserverapi.server.TorrserverCommands
-import com.dik.torrserverapi.server.api.TorrserverStuffApi
+import com.dik.torrserverapi.server.api.TorrserverApiClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import torrservermedia.features.settings.impl.generated.resources.Res
@@ -41,8 +41,8 @@ import torrservermedia.features.settings.impl.generated.resources.main_settings_
 internal class DefaultMainComponent(
     context: ComponentContext,
     private val serverSettingsApi: ServerSettingsApi,
-    private val torrserverStuffApi: TorrserverStuffApi,
-    private val torrserverCommands: TorrserverCommands,
+    private val torrserverApiClient: TorrserverApiClient,
+    private val torrserverManager: TorrserverManager,
     private val appSettings: AppSettings,
     private val localization: LocalizationResource,
     private val dispatchers: AppDispatchers,
@@ -65,15 +65,20 @@ internal class DefaultMainComponent(
     override fun onClickUpdateTorrserver() {
         _uiState.update { it.copy(isShowAvailableNewVersionProgress = true) }
         componentScope.launch(dispatchers.ioDispatcher()) {
-            torrserverCommands.installServer().collect { result ->
-                when (result) {
-                    is ResultProgress.Error -> updateError()
+            torrserverManager.installOrUpdate()
+                .distinctUntilChanged()
+                .collect { result ->
+                    when (result) {
+                        is TorrserverStatus.Install.Error -> updateError()
 
-                    is ResultProgress.Loading -> updateProgress(result.progress.progress)
+                        is TorrserverStatus.Install.Progress -> updateProgress(result.progress)
 
-                    is ResultProgress.Success -> updateSuccess()
+                        is TorrserverStatus.Install.Installed -> updateSuccess()
+                        else -> {
+                            println("Install server: $result")
+                        }
+                    }
                 }
-            }
         }
     }
 
@@ -110,8 +115,7 @@ internal class DefaultMainComponent(
     }
 
     private suspend fun restartTorrserver() {
-        torrserverCommands.stopServer()
-        torrserverCommands.startServer()
+        torrserverManager.restart().collect {  }
     }
 
     override fun onChangeDefaultPlayer(value: Player) {
@@ -209,7 +213,8 @@ internal class DefaultMainComponent(
     override fun onClickSave() {
         if (_uiState.value.isShowProgressBar) {
             componentScope.launch {
-                val message = localization.getString(Res.string.main_settings_snackbar_not_available_now)
+                val message =
+                    localization.getString(Res.string.main_settings_snackbar_not_available_now)
                 _uiState.update { it.copy(snackbar = message) }
             }
             return
@@ -329,15 +334,23 @@ internal class DefaultMainComponent(
     }
 
     private suspend fun checkUpdates() {
-        val echoResult = torrserverStuffApi.echo().successResult()
-        val updatesResult = torrserverCommands.isAvailableNewVersion().successResult() ?: false
+        torrserverManager.checkNewVersion().collect { status ->
+            when (status) {
+                is TorrserverStatus.CheckLatestVersion.AvailableNewVersion -> {
+                    _uiState.update {
+                        it.copy(
+                            availableNewVersionText = localization.getString(Res.string.main_settings_available_new_version),
+                            isAvailableNewVersion = true
+                        )
+                    }
+                }
+                is TorrserverStatus.CheckLatestVersion.VersionIsActual -> {
 
-        if (!echoResult.isNullOrEmpty() && updatesResult) {
-            _uiState.update {
-                it.copy(
-                    availableNewVersionText = localization.getString(Res.string.main_settings_available_new_version),
-                    isAvailableNewVersion = true
-                )
+                }
+                is TorrserverStatus.CheckLatestVersion.Checking -> {
+
+                }
+                else -> println("Status: $status")
             }
         }
     }
