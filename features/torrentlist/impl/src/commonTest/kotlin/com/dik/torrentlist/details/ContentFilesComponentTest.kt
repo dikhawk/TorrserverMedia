@@ -3,6 +3,9 @@ package com.dik.torrentlist.details
 import app.cash.turbine.test
 import com.dik.common.AppDispatchers
 import com.dik.torrentlist.screens.details.files.DefaultContentFilesComponent
+import com.dik.torrentlist.screens.mappers.toContentFileState
+import com.dik.torrentlist.screens.mappers.toContetFileList
+import com.dik.torrentlist.screens.model.ContentFileUiState
 import com.dik.torrserverapi.model.ContentFile
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -24,7 +27,7 @@ class ContentFilesComponentTest {
         override fun defaultDispatcher() = unconfiedTestDispatcher
         override fun mainDispatcher() = unconfiedTestDispatcher
     }
-    private val onClickPlayFile: suspend (contentFile: ContentFile) -> Unit = mockk(relaxed = true)
+    private val onClickPlayFile: suspend (contentFile: ContentFileUiState) -> Unit = mockk(relaxed = true)
 
     @Test
     fun `Show files then check ui state files`() = runTest {
@@ -51,7 +54,7 @@ class ContentFilesComponentTest {
             isViewed = false
         )
 
-        component.showFiles(listOf(contentFile1, contentFile2, contentFile3))
+        component.showFiles(listOf(contentFile1, contentFile2, contentFile3).toContetFileList())
 
         component.uiState.test {
             val item = awaitItem()
@@ -71,7 +74,7 @@ class ContentFilesComponentTest {
             length = 123456789L,
             url = "url_to",
             isViewed = false
-        )
+        ).toContentFileState()
 
         component.onClickItem(contentFile)
 
