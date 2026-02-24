@@ -1,16 +1,17 @@
 package com.dik.torrentlist.main
 
 import app.cash.turbine.test
-import com.dik.common.AppDispatchers
+import com.dik.common.Result
 import com.dik.common.i18n.LocalizationResource
-import com.dik.torrentlist.screens.main.AddMagnetLink
-import com.dik.torrentlist.screens.main.AddMagnetLinkResult
-import com.dik.torrentlist.screens.main.AddTorrentFile
 import com.dik.torrentlist.screens.main.appbar.DefaultMainAppBarComponent
 import com.dik.torrentlist.screens.main.appbar.MainAppBarAction
+import com.dik.torrentlist.screens.main.domain.AddMagnetLinkErrors
+import com.dik.torrentlist.screens.main.domain.AddMagnetLinkUseCase
+import com.dik.torrentlist.screens.main.domain.AddTorrentFileUseCase
 import com.dik.torrentlist.utils.FileUtils
-import com.dik.torrserverapi.model.TorrserverStatus
-import com.dik.torrserverapi.server.TorrserverCommands
+import com.dik.torrserverapi.model.Torrent
+import com.dik.torrserverapi.server.TorrserverManager
+import com.dik.torrserverapi.server.TorrserverStatus
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -36,16 +37,11 @@ class DefaultMainAppBarComponentTest {
     private val unconfiedTestComponentScope = TestScope(unconfiedTestDispatcher)
 
     private val standardTestDispatcher = UnconfinedTestDispatcher()
-    private val standardDispatchers: AppDispatchers = object : AppDispatchers {
-        override fun ioDispatcher() = standardTestDispatcher
-        override fun defaultDispatcher() = standardTestDispatcher
-        override fun mainDispatcher() = standardTestDispatcher
-    }
     private val standardTestComponentScope = TestScope(standardTestDispatcher)
 
-    private val addTorrentFile: AddTorrentFile = mockk()
-    private val addMagnetLink: AddMagnetLink = mockk()
-    private val torrserverCommands: TorrserverCommands = mockk()
+    private val addTorrentFileUseCase: AddTorrentFileUseCase = mockk()
+    private val addMagnetLinkUseCase: AddMagnetLinkUseCase = mockk()
+    private val torrserverManager: TorrserverManager = mockk()
     private val openSettingsScreen: () -> Unit = mockk(relaxed = true)
     private val localization: LocalizationResource = mockk()
     private val fileUtils: FileUtils = mockk()
@@ -53,21 +49,21 @@ class DefaultMainAppBarComponentTest {
 
     @Test
     fun `Observe status when server is started then isServerStarted == true`() = runTest {
-        val statusFlow = MutableStateFlow(TorrserverStatus.UNKNOWN)
-        coEvery { torrserverCommands.serverStatus() } returns statusFlow
+        val statusFlow: MutableStateFlow<TorrserverStatus> = MutableStateFlow(TorrserverStatus.General.Stopped)
+        coEvery { torrserverManager.observeTorrserverStatus() } returns statusFlow
         val component = defaultMainAppBarComponent(unconfiedTestComponentScope)
 
         component.uiState.test {
             assertFalse(awaitItem().isServerStarted)
-            statusFlow.emit(TorrserverStatus.STARTED)
+            statusFlow.emit(TorrserverStatus.General.Started)
             assertTrue(awaitItem().isServerStarted)
         }
     }
 
     @Test
     fun `Open settings screen if server is started`() = runTest {
-        val statusFlow = MutableStateFlow(TorrserverStatus.STARTED)
-        coEvery { torrserverCommands.serverStatus() } returns statusFlow
+        val statusFlow = MutableStateFlow(TorrserverStatus.General.Started)
+        coEvery { torrserverManager.observeTorrserverStatus() } returns statusFlow
         val component = defaultMainAppBarComponent(unconfiedTestComponentScope)
 
         component.openSettingsScreen()
@@ -78,8 +74,8 @@ class DefaultMainAppBarComponentTest {
     @Test
     fun `Open settings screen if server is not started`() = runTest {
         val errorName = "error_server_not_started"
-        val statusFlow = MutableStateFlow(TorrserverStatus.STOPPED)
-        coEvery { torrserverCommands.serverStatus() } returns statusFlow
+        val statusFlow = MutableStateFlow(TorrserverStatus.General.Stopped)
+        coEvery { torrserverManager.observeTorrserverStatus() } returns statusFlow
         coEvery { localization.getString(Res.string.main_app_bar_error_server_not_started) } returns errorName
         val component = defaultMainAppBarComponent(unconfiedTestComponentScope)
         component.openSettingsScreen()
@@ -105,11 +101,11 @@ class DefaultMainAppBarComponentTest {
     @Test
     fun `On link change after add link with error then check ui state`() = runTest {
         val magnetLink = "magnet_link"
-        val error = "magnet_link_error"
-        val statusFlow = MutableStateFlow(TorrserverStatus.STARTED)
+        val error = AddMagnetLinkErrors.InvalidMagnet
+        val statusFlow = MutableStateFlow(TorrserverStatus.General.Started)
 
-        coEvery { torrserverCommands.serverStatus() } returns statusFlow
-        coEvery { addMagnetLink.invoke(any()) } coAnswers { AddMagnetLinkResult(error = error) }
+        coEvery { torrserverManager.observeTorrserverStatus() } returns statusFlow
+        coEvery { addMagnetLinkUseCase.invoke(any()) } coAnswers { Result.Error(error) }
 
         val component = defaultMainAppBarComponent(standardTestComponentScope)
 
@@ -118,18 +114,19 @@ class DefaultMainAppBarComponentTest {
         component.uiState.test {
             component.addLink()
             assertEquals(magnetLink, awaitItem().link)
-            assertEquals(error, awaitItem().errorLink)
+            val item = awaitItem()
+            assertEquals(error.toString(), item.errorLink)
         }
     }
 
     @Test
     fun `On link change after add link success then check dismiss dialog ui state`() = runTest {
         val magnetLink = "magnet_link"
-        val statusFlow = MutableStateFlow(TorrserverStatus.STARTED)
+        val statusFlow = MutableStateFlow(TorrserverStatus.General.Started)
 
-        coEvery { torrserverCommands.serverStatus() } returns statusFlow
-        coEvery { addMagnetLink.invoke(any()) } coAnswers
-                { AddMagnetLinkResult(torrent = mockk(relaxed = true)) }
+        coEvery { torrserverManager.observeTorrserverStatus() } returns statusFlow
+        coEvery { addMagnetLinkUseCase.invoke(any()) } coAnswers
+                { Result.Success(mockk<Torrent>(relaxed = true)) }
 
         val component = defaultMainAppBarComponent(standardTestComponentScope)
 
@@ -145,9 +142,9 @@ class DefaultMainAppBarComponentTest {
 
     @Test
     fun `Open add link dialog when server is not started then check ui state action`() = runTest {
-        val statusFlow = MutableStateFlow(TorrserverStatus.STOPPED)
+        val statusFlow = MutableStateFlow(TorrserverStatus.General.Stopped)
 
-        coEvery { torrserverCommands.serverStatus() } returns statusFlow
+        coEvery { torrserverManager.observeTorrserverStatus() } returns statusFlow
         val component = defaultMainAppBarComponent(standardTestComponentScope)
 
         component.openAddLinkDialog()
@@ -161,9 +158,9 @@ class DefaultMainAppBarComponentTest {
 
     @Test
     fun `Open add link dialog when server is started then check ui state action after dismiss dialog`() = runTest {
-        val statusFlow = MutableStateFlow(TorrserverStatus.STARTED)
+        val statusFlow = MutableStateFlow(TorrserverStatus.General.Started)
 
-        coEvery { torrserverCommands.serverStatus() } returns statusFlow
+        coEvery { torrserverManager.observeTorrserverStatus() } returns statusFlow
         val component = defaultMainAppBarComponent(standardTestComponentScope)
 
         component.openAddLinkDialog()
@@ -177,23 +174,25 @@ class DefaultMainAppBarComponentTest {
 
     @Test
     fun `Change server status from STOPPED to STARTED and check ui state isServerStarted`() = runTest {
-        val statusFlow = MutableStateFlow(TorrserverStatus.STOPPED)
+        val statusFlow: MutableStateFlow<TorrserverStatus> =
+            MutableStateFlow(TorrserverStatus.General.Stopped)
 
-        coEvery { torrserverCommands.serverStatus() } returns statusFlow
+        coEvery { torrserverManager.observeTorrserverStatus() } returns statusFlow
         val component = defaultMainAppBarComponent(standardTestComponentScope)
 
         component.uiState.test {
             assertFalse(awaitItem().isServerStarted)
-            statusFlow.emit(TorrserverStatus.STARTED)
+            statusFlow.emit(TorrserverStatus.General.Started)
             assertTrue(awaitItem().isServerStarted)
         }
     }
 
     @Test
     fun `Open file pick torrent when server is started then check ui state action`() = runTest {
-        val statusFlow = MutableStateFlow(TorrserverStatus.STARTED)
+        val statusFlow: MutableStateFlow<TorrserverStatus> =
+            MutableStateFlow(TorrserverStatus.General.Started)
 
-        coEvery { torrserverCommands.serverStatus() } returns statusFlow
+        coEvery { torrserverManager.observeTorrserverStatus() } returns statusFlow
         val component = defaultMainAppBarComponent(standardTestComponentScope)
 
         component.openFilePickTorrent()
@@ -207,10 +206,10 @@ class DefaultMainAppBarComponentTest {
 
     @Test
     fun `Open file pick torrent when server is stopped then check ui state action`() = runTest {
-        val statusFlow = MutableStateFlow(TorrserverStatus.STOPPED)
+        val statusFlow = MutableStateFlow(TorrserverStatus.General.Stopped)
         val serverNotStartedError = "main_app_bar_error_server_not_started"
 
-        coEvery { torrserverCommands.serverStatus() } returns statusFlow
+        coEvery { torrserverManager.observeTorrserverStatus() } returns statusFlow
         coEvery { localization.getString(Res.string.main_app_bar_error_server_not_started) } returns
                 serverNotStartedError
         val component = defaultMainAppBarComponent(standardTestComponentScope)
@@ -227,10 +226,10 @@ class DefaultMainAppBarComponentTest {
 
     @Test
     fun `Picked file then check action is undefined`() = runTest {
-        val statusFlow = MutableStateFlow(TorrserverStatus.STARTED)
+        val statusFlow = MutableStateFlow(TorrserverStatus.General.Started)
         val pathToTorrent = "path/to/file.torrent"
 
-        coEvery { torrserverCommands.serverStatus() } returns statusFlow
+        coEvery { torrserverManager.observeTorrserverStatus() } returns statusFlow
         val component = defaultMainAppBarComponent(standardTestComponentScope)
 
         component.onFilePicked(pathToTorrent)
@@ -248,9 +247,9 @@ class DefaultMainAppBarComponentTest {
     ) = DefaultMainAppBarComponent(
         context = mockk(),
         componentScope = scope,
-        addTorrentFile = addTorrentFile,
-        addMagnetLink = addMagnetLink,
-        torrserverCommands = torrserverCommands,
+        addTorrentFileUseCase = addTorrentFileUseCase,
+        addMagnetLinkUseCase = addMagnetLinkUseCase,
+        torrserverManager = torrserverManager,
         openSettingsScreen = openSettingsScreen,
         localization = localization,
         fileUtils = fileUtils,
