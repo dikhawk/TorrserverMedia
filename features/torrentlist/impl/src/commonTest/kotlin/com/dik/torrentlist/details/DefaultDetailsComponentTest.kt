@@ -6,6 +6,7 @@ import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
+import com.dik.common.converter.toReadableSize
 import com.dik.common.i18n.AppLanguage
 import com.dik.common.i18n.LocalizationResource
 import com.dik.themoviedb.SearchTheMovieDbApi
@@ -14,11 +15,14 @@ import com.dik.themoviedb.TvSeasonsTheMovieDbApi
 import com.dik.themoviedb.model.Movie
 import com.dik.themoviedb.model.TvSeason
 import com.dik.themoviedb.model.TvShow
-import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrentlist.screens.details.DefaultDetailsComponent
 import com.dik.torrentlist.screens.details.DetailsComponentScreenFormat
-import com.dik.torrentlist.screens.main.FindPosterForTorrent
-import com.dik.torrentlist.screens.main.Poster
+import com.dik.torrentlist.screens.main.domain.FindPosterUseCase
+import com.dik.torrentlist.screens.main.domain.Poster
+import com.dik.torrentlist.screens.mappers.toContentFileState
+import com.dik.torrentlist.screens.mappers.toTorrentUiState
+import com.dik.torrentlist.screens.model.ContentFileUiState
+import com.dik.torrentlist.screens.model.TorrentUiState
 import com.dik.torrentlist.utils.fileName
 import com.dik.torrserverapi.model.ContentFile
 import com.dik.torrserverapi.model.Torrent
@@ -60,8 +64,8 @@ class DefaultDetailsComponentTest {
     private val tvEpisodesTmdb: TvEpisodesTheMovieDbApi = mockk()
     private val screenFormat: DetailsComponentScreenFormat = mockk()
     private val localization: LocalizationResource = mockk(relaxed = true)
-    private val findPosterForTorrent: FindPosterForTorrent = mockk(relaxed = true)
-    private val onClickPlayFile: suspend (torrent: Torrent, contentFile: ContentFile) -> Unit =
+    private val findPosterUseCase: FindPosterUseCase = mockk(relaxed = true)
+    private val onClickPlayFile: suspend (torrent: TorrentUiState, contentFile: ContentFileUiState) -> Unit =
         mockk()
     private val onClickBack: () -> Unit = {}
 
@@ -217,8 +221,8 @@ class DefaultDetailsComponentTest {
         coEvery { torrentApi.getTorrent(torrent.hash) } returns Result.Success(torrent)
 
         component.runBufferization(
-            torrent = torrent,
-            contentFile = contentFile,
+            torrent = torrent.toTorrentUiState(),
+            contentFile = contentFile.toContentFileState(),
             runAferBuferazation = {})
 
         component.uiState.test {
@@ -261,7 +265,7 @@ class DefaultDetailsComponentTest {
         val component = detailsComponent()
 
         coEvery { torrentApi.getTorrent(torrent.hash) } returns Result.Success(torrent)
-        coEvery { findPosterForTorrent.invoke(torrent) } returns
+        coEvery { findPosterUseCase.invoke(torrent) } returns
                 Result.Success(
                     Poster(
                         poster300 = "poster300.jpg",
@@ -286,7 +290,7 @@ class DefaultDetailsComponentTest {
         tvEpisodesTmdb = tvEpisodesTmdb,
         screenFormat = screenFormat,
         localization = localization,
-        findPosterForTorrent = findPosterForTorrent,
+        findPosterUseCase = findPosterUseCase,
         onClickPlayFile = onClickPlayFile,
         onClickBack = onClickBack
     )
