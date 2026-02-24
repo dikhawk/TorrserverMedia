@@ -4,6 +4,8 @@ import app.cash.turbine.test
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
 import com.dik.common.Result
+import com.dik.common.converter.bytesToBits
+import com.dik.common.converter.toReadableSize
 import com.dik.common.i18n.AppLanguage
 import com.dik.common.i18n.LocalizationResource
 import com.dik.themoviedb.SearchTheMovieDbApi
@@ -12,9 +14,9 @@ import com.dik.themoviedb.errors.TheMovieDbError
 import com.dik.themoviedb.model.Movie
 import com.dik.themoviedb.model.TvEpisode
 import com.dik.themoviedb.model.TvShow
-import com.dik.torrentlist.converters.bytesToBits
-import com.dik.torrentlist.converters.toReadableSize
 import com.dik.torrentlist.screens.components.bufferization.DefaultBufferizationComponent
+import com.dik.torrentlist.screens.mappers.toContentFileState
+import com.dik.torrentlist.screens.mappers.toTorrentUiState
 import com.dik.torrentlist.utils.fileName
 import com.dik.torrserverapi.model.ContentFile
 import com.dik.torrserverapi.model.PlayStatistics
@@ -55,7 +57,7 @@ class BufferizationComponentTest {
         every { language } returns AppLanguage.RUSSIAN
     }
 
-    
+
     @Test
     fun `Start bufferization and check show torrent info`() = runTest {
         val torrent = Torrent(
@@ -75,9 +77,14 @@ class BufferizationComponentTest {
         )
         val component = bufferizationComponentTest()
 
-        coEvery { torrentApi.preloadTorrent(torrent.hash, contentFile.id) } returns Result.Success(Unit)
+        coEvery { torrentApi.preloadTorrent(torrent.hash, contentFile.id) } returns Result.Success(
+            Unit
+        )
 
-        component.startBufferezation(torrent, contentFile, {})
+        component.startBufferization(
+            torrent.toTorrentUiState(),
+            contentFile.toContentFileState(),
+            {})
 
         component.uiState.test {
             val state = awaitItem()
@@ -112,12 +119,20 @@ class BufferizationComponentTest {
         val scruppedMovieTitle = parseFileNameBase(torrent.title).title
         val component = bufferizationComponentTest()
 
-        coEvery { torrentApi.preloadTorrent(torrent.hash, contentFile.id) } returns Result.Success(Unit)
+        coEvery { torrentApi.preloadTorrent(torrent.hash, contentFile.id) } returns Result.Success(
+            Unit
+        )
         coEvery {
-            searchTheMovieDbApi.multiSearching(query = scruppedMovieTitle, language = AppLanguage.RUSSIAN.iso)
+            searchTheMovieDbApi.multiSearching(
+                query = scruppedMovieTitle,
+                language = AppLanguage.RUSSIAN.iso
+            )
         } returns Result.Success(listOf(movie))
 
-        component.startBufferezation(torrent, contentFile, {})
+        component.startBufferization(
+            torrent.toTorrentUiState(),
+            contentFile.toContentFileState(),
+            {})
 
         component.uiState.test {
             val state = awaitItem()
@@ -154,11 +169,17 @@ class BufferizationComponentTest {
         val episode = scruppedTvShow.episodeNumbers.first()
         val tvShowTitleMask = "TvShow: %s, %s"
         val component = bufferizationComponentTest()
-        val tvEpisode: TvEpisode = mockk(relaxed = true) { every { overview } returns "About tv show" }
+        val tvEpisode: TvEpisode =
+            mockk(relaxed = true) { every { overview } returns "About tv show" }
 
-        coEvery { torrentApi.preloadTorrent(torrent.hash, contentFile.id) } returns Result.Success(Unit)
+        coEvery { torrentApi.preloadTorrent(torrent.hash, contentFile.id) } returns Result.Success(
+            Unit
+        )
         coEvery {
-            searchTheMovieDbApi.multiSearching(query = scruppedTvShow.title, language = AppLanguage.RUSSIAN.iso)
+            searchTheMovieDbApi.multiSearching(
+                query = scruppedTvShow.title,
+                language = AppLanguage.RUSSIAN.iso
+            )
         } returns Result.Success(listOf(tvShow))
         coEvery { localization.getString(Res.string.main_bufferization_season_and_episode) } returns tvShowTitleMask
         coEvery {
@@ -170,7 +191,10 @@ class BufferizationComponentTest {
             )
         } returns Result.Success(tvEpisode)
 
-        component.startBufferezation(torrent, contentFile, {})
+        component.startBufferization(
+            torrent.toTorrentUiState(),
+            contentFile.toContentFileState(),
+            {})
 
         component.uiState.test {
             val state = awaitItem()
@@ -182,35 +206,48 @@ class BufferizationComponentTest {
     }
 
     @Test
-    fun `Start bufferization where preloadTorrent is success then check runAferBuferazation and disssmiss`() = runTest {
-        val torrent = Torrent(
-            hash = this.hashCode().toString(),
-            title = "At the edge of the abyss",
-            poster = "poster",
-            name = "name",
-            size = 123456789L,
-            files = listOf(),
-        )
-        val contentFile = ContentFile(
-            id = this.hashCode(),
-            path = "Season 1/At the edge of the abyss.S1E1.1080p.rus.mkv",
-            length = 123456789L,
-            url = "url_to",
-            isViewed = false
-        )
-        val component = bufferizationComponentTest()
-        val runAferBuferazation: () -> Unit = mockk(relaxed = true)
+    fun `Start bufferization where preloadTorrent is success then check runAferBuferazation and disssmiss`() =
+        runTest {
+            val torrent = Torrent(
+                hash = this.hashCode().toString(),
+                title = "At the edge of the abyss",
+                poster = "poster",
+                name = "name",
+                size = 123456789L,
+                files = listOf(),
+            )
+            val contentFile = ContentFile(
+                id = this.hashCode(),
+                path = "Season 1/At the edge of the abyss.S1E1.1080p.rus.mkv",
+                length = 123456789L,
+                url = "url_to",
+                isViewed = false
+            )
+            val component = bufferizationComponentTest()
+            val runAferBuferazation: () -> Unit = mockk(relaxed = true)
 
-        coEvery { torrentApi.preloadTorrent(torrent.hash, contentFile.id) } returns Result.Success(Unit)
-        coEvery {
-            searchTheMovieDbApi.multiSearching(query = any(), language = AppLanguage.RUSSIAN.iso)
-        } returns Result.Success(listOf(mockk<Movie>(relaxed = true)))
+            coEvery {
+                torrentApi.preloadTorrent(
+                    torrent.hash,
+                    contentFile.id
+                )
+            } returns Result.Success(Unit)
+            coEvery {
+                searchTheMovieDbApi.multiSearching(
+                    query = any(),
+                    language = AppLanguage.RUSSIAN.iso
+                )
+            } returns Result.Success(listOf(mockk<Movie>(relaxed = true)))
 
-        component.startBufferezation(torrent, contentFile, runAferBuferazation)
+            component.startBufferization(
+                torrent.toTorrentUiState(),
+                contentFile.toContentFileState(),
+                runAferBuferazation
+            )
 
-        verify(exactly = 1) { runAferBuferazation.invoke() }
-        verify(exactly = 1) { onClickDismiss.invoke() }
-    }
+            verify(exactly = 1) { runAferBuferazation.invoke() }
+            verify(exactly = 1) { onClickDismiss.invoke() }
+        }
 
     @Test
     fun `Start bufferization where preloadTorrent is failure then check disssmiss`() = runTest {
@@ -232,12 +269,18 @@ class BufferizationComponentTest {
         val component = bufferizationComponentTest()
         val runAferBuferazation: () -> Unit = mockk(relaxed = true)
 
-        coEvery { torrentApi.preloadTorrent(torrent.hash, contentFile.id) } returns Result.Success(Unit)
+        coEvery { torrentApi.preloadTorrent(torrent.hash, contentFile.id) } returns Result.Success(
+            Unit
+        )
         coEvery {
             searchTheMovieDbApi.multiSearching(query = any(), language = AppLanguage.RUSSIAN.iso)
         } returns Result.Error(TheMovieDbError.HttpError.ResponseReturnNull)
 
-        component.startBufferezation(torrent, contentFile, runAferBuferazation)
+        component.startBufferization(
+            torrent.toTorrentUiState(),
+            contentFile.toContentFileState(),
+            runAferBuferazation
+        )
 
         verify(exactly = 1) { onClickDismiss.invoke() }
     }
@@ -273,13 +316,24 @@ class BufferizationComponentTest {
         val component = bufferizationComponentTest()
         val runAferBuferazation: () -> Unit = mockk(relaxed = true)
 
-        coEvery { torrentApi.preloadTorrent(torrent.hash, contentFile.id) } returns Result.Success(Unit)
-        coEvery { searchTheMovieDbApi.multiSearching(query = any(), language = AppLanguage.RUSSIAN.iso) } returns Result.Success(
+        coEvery { torrentApi.preloadTorrent(torrent.hash, contentFile.id) } returns Result.Success(
+            Unit
+        )
+        coEvery {
+            searchTheMovieDbApi.multiSearching(
+                query = any(),
+                language = AppLanguage.RUSSIAN.iso
+            )
+        } returns Result.Success(
             listOf(mockk<Movie>(relaxed = true))
         )
         coEvery { torrentApi.getTorrent(torrent.hash) } returns Result.Success(torrent)
 
-        component.startBufferezation(torrent, contentFile, runAferBuferazation)
+        component.startBufferization(
+            torrent.toTorrentUiState(),
+            contentFile.toContentFileState(),
+            runAferBuferazation
+        )
         testScope.cancel()
 
         component.uiState.test {
