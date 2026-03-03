@@ -2,14 +2,11 @@ package com.dik.torrentlist.main
 
 import app.cash.turbine.test
 import com.dik.common.AppDispatchers
-import com.dik.common.Progress
-import com.dik.common.ResultProgress
 import com.dik.common.i18n.LocalizationResource
 import com.dik.torrentlist.screens.main.torrserverbar.DefaultTorrserverBarComponent
-import com.dik.torrentlist.screens.main.torrserverbar.TorrServerStarterPlatform
 import com.dik.torrserverapi.TorrserverError
-import com.dik.torrserverapi.model.TorrserverFile
-import com.dik.torrserverapi.server.TorrserverCommands
+import com.dik.torrserverapi.server.TorrserverManager
+import com.dik.torrserverapi.server.TorrserverStatus
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -30,7 +27,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class DefaultTorrserverBarComponentTest {
 
-    private val torrserverCommands: TorrserverCommands = mockk()
+    private val torrserverManager: TorrserverManager = mockk()
     private val unconfiedTestDispatcher = UnconfinedTestDispatcher()
     private val unconfiedDispatchers: AppDispatchers = object : AppDispatchers {
         override fun ioDispatcher() = unconfiedTestDispatcher
@@ -39,18 +36,16 @@ class DefaultTorrserverBarComponentTest {
     }
     private val unconfiedTestComponentScope = TestScope(unconfiedTestDispatcher)
     private val localization: LocalizationResource = mockk()
-    private val torrServerStarter: TorrServerStarterPlatform = mockk()
 
     @Test
     fun `On click install server loading then check progress`() = runTest {
         val progressValue = 0.2
         val progressMessage = "progress server status"
-        val resultFlow: ResultProgress<TorrserverFile, TorrserverError> =
-            ResultProgress.Loading(Progress(progress = progressValue))
-        val installServerStatus = MutableStateFlow(resultFlow)
-        val component = defaultTorrserverBarComponent(unconfiedDispatchers, unconfiedTestComponentScope)
+        val installServerStatus = MutableStateFlow(TorrserverStatus.Install.Progress(progressValue))
+        val component =
+            defaultTorrserverBarComponent(unconfiedDispatchers, unconfiedTestComponentScope)
 
-        coEvery { torrserverCommands.installServer() } returns installServerStatus
+        coEvery { torrserverManager.installOrUpdate() } returns installServerStatus
         coEvery {
             localization.getString(Res.string.main_torrserver_bar_msg_installing_torrserver)
         } returns progressMessage
@@ -68,13 +63,14 @@ class DefaultTorrserverBarComponentTest {
 
     @Test
     fun `On click install server with error then check progress`() = runTest {
-        val errorMessage = "error server status"
-        val resultFlow: ResultProgress<TorrserverFile, TorrserverError> =
-            ResultProgress.Error(TorrserverError.Server.NoServerConnection)
-        val installServerStatus = MutableStateFlow(resultFlow)
-        val component = defaultTorrserverBarComponent(unconfiedDispatchers, unconfiedTestComponentScope)
+        val errorMessage = TorrserverError.Server.NoServerConnection.toString()
+        val installServerStatus = MutableStateFlow(
+            TorrserverStatus.Install.Error(TorrserverError.Server.NoServerConnection.toString())
+        )
+        val component =
+            defaultTorrserverBarComponent(unconfiedDispatchers, unconfiedTestComponentScope)
 
-        coEvery { torrserverCommands.installServer() } returns installServerStatus
+        coEvery { torrserverManager.installOrUpdate() } returns installServerStatus
         coEvery {
             localization.getString(Res.string.main_error_msg_no_server_connection)
         } returns errorMessage
@@ -89,44 +85,39 @@ class DefaultTorrserverBarComponentTest {
         }
     }
 
-    @Test
-    fun `On click install server success then check progress`() = runTest {
-        val resultFlow: ResultProgress<TorrserverFile, TorrserverError> =
-            ResultProgress.Success(TorrserverFile(filePath = "path_to_file"))
-        val installServerStatus = MutableStateFlow(resultFlow)
-        val component = defaultTorrserverBarComponent(unconfiedDispatchers, unconfiedTestComponentScope)
+        @Test
+        fun `On click install server success then check progress`() = runTest {
+            val installServerStatus = MutableStateFlow(TorrserverStatus.Install.Installed)
+            val component = defaultTorrserverBarComponent(unconfiedDispatchers, unconfiedTestComponentScope)
 
-        coEvery { torrserverCommands.installServer() } returns installServerStatus
+            coEvery { torrserverManager.installOrUpdate()} returns installServerStatus
 
-        component.onClickInstallServer()
+            component.onClickInstallServer()
 
-        coVerify { torrServerStarter.startTorrServer() }
+            component.uiState.test {
+                val item = awaitItem()
 
-        component.uiState.test {
-            val item = awaitItem()
-
-            assertFalse(item.isShowProgress)
-            assertTrue(item.isServerInstalled)
+                assertFalse(item.isShowProgress)
+                assertTrue(item.isServerInstalled)
+            }
         }
-    }
 
-    @Test
-    fun `On click start torrserver`() = runTest {
-        val component = defaultTorrserverBarComponent(unconfiedDispatchers, unconfiedTestComponentScope)
+        @Test
+        fun `On click start torrserver`() = runTest {
+            val component = defaultTorrserverBarComponent(unconfiedDispatchers, unconfiedTestComponentScope)
 
-        component.onClickStartServer()
+            component.onClickStartServer()
 
-        coVerify { torrServerStarter.startTorrServer() }
-    }
+            coVerify { torrserverManager.start() }
+        }
 
     private fun defaultTorrserverBarComponent(
         dispatchers: AppDispatchers, componentScope: CoroutineScope
     ) = DefaultTorrserverBarComponent(
         context = mockk(),
-        torrserverCommands = torrserverCommands,
+        torrserverManager = torrserverManager,
         dispatchers = dispatchers,
         componentScope = componentScope,
         localization = localization,
-        torrServerStarter = torrServerStarter
     )
 }
