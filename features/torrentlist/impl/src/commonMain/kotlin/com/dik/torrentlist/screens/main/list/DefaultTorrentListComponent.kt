@@ -16,13 +16,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -38,9 +39,30 @@ internal class DefaultTorrentListComponent(
     private val fileUtils: FileUtils
 ) : ComponentContext by context, TorrentListComponent {
 
-    private val _uiState: MutableStateFlow<TorrentListState> = MutableStateFlow(TorrentListState())
-    override val uiState: StateFlow<TorrentListState> = _uiState.asStateFlow()
 
+    private val observeTorrents = torrentApi.observeTorrents()
+        .onStart { _uiState.update { it.copy(isShowProgress = true) } }
+        .distinctUntilChanged()
+        .map { result ->
+            if (result is Result.Success) {
+                onTorrentsIsEmpty(result.data.isEmpty())
+                _uiState.value.copy(
+                    torrents = result.data.toTorrentUiStateList(),
+                    isShowProgress = false
+                )
+            } else {
+                val error = result as Result.Error
+                _uiState.value.copy(error = error.error.toString(), isShowProgress = false)
+            }
+        }
+
+    private val _uiState: MutableStateFlow<TorrentListState> = MutableStateFlow(TorrentListState())
+    override val uiState: StateFlow<TorrentListState> =
+        merge(_uiState, observeTorrents).stateIn(
+            scope = componentScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = TorrentListState(isShowProgress = true)
+        )
 
     override fun onClickItem(torrent: TorrentUiState) {
         onTorrentClick.invoke(torrent)
@@ -57,19 +79,20 @@ internal class DefaultTorrentListComponent(
     }
 
     override fun addTorrents(paths: List<String>) {
-        _uiState.update { it.copy(isShowProgress = true) }
         componentScope.launch {
+            _uiState.update { it.copy(isShowProgress = true) }
             val tasks = mutableListOf<Deferred<Result<Torrent, AddTorrentFileErrors>>>()
 
             paths.forEach { uri ->
                 val path = fileUtils.uriToPath(uri)
                 tasks.add(async { addTorrentFileUseCase.invoke(path) })
             }
+
             tasks.awaitAll()
             _uiState.update { it.copy(isShowProgress = false) }
         }
     }
-    
+
     override fun addMagnet(magnetLink: String) {
         _uiState.update { it.copy(isShowProgress = true) }
         componentScope.launch {
@@ -85,15 +108,4 @@ internal class DefaultTorrentListComponent(
             _uiState.update { it.copy(isShowProgress = false) }
         }
     }
-    
-    override fun observeTorrentsList(): Flow<List<TorrentUiState>> =
-        torrentApi.observeTorrents().flatMapLatest { result ->
-            if (result is Result.Success) {
-                flow {
-                    emit(result.data.toTorrentUiStateList())
-                }
-            } else {
-                awaitCancellation()
-            }
-        }
 }
