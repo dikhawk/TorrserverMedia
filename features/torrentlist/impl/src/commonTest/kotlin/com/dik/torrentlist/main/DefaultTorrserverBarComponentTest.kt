@@ -41,7 +41,7 @@ class DefaultTorrserverBarComponentTest {
     fun `On click install server loading then check progress`() = runTest {
         val progressValue = 0.2
         val progressMessage = "progress server status"
-        val installServerStatus = MutableStateFlow(TorrserverStatus.Install.Progress(progressValue))
+        val installServerStatus = MutableStateFlow(TorrserverStatus.Install.Progress(progressValue,  0, 0))
         val component =
             defaultTorrserverBarComponent(unconfiedDispatchers, unconfiedTestComponentScope)
 
