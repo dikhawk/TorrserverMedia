@@ -1,23 +1,27 @@
 package com.dik.torrentlist.main
 
+import app.cash.turbine.test
 import com.arkivanov.decompose.ComponentContext
 import com.dik.common.Result
-import com.dik.torrentlist.screens.main.AddTorrentFile
-import com.dik.torrentlist.screens.main.AddTorrentResult
+import com.dik.torrentlist.screens.main.domain.AddMagnetLinkUseCase
+import com.dik.torrentlist.screens.main.domain.AddTorrentFileErrors
+import com.dik.torrentlist.screens.main.domain.AddTorrentFileUseCase
 import com.dik.torrentlist.screens.main.list.DefaultTorrentListComponent
 import com.dik.torrentlist.utils.FileUtils
 import com.dik.torrserverapi.TorrserverError
+import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.api.TorrentApi
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -26,98 +30,109 @@ import kotlin.test.assertTrue
 class DefaultTorrentListComponentTest {
 
     private val torrentApi: TorrentApi = mockk()
-    private val addTorrentFile: AddTorrentFile = mockk()
+    private val addTorrentFileUseCase: AddTorrentFileUseCase = mockk()
+    private val addMagnetLinkUseCase: AddMagnetLinkUseCase = mockk()
+
     private val testDispatcher = StandardTestDispatcher()
     private val testScope = TestScope(testDispatcher)
+
+    private val unconfiedTestDispatcher = UnconfinedTestDispatcher()
+    private val unconfiedTestComponentScope = TestScope(unconfiedTestDispatcher)
+
     private val fileUtils: FileUtils = mockk()
-    private lateinit var defaultTorrentListComponent: DefaultTorrentListComponent
 
-    @Before
-    fun setUp() {
-        MockKAnnotations.init(this, relaxUnitFun = true)
-        defaultTorrentListComponent = DefaultTorrentListComponent(
-            context = mockk<ComponentContext>(),
-            onTorrentClick = {},
-            onTorrentsIsEmpty = {},
-            torrentApi = torrentApi,
-            addTorrentFile = addTorrentFile,
-            componentScope = testScope,
-            fileUtils = fileUtils
-        )
+
+    @Test
+    fun `should contain torrent after successful api call`() = runTest {
+        val torrentsFlow: MutableStateFlow<Result<List<Torrent>, TorrserverError>> =
+            MutableStateFlow(Result.Success(emptyList()))
+        coEvery { torrentApi.observeTorrents(any()) } returns torrentsFlow
+
+        val component = defaultTorrentListComponent(unconfiedTestComponentScope)
+
+        component.uiState.test {
+            assertTrue(awaitItem().torrents.isEmpty())
+
+            torrentsFlow.update { Result.Success(listOf(mockk<Torrent>(relaxed = true))) }
+
+            assertFalse(awaitItem().torrents.isEmpty())
+        }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `should contain torrent after successful api call`() = testScope.runTest {
-        coEvery { torrentApi.getTorrents() } returns Result.Success(listOf(mockk()))
-
-        val uiState = defaultTorrentListComponent.uiState
-
-        defaultTorrentListComponent.startObserveTorrentList()
-
-        advanceTimeBy(1000)
-
-        defaultTorrentListComponent.stopObservingTorrentList()
-
-        assertTrue(uiState.value.torrents.size == 1)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `should contain error after unsuccessful api call`() = testScope.runTest {
+    fun `should contain error after unsuccessful api call`() = runTest {
         val error = TorrserverError.HttpError.ResponseReturnError("Response error")
-        coEvery { torrentApi.getTorrents() } returns Result.Error(error)
+        val torrentsFlow: MutableStateFlow<Result<List<Torrent>, TorrserverError>> =
+            MutableStateFlow(Result.Success(emptyList()))
+        coEvery { torrentApi.observeTorrents() } returns torrentsFlow
 
-        val uiState = defaultTorrentListComponent.uiState
+        val component = defaultTorrentListComponent(unconfiedTestComponentScope)
+        val uiState = component.uiState
 
-        defaultTorrentListComponent.startObserveTorrentList()
-
-        advanceTimeBy(1000)
-
-        defaultTorrentListComponent.stopObservingTorrentList()
-
-        assertEquals(uiState.value.error, error.toString())
+        uiState.test {
+            assertEquals(awaitItem().error, null)
+            torrentsFlow.update { Result.Error(error) }
+            assertEquals(awaitItem().error, error.toString())
+        }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `add torrent success and check show progress`() = testScope.runTest {
-        val uriTorrent = kotlin.io.path.createTempFile("temp", "torrent").toUri()
+    fun `add torrent success and check show progress`() = runTest {
+        val uriTorrent = "file:/home/user/test.torrent"
+        val torrentsFlow: MutableStateFlow<Result<List<Torrent>, TorrserverError>> =
+            MutableStateFlow(Result.Success(emptyList()))
 
-        coEvery { addTorrentFile.invoke(any()) } returns AddTorrentResult(torrent = mockk())
-        coEvery { fileUtils.uriToPath(uriTorrent.toString()) } returns uriTorrent.toString()
-        defaultTorrentListComponent.startObserveTorrentList()
-        defaultTorrentListComponent.stopObservingTorrentList()
+        coEvery { addTorrentFileUseCase.invoke(any()) } coAnswers {
+            delay(100)
+            Result.Success(mockk<Torrent>(relaxed = true))
+        }
 
-        assertFalse(defaultTorrentListComponent.uiState.value.isShowProgress)
+        coEvery { fileUtils.uriToPath(uriTorrent) } returns uriTorrent
+        every { torrentApi.observeTorrents(any()) } returns torrentsFlow
 
-        defaultTorrentListComponent.addTorrents(listOf(uriTorrent.toString()))
+        val component = defaultTorrentListComponent(unconfiedTestComponentScope)
 
-        assertTrue(defaultTorrentListComponent.uiState.value.isShowProgress)
-
-        advanceUntilIdle()
-
-        assertFalse(defaultTorrentListComponent.uiState.value.isShowProgress)
+        component.uiState.test {
+            assertTrue(awaitItem().isShowProgress)
+            torrentsFlow.value = Result.Success(listOf(mockk<Torrent>(relaxed = true)))
+            component.addTorrents(listOf(uriTorrent))
+            assertFalse(awaitItem().isShowProgress)
+        }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `add torrent with error and check show progress`() = testScope.runTest {
-        val uriTorrent = kotlin.io.path.createTempFile("temp", "torrent").toUri()
+    fun `add torrent with error and check show progress`() = runTest {
+        val uriTorrent = "file:/home/user/test.torrent"
+        val torrentsFlow: MutableStateFlow<Result<List<Torrent>, TorrserverError>> =
+            MutableStateFlow(Result.Success(emptyList()))
 
-        coEvery { addTorrentFile.invoke(any()) } returns AddTorrentResult(error = "File not exist")
-        coEvery { fileUtils.uriToPath(uriTorrent.toString()) } returns uriTorrent.toString()
-        defaultTorrentListComponent.startObserveTorrentList()
-        defaultTorrentListComponent.stopObservingTorrentList()
+        coEvery { addTorrentFileUseCase.invoke(any()) } coAnswers {
+            Result.Error(AddTorrentFileErrors.TorrentNotExist)
+        }
+        coEvery { fileUtils.uriToPath(uriTorrent) } returns uriTorrent
+        every { torrentApi.observeTorrents(any()) } returns torrentsFlow
 
-        assertFalse(defaultTorrentListComponent.uiState.value.isShowProgress)
+        val component = defaultTorrentListComponent(unconfiedTestComponentScope)
 
-        defaultTorrentListComponent.addTorrents(listOf(uriTorrent.toString()))
-
-        assertTrue(defaultTorrentListComponent.uiState.value.isShowProgress)
-
-        advanceUntilIdle()
-
-        assertFalse(defaultTorrentListComponent.uiState.value.isShowProgress)
+        component.uiState.test {
+            assertTrue(awaitItem().isShowProgress)
+            torrentsFlow.value = Result.Success(listOf(mockk<Torrent>(relaxed = true)))
+            component.addTorrents(listOf(uriTorrent))
+            assertFalse(expectMostRecentItem().isShowProgress)
+        }
     }
+
+    private fun defaultTorrentListComponent(
+        scope: CoroutineScope
+    ) = DefaultTorrentListComponent(
+        context = mockk<ComponentContext>(relaxed = true),
+        onTorrentClick = {},
+        onNavigateToDetails = {},
+        onTorrentsIsEmpty = {},
+        torrentApi = torrentApi,
+        addTorrentFileUseCase = addTorrentFileUseCase,
+        addMagnetLinkUseCase = addMagnetLinkUseCase,
+        componentScope = scope,
+        fileUtils = fileUtils
+    )
 }
