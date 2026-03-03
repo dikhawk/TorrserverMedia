@@ -7,8 +7,8 @@ import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.errors.TheMovieDbError
 import com.dik.themoviedb.model.Movie
 import com.dik.themoviedb.model.TvShow
-import com.dik.torrentlist.screens.main.FindPosterForTorrent
-import com.dik.torrentlist.screens.main.FindPosterForTorrentErrors
+import com.dik.torrentlist.screens.main.domain.FindPosterUseCase
+import com.dik.torrentlist.screens.main.domain.FindPosterErrors
 import com.dik.torrserverapi.model.Torrent
 import com.dik.videofilenameparser.parseFileNameBase
 import com.dik.videofilenameparser.parseFileNameTvShow
@@ -26,7 +26,7 @@ class FindPosterForTorrentTest {
     private val appSettings: AppSettings = mockk(relaxed = true) {
         every { language } returns AppLanguage.RUSSIAN
     }
-    private val findPosterForTorrent = FindPosterForTorrent(searchTheMovieDbApi = searchTheMovieDbApi, appSettings = appSettings)
+    private val findPosterUseCase = FindPosterUseCase(searchTheMovieDbApi = searchTheMovieDbApi, appSettings = appSettings)
 
     @Test
     fun `Returns poster when search is successful for Movie`() = runTest {
@@ -42,7 +42,7 @@ class FindPosterForTorrentTest {
             searchTheMovieDbApi.multiSearching(query = title, language = AppLanguage.RUSSIAN.iso)
         } returns Result.Success(listOf(content))
 
-        val result = findPosterForTorrent.invoke(torrent)
+        val result = findPosterUseCase.invoke(torrent)
 
         assertTrue(result is Result.Success)
         assertEquals("poster_url", result.data.poster300)
@@ -62,7 +62,7 @@ class FindPosterForTorrentTest {
             searchTheMovieDbApi.multiSearching(query = title, language = AppLanguage.RUSSIAN.iso)
         } returns Result.Success(listOf(content))
 
-        val result = findPosterForTorrent.invoke(torrent)
+        val result = findPosterUseCase.invoke(torrent)
 
         assertTrue(result is Result.Success)
         assertEquals("poster_url", result.data.poster300)
@@ -78,10 +78,10 @@ class FindPosterForTorrentTest {
             searchTheMovieDbApi.multiSearching(query = title, language = AppLanguage.RUSSIAN.iso)
         } returns Result.Success(emptyList())
 
-        val result = findPosterForTorrent.invoke(torrent)
+        val result = findPosterUseCase.invoke(torrent)
 
         assertTrue(result is Result.Error)
-        assertTrue(result.error is FindPosterForTorrentErrors.PosterNotFound)
+        assertTrue(result.error is FindPosterErrors.PosterNotFound)
     }
 
     @Test
@@ -95,10 +95,10 @@ class FindPosterForTorrentTest {
             searchTheMovieDbApi.multiSearching(query = title, language = AppLanguage.RUSSIAN.iso)
         } returns Result.Error(TheMovieDbError.HttpError.ResponseReturnNull)
 
-        val result = findPosterForTorrent.invoke(torrent)
+        val result = findPosterUseCase.invoke(torrent)
 
         assertTrue(result is Result.Error)
-        assertEquals((result.error as FindPosterForTorrentErrors.UnknownError).error,
+        assertEquals((result.error as FindPosterErrors.UnknownError).error,
             TheMovieDbError.HttpError.ResponseReturnNull.toString())
     }
 }
