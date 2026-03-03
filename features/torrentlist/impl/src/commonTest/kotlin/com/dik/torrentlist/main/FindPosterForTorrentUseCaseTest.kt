@@ -7,8 +7,8 @@ import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.errors.TheMovieDbError
 import com.dik.themoviedb.model.Movie
 import com.dik.themoviedb.model.TvShow
-import com.dik.torrentlist.screens.main.domain.FindPosterUseCase
 import com.dik.torrentlist.screens.main.domain.FindPosterErrors
+import com.dik.torrentlist.screens.main.domain.FindPosterUseCase
 import com.dik.torrserverapi.model.Torrent
 import com.dik.videofilenameparser.parseFileNameBase
 import com.dik.videofilenameparser.parseFileNameTvShow
@@ -20,7 +20,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class FindPosterForTorrentTest {
+class FindPosterForTorrentUseCaseTest {
 
     private val searchTheMovieDbApi: SearchTheMovieDbApi = mockk()
     private val appSettings: AppSettings = mockk(relaxed = true) {
