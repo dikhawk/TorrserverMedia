@@ -103,7 +103,13 @@ internal class FileDownloaderImpl(
         val currentBytes = fileSystem.metadata(path).size ?: return
         val progress = calculateProgress(currentBytes, totalBytes)
 
-        send(DownloadFileRusult.Progress(progress))
+        send(
+            DownloadFileRusult.Progress(
+                progress = progress,
+                currentBytes = currentBytes,
+                totalBytes = totalBytes
+            )
+        )
     }
 
     private fun calculateProgress(
