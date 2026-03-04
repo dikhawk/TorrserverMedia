@@ -5,7 +5,7 @@ sealed interface TorrserverStatus {
     sealed interface Install : TorrserverStatus {
         data object Start : Install
         data object Installing : Install
-        data class Progress(val progress: Double) : Install
+        data class Progress(val progress: Double, val currentBytes: Long, val totalBytes: Long) : Install
         data object Installed : Install
         data class PlatformNotSupported(val msg: String) : Install
         data class Error(val msg: String) : Install
