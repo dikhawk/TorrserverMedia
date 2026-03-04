@@ -40,4 +40,6 @@
     <string name="main_bufferization_buffer_size">Buffer:</string>
     <string name="main_app_bar_error_server_not_started">TorrServer not started</string>
     <string name="main_error_msg_wrong_server_config">Wrong server configuration</string>
+    <string name="main_error_msg_poster_not_found">Poster not found</string>
+    <string name="main_error_msg_title_is_empty">Title is empty</string>
 </resources>
