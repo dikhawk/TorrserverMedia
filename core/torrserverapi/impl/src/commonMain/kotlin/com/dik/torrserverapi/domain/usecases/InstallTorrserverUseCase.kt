@@ -105,7 +105,12 @@ internal class InstallTorrserverUseCase(
     private fun DownloadFileRusult.mapToTorrserverStatus(): TorrserverStatus {
         return when (this) {
             is DownloadFileRusult.Erorr -> TorrserverStatus.Install.Error(type.toString())
-            is DownloadFileRusult.Progress -> TorrserverStatus.Install.Progress(value)
+            is DownloadFileRusult.Progress -> TorrserverStatus.Install.Progress(
+                progress = progress,
+                currentBytes = currentBytes,
+                totalBytes = totalBytes
+            )
+
             is DownloadFileRusult.Done -> TorrserverStatus.Install.Installed
             DownloadFileRusult.Starting -> TorrserverStatus.Install.Installing
         }
