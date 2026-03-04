@@ -5,7 +5,6 @@ import com.dik.common.AppDispatchers
 import com.dik.common.cmd.CommandExecutor
 import com.dik.common.i18n.LocalizationResource
 import com.dik.common.platform.PlatformEvents
-import com.dik.common.platform.WindowAdaptiveClient
 import com.dik.settings.SettingsFeatureApi
 import com.dik.themoviedb.MoviesTheMovieDbApi
 import com.dik.themoviedb.SearchTheMovieDbApi
@@ -81,7 +80,6 @@ internal fun torrentListModule(dependencies: TorrentListDependencies) = module {
     single<TvEpisodesTheMovieDbApi> { dependencies.theMovieDbApi().tvEpisodesApi() }
     single<TvSeasonsTheMovieDbApi> { dependencies.theMovieDbApi().tvSeasonsApi() }
     single<PlatformEvents> { dependencies.platformEvents() }
-    single<WindowAdaptiveClient> { dependencies.windowAdaptive() }
     single<LocalizationResource> { dependencies.localizationResource() }
 }
 
