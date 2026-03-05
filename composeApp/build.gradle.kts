@@ -79,11 +79,7 @@ kotlin {
             implementation(projects.modules.themoviedb.api)
             implementation(projects.modules.themoviedb.impl)
 
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.bundles.compose)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.ktor.core)
             implementation(libs.kotlinx.serialization.json)
@@ -96,8 +92,6 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation(compose.uiTooling)
-            implementation(compose.preview)
             implementation(libs.androidx.activityCompose)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.ktor.client.okhttp)

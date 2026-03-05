@@ -50,21 +50,17 @@ kotlin {
             implementation(projects.core.torrserverapi.api)
             implementation(projects.core.appsettings.api)
 
-            implementation(compose.components.uiToolingPreview)
-            implementation(compose.components.resources)
+            implementation(libs.compose.components.resources)
             implementation(libs.bundles.decompose)
             implementation(libs.koin.core)
-            implementation(compose.preview)
         }
 
         androidMain.dependencies {
-            implementation(compose.uiTooling)
-            implementation(compose.preview)
+
         }
 
         jvmMain.dependencies {
-            implementation(compose.uiTooling)
-            implementation(compose.preview)
+
         }
 
         commonTest.dependencies {

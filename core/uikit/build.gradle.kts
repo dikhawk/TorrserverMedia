@@ -38,13 +38,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(compose.runtime)
-                api(compose.foundation)
-                api(compose.material3)
-                api(compose.components.uiToolingPreview)
-                api(compose.preview)
-                api(compose.uiTooling)
-                implementation(compose.components.resources)
+                api(libs.bundles.compose)
                 implementation(libs.coil.compose.core)
                 implementation(libs.coil.compose)
                 implementation(libs.coil.network.ktor)

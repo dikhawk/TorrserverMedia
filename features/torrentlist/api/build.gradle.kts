@@ -12,7 +12,7 @@ kotlin {
             dependencies {
                 implementation(projects.core.moduleinjector)
                 implementation(projects.core.common)
-                implementation(compose.runtime)
+                implementation(libs.compose.runtime)
                 implementation(libs.bundles.decompose)
             }
         }
