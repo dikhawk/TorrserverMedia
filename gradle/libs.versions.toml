@@ -117,6 +117,15 @@ decompose = [
     "decompose-compose-ext",
 ]
 
+compose = [
+    "compose-runtime",
+    "compose-foundation",
+    "compose-material3",
+    "compose-ui-tooling-preview",
+    "compose-ui-tooling",
+    "compose-components-resources"
+]
+
 testing = [
     "kotlin-test",
     "kotlin-test-junit",
