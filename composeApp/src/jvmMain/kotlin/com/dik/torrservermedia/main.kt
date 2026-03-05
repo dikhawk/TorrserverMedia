@@ -1,4 +1,5 @@
 package com.dik.torrservermedia
+
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
@@ -19,9 +20,10 @@ import com.dik.torrservermedia.nanigation.DefaultRootComponent
 import com.dik.torrservermedia.utils.runOnUiThread
 import com.dik.uikit.theme.AppTheme
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.stringResource
 import torrservermedia.composeapp.generated.resources.Res
 import torrservermedia.composeapp.generated.resources.app_name
@@ -36,7 +38,7 @@ fun main(args: Array<String>) {
     val torrServerApi: TorrserverApi = inject()
     val dispatchers: AppDispatchers = inject()
     val appSettings: AppSettings = inject()
-    val commands = torrServerApi.torrserverCommands()
+    val serverManager = torrServerApi.torrserverManager()
     val scope = CoroutineScope(dispatchers.defaultDispatcher() + SupervisorJob())
     val root = runOnUiThread {
         DefaultRootComponent(
@@ -47,8 +49,8 @@ fun main(args: Array<String>) {
         )
     }
 
-    scope.launch {
-        commands.startServer()
+    scope.launch(Dispatchers.IO) {
+        serverManager.start().last()
         setLocalization(appSettings.language)
     }
 
@@ -57,7 +59,9 @@ fun main(args: Array<String>) {
             title = stringResource(Res.string.app_name),
             state = rememberWindowState(width = 1000.dp, height = 600.dp),
             onCloseRequest = {
-                runBlocking { commands.stopServer() }
+                scope.launch {
+                    serverManager.stop().last()
+                }
                 exitApplication()
             }
         ) {

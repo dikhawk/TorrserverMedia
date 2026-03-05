@@ -16,7 +16,7 @@ import com.arkivanov.decompose.defaultComponentContext
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.CurrentActivityProvider
 import com.dik.common.i18n.setLocalization
-import com.dik.torrserverapi.model.TorrserverServiceManager
+import com.dik.torrserverapi.server.TorrserverManager
 import com.dik.torrservermedia.di.KoinModules
 import com.dik.torrservermedia.di.inject
 import com.dik.torrservermedia.nanigation.ChildConfig
@@ -25,6 +25,7 @@ import com.dik.torrservermedia.utils.pathToFile
 import com.dik.uikit.theme.AppTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import java.lang.ref.WeakReference
@@ -84,15 +85,17 @@ class AndroidApp : Application(), CurrentActivityProvider {
 @OptIn(ExperimentalPermissionsApi::class)
 class AppActivity : ComponentActivity() {
 
-    private val torrserverService: TorrserverServiceManager = inject()
+    private val torrserverService: TorrserverManager = inject()
     private val appSettings: AppSettings = inject()
     private lateinit var rootComponent: DefaultRootComponent
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         lifecycleScope.launch {
-            torrserverService.startService()
+            torrserverService.start().last()
             setLocalization(appSettings.language)
         }
 
@@ -103,7 +106,6 @@ class AppActivity : ComponentActivity() {
             featureSettingsApi = inject(),
         )
 
-        enableEdgeToEdge()
         setContent {
             val permissions = remember {
                 mutableListOf<String>().apply {

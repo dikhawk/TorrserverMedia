@@ -1,5 +1,6 @@
 package com.dik.common.player
 
+@Deprecated("Use PlayerManager")
 interface PlayersCommands {
 
     suspend fun playFileInDefaultPlayer(fileName: String, fileUrl: String)

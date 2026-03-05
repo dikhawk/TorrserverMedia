@@ -8,6 +8,8 @@ import com.dik.common.Result
 import com.dik.common.i18n.AppLanguage
 import com.dik.common.i18n.LocalizationResource
 import com.dik.common.i18n.setLocalization
+import com.dik.common.onError
+import com.dik.common.onSuccess
 import com.dik.common.player.Player
 import com.dik.common.utils.cpuArch
 import com.dik.common.utils.platformName
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import torrservermedia.features.settings.impl.generated.resources.Res
@@ -64,7 +67,7 @@ internal class DefaultMainComponent(
 
     override fun onClickUpdateTorrserver() {
         _uiState.update { it.copy(isShowAvailableNewVersionProgress = true) }
-        componentScope.launch(dispatchers.ioDispatcher()) {
+        componentScope.launch {
             torrserverManager.installOrUpdate()
                 .distinctUntilChanged()
                 .collect { result ->
@@ -115,7 +118,7 @@ internal class DefaultMainComponent(
     }
 
     private suspend fun restartTorrserver() {
-        torrserverManager.restart().collect {  }
+        torrserverManager.restart().last()
     }
 
     override fun onChangeDefaultPlayer(value: Player) {
@@ -313,11 +316,10 @@ internal class DefaultMainComponent(
         showProgressBar()
 
         componentScope.launch {
-            val result = serverSettingsApi.getSettings()
-
-            when (result) {
-                is Result.Error -> showError(result.error.toString())
-                is Result.Success -> updateSettingsUiState(result.data)
+            serverSettingsApi.getSettings().onSuccess { settings ->
+                updateSettingsUiState(settings)
+            }.onError { error ->
+                showError(error.toString())
             }
 
             checkUpdates()
