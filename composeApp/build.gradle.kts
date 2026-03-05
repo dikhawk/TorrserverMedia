@@ -1,5 +1,4 @@
 
-import com.android.build.api.dsl.ManagedVirtualDevice
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.reload.gradle.ComposeHotRun
@@ -152,7 +151,7 @@ android {
         res.srcDirs("src/androidMain/res")
     }
     //https://developer.android.com/studio/test/gradle-managed-devices
-    @Suppress("UnstableApiUsage")
+/*    @Suppress("UnstableApiUsage")
     testOptions {
         managedDevices.devices {
             maybeCreate<ManagedVirtualDevice>("pixel5").apply {
@@ -161,7 +160,7 @@ android {
                 systemImageSource = "aosp"
             }
         }
-    }
+    }*/
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
