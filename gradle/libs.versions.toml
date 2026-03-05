@@ -6,6 +6,7 @@ android-targetSdk = "28"
 kotlin = "2.3.10"
 compose = "1.10.1"
 compose-tv = "1.0.1"
+material3 = "1.9.0-beta03"
 agp = "8.13.1"
 androidx-activityCompose = "1.12.4"
 androidx-uiTest = "1.10.4"
@@ -30,7 +31,8 @@ android-lifecycle = "2.10.0"
 commpose-adaptive = "1.2.0"
 mockk = "1.14.9"
 turbine = "1.2.1"
-hot-reload="1.0.0"
+hot-reload = "1.0.0"
+stability-analyzer = "0.7.0"
 
 
 [libraries]
@@ -80,6 +82,12 @@ kermit-core = { module = "co.touchlab:kermit", version.ref = "kermit" }
 compose-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "commpose-adaptive" }
 compose-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "commpose-adaptive" }
 compose-adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation", version.ref = "commpose-adaptive" }
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
+compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose" }
+compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
+compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
@@ -101,6 +109,7 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
+stabilityAnalyzer = { id = "com.github.skydoves.compose.stability.analyzer", version.ref = "stability-analyzer" }
 
 [bundles]
 decompose = [
