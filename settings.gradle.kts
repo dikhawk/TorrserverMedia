@@ -25,7 +25,8 @@ plugins {
 rootProject.name = "TorrServerMedia"
 
 include(
-    ":composeApp",
+    ":shared",
+    ":androidApp",
     ":core:moduleinjector",
     ":core:torrserverapi:api",
     ":core:torrserverapi:impl",

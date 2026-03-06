@@ -5,11 +5,11 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.compose)
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.kmp.library)
     alias(libs.plugins.stabilityAnalyzer)
 }
 
-android {
+/*android {
     namespace = "com.dik.settings.impl"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
@@ -25,12 +25,12 @@ android {
     buildFeatures {
         compose = true
     }
-}
+}*/
 
 kotlin {
     jvm()
 
-    androidTarget {
+    android {
         compilations.all {
             compileTaskProvider {
                 compilerOptions {
@@ -39,6 +39,11 @@ kotlin {
                 }
             }
         }
+        namespace = "com.dik.settings.impl"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        androidResources.enable = true
     }
 
     sourceSets {

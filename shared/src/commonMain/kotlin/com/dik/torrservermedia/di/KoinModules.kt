@@ -46,6 +46,6 @@ object KoinModules {
     }
 }
 
-internal inline fun <reified T> inject(): T {
+inline fun <reified T> inject(): T {
     return KoinModules.koin!!.get()
 }

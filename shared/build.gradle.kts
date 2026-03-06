@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.compose)
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.kmp.library)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.compose.hotreload)
 }
@@ -23,7 +23,7 @@ tasks.withType<ComposeHotRun>().configureEach {
 }
 
 kotlin {
-    androidTarget {
+    android {
         compilations.all {
             compileTaskProvider {
                 compilerOptions {
@@ -32,6 +32,25 @@ kotlin {
                 }
             }
         }
+
+        namespace = "com.dik.torrservermedia.shared"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        /*    sourceSets["main"].apply {
+                manifest.srcFile("src/androidMain/AndroidManifest.xml")
+                res.srcDirs("src/androidMain/res")
+            }*/
+        //https://developer.android.com/studio/test/gradle-managed-devices
+        /*    @Suppress("UnstableApiUsage")
+            testOptions {
+                managedDevices.devices {
+                    maybeCreate<ManagedVirtualDevice>("pixel5").apply {
+                        device = "Pixel 5"
+                        apiLevel = 34
+                        systemImageSource = "aosp"
+                    }
+                }
+            }*/
         //https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
 //        @OptIn(ExperimentalKotlinGradlePluginApi::class)
 //        instrumentedTestVariant {
@@ -57,7 +76,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach {
         it.binaries.framework {
-            baseName = "ComposeApp"
+            baseName = "Shared"
             isStatic = true
         }
     }*/
@@ -115,17 +134,12 @@ kotlin {
     }
 }
 
-android {
-    namespace = "com.dik.torrservermedia"
+/*android {
+    namespace = "com.dik.torrservermedia.shared"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-
-        applicationId = "com.dik.torrservermedia.androidApp"
-        versionCode = 1
-        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -142,16 +156,16 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("release")
-            isShrinkResources = true
-            isMinifyEnabled = true
+//            isShrinkResources = true
+            isMinifyEnabled = false
         }
     }
-    sourceSets["main"].apply {
+*//*    sourceSets["main"].apply {
         manifest.srcFile("src/androidMain/AndroidManifest.xml")
         res.srcDirs("src/androidMain/res")
-    }
+    }*//*
     //https://developer.android.com/studio/test/gradle-managed-devices
-/*    @Suppress("UnstableApiUsage")
+*//*    @Suppress("UnstableApiUsage")
     testOptions {
         managedDevices.devices {
             maybeCreate<ManagedVirtualDevice>("pixel5").apply {
@@ -160,7 +174,7 @@ android {
                 systemImageSource = "aosp"
             }
         }
-    }*/
+    }*//*
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -169,7 +183,7 @@ android {
         //enables a Compose tooling support in the AndroidStudio
         compose = true
     }
-}
+}*/
 
 compose.desktop {
     application {

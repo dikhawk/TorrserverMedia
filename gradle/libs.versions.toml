@@ -4,10 +4,10 @@ android-minSdk = "24"
 android-targetSdk = "28"
 
 kotlin = "2.3.10"
-compose = "1.10.1"
+compose = "1.10.2"
 compose-tv = "1.0.1"
-material3 = "1.9.0-beta03"
-agp = "9.0.1"
+material3 = "1.9.0"
+agp = "9.1.0"
 androidx-activityCompose = "1.12.4"
 androidx-uiTest = "1.10.4"
 coil = "3.4.0"
@@ -105,7 +105,7 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 compose-hotreload = { id = "org.jetbrains.compose.hot-reload", version.ref = "hot-reload" }
 android-application = { id = "com.android.application", version.ref = "agp" }
-android-library = { id = "com.android.library", version.ref = "agp" }
+android-kmp-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 stabilityAnalyzer = { id = "com.github.skydoves.compose.stability.analyzer", version.ref = "stability-analyzer" }
@@ -122,7 +122,6 @@ compose = [
     "compose-material3",
     "compose-ui-tooling-preview",
     "compose-ui-tooling",
-    "compose-components-resources"
 ]
 
 testing = [

@@ -4,12 +4,12 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.multiplatform)
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.kmp.library)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.buildkonfig)
 }
 
-android {
+/*android {
     namespace = "com.dik.themoviedb.impl"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
@@ -17,11 +17,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-}
+}*/
 
 kotlin {
     jvm()
-    androidTarget {
+    androidLibrary {
         compilations.all {
             compileTaskProvider {
                 compilerOptions {
@@ -30,6 +30,9 @@ kotlin {
                 }
             }
         }
+
+        namespace = "com.dik.themoviedb.impl"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
     }
 
     sourceSets {

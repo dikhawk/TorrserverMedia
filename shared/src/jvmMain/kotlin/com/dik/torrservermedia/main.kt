@@ -25,8 +25,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import torrservermedia.composeapp.generated.resources.Res
-import torrservermedia.composeapp.generated.resources.app_name
+import torrservermedia.shared.generated.resources.Res
+import torrservermedia.shared.generated.resources.app_name
 import java.awt.Dimension
 
 

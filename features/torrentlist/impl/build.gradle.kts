@@ -5,37 +5,14 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.compose)
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.kmp.library)
     alias(libs.plugins.stabilityAnalyzer)
-}
-
-android {
-    namespace = "com.dik.torrentlist.impl"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-
-    sourceSets["main"].apply {
-        manifest.srcFile("src/androidMain/AndroidManifest.xml")
-//        res.srcDirs("src/androidMain/res")
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    buildFeatures {
-        compose = true
-    }
 }
 
 kotlin {
     jvm()
 
-    androidTarget {
+    android {
         compilations.all {
             compileTaskProvider {
                 compilerOptions {
@@ -44,6 +21,12 @@ kotlin {
                 }
             }
         }
+
+        namespace = "com.dik.torrentlist.impl"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        androidResources.enable = true
     }
 
     sourceSets {
@@ -85,4 +68,3 @@ kotlin {
         }
     }
 }
-

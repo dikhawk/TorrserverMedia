@@ -2,22 +2,12 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.multiplatform)
-    alias(libs.plugins.android.library)
-}
-
-android {
-    namespace = "com.dik.appsettnigs.impl"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
+    alias(libs.plugins.android.kmp.library)
 }
 
 kotlin {
     jvm()
-    androidTarget {
+    android {
         compilations.all {
             compileTaskProvider {
                 compilerOptions {
@@ -26,6 +16,9 @@ kotlin {
                 }
             }
         }
+
+        namespace = "com.dik.appsettnigs.impl"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
     }
 
     sourceSets {

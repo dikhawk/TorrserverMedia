@@ -3,31 +3,12 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.kotlinx.serialization)
-    alias(libs.plugins.android.library)
-}
-
-android {
-    namespace = "com.dik.torrserverapi.impl"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-
-    sourceSets["main"].apply {
-        manifest.srcFile("src/androidMain/AndroidManifest.xml")
-//        res.srcDirs("src/androidMain/res")
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
+    alias(libs.plugins.android.kmp.library)
 }
 
 kotlin {
     jvm() // Create a JVM target with the default name 'jvm'
-    androidTarget {
+    android {
         compilations.all {
             compileTaskProvider {
                 compilerOptions {
@@ -36,7 +17,17 @@ kotlin {
                 }
             }
         }
+        namespace = "com.dik.torrserverapi.impl"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+/*        sourceSets["main"].apply {
+            manifest.srcFile("src/androidMain/AndroidManifest.xml")
+//        res.srcDirs("src/androidMain/res")
+        }*/
+        androidResources.enable = true
     }
+
 
     sourceSets {
         commonMain.dependencies {
