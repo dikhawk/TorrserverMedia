@@ -8,7 +8,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.stack.animation.plus
@@ -18,6 +17,7 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.dik.common.i18n.LocalAppLanguage
 import com.dik.common.i18n.currentLanguageFlow
 import com.dik.torrservermedia.nanigation.RootComponent
+import com.dik.uikit.theme.AppTheme
 
 
 @Composable
@@ -27,23 +27,25 @@ fun RootUi(
 ) {
     val currentLanguage by currentLanguageFlow.collectAsState()
 
-    CompositionLocalProvider(
-        LocalAppLanguage provides currentLanguage
-    ) {
-        Children(
-            stack = component.stack,
-            modifier = modifier,
-            animation = predictiveBackAnimation(
-                backHandler = component.backHandler,
-                fallbackAnimation = stackAnimation(fade() + scale()),
-                onBack = component::onBackClicked,
-            )
-        ) { child ->
-            Surface(modifier = Modifier.fillMaxSize(), color = Color.White) {
-                when (val rootChild = child.instance) {
-                    is RootComponent.Child.TorrentList -> rootChild.composable()
-                    is RootComponent.Child.Details -> rootChild.composable()
-                    is RootComponent.Child.Settings -> rootChild.composable()
+    AppTheme {
+        CompositionLocalProvider(
+            LocalAppLanguage provides currentLanguage
+        ) {
+            Children(
+                stack = component.stack,
+                modifier = modifier,
+                animation = predictiveBackAnimation(
+                    backHandler = component.backHandler,
+                    fallbackAnimation = stackAnimation(fade() + scale()),
+                    onBack = component::onBackClicked,
+                )
+            ) { child ->
+                Surface(modifier = Modifier.fillMaxSize(), color = Color.White) {
+                    when (val rootChild = child.instance) {
+                        is RootComponent.Child.TorrentList -> rootChild.composable()
+                        is RootComponent.Child.Details -> rootChild.composable()
+                        is RootComponent.Child.Settings -> rootChild.composable()
+                    }
                 }
             }
         }

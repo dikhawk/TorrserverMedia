@@ -36,30 +36,6 @@ kotlin {
         namespace = "com.dik.torrservermedia.shared"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
-        /*    sourceSets["main"].apply {
-                manifest.srcFile("src/androidMain/AndroidManifest.xml")
-                res.srcDirs("src/androidMain/res")
-            }*/
-        //https://developer.android.com/studio/test/gradle-managed-devices
-        /*    @Suppress("UnstableApiUsage")
-            testOptions {
-                managedDevices.devices {
-                    maybeCreate<ManagedVirtualDevice>("pixel5").apply {
-                        device = "Pixel 5"
-                        apiLevel = 34
-                        systemImageSource = "aosp"
-                    }
-                }
-            }*/
-        //https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
-//        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-//        instrumentedTestVariant {
-//            sourceSetTree.set(KotlinSourceSetTree.test)
-//            dependencies {
-//                debugImplementation(libs.androidx.testManifest)
-//                implementation(libs.androidx.junit4)
-//            }
-//        }
     }
 
     jvm()

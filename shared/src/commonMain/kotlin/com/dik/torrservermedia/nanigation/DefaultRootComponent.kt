@@ -7,16 +7,28 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
+import com.dik.appsettings.api.model.AppSettings
+import com.dik.common.AppDispatchers
+import com.dik.common.i18n.setLocalization
 import com.dik.settings.SettingsFeatureApi
 import com.dik.torrentlist.TorrentListFeatureApi
+import com.dik.torrserverapi.di.TorrserverApi
+import com.dik.torrservermedia.di.inject
 import com.dik.torrservermedia.nanigation.RootComponent.Child
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 class DefaultRootComponent(
     componentContext: ComponentContext,
     private val initialConfiguration: ChildConfig = ChildConfig.TorrentList,
-    private val featureTorrentListApi: TorrentListFeatureApi,
-    private val featureSettingsApi: SettingsFeatureApi
+    private val featureTorrentListApi: TorrentListFeatureApi = inject(),
+    private val featureSettingsApi: SettingsFeatureApi = inject(),
+    private val torrServerApi: TorrserverApi = inject(),
+    private val dispatchers: AppDispatchers = inject(),
+    private val appSettings: AppSettings = inject(),
 ) : RootComponent, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<ChildConfig>()
@@ -29,8 +41,23 @@ class DefaultRootComponent(
         childFactory = ::childFactory
     )
 
+    private val scope = CoroutineScope(dispatchers.defaultDispatcher() + SupervisorJob())
+
     override fun onBackClicked() {
         navigation.pop()
+    }
+
+    override fun startServer() {
+        scope.launch {
+            setLocalization(appSettings.language)
+            torrServerApi.torrserverManager().start().last()
+        }
+    }
+
+    override fun stopServer() {
+        scope.launch {
+            torrServerApi.torrserverManager().stop().last()
+        }
     }
 
     override fun onOpenContent(config: ChildConfig) {

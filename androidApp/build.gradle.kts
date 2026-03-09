@@ -6,24 +6,6 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
-dependencies {
-    implementation(libs.androidx.activityCompose)
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.ktor.client.okhttp)
-    implementation(libs.decompose.core)
-    implementation(libs.koin.android)
-    implementation(libs.accompanist.permissions)
-    implementation(libs.android.lifecycle.runtime)
-
-    implementation(projects.core.common)
-    implementation(projects.features.torrentlist.api)
-    implementation(projects.core.torrserverapi.api)
-    implementation(projects.features.settings.api)
-    implementation(projects.core.appsettings.api)
-    implementation(projects.core.uikit)
-    implementation(projects.shared)
-}
-
 android {
     namespace = "com.dik.torrservermedia"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -56,23 +38,29 @@ android {
         }
     }
 
-    //https://developer.android.com/studio/test/gradle-managed-devices
-    /*    @Suppress("UnstableApiUsage")
-        testOptions {
-            managedDevices.devices {
-                maybeCreate<ManagedVirtualDevice>("pixel5").apply {
-                    device = "Pixel 5"
-                    apiLevel = 34
-                    systemImageSource = "aosp"
-                }
-            }
-        }*/
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
-        //enables a Compose tooling support in the AndroidStudio
         compose = true
     }
+}
+
+dependencies {
+    implementation(libs.androidx.activityCompose)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.decompose.core)
+    implementation(libs.koin.android)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.android.lifecycle.runtime)
+
+    implementation(projects.core.common)
+    implementation(projects.features.torrentlist.api)
+    implementation(projects.core.torrserverapi.api)
+    implementation(projects.features.settings.api)
+    implementation(projects.core.appsettings.api)
+    implementation(projects.core.uikit)
+    implementation(projects.shared)
 }

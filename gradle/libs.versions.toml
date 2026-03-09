@@ -101,6 +101,7 @@ compose-tv = { module = "androidx.tv:tv-material", version.ref = "compose-tv" }
 [plugins]
 
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 compose-hotreload = { id = "org.jetbrains.compose.hot-reload", version.ref = "hot-reload" }

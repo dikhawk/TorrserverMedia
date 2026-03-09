@@ -11,22 +11,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.lifecycle.lifecycleScope
 import com.arkivanov.decompose.defaultComponentContext
-import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.CurrentActivityProvider
-import com.dik.common.i18n.setLocalization
-import com.dik.torrserverapi.server.TorrserverManager
 import com.dik.torrservermedia.di.KoinModules
-import com.dik.torrservermedia.di.inject
 import com.dik.torrservermedia.nanigation.ChildConfig
 import com.dik.torrservermedia.nanigation.DefaultRootComponent
 import com.dik.torrservermedia.utils.pathToFile
-import com.dik.uikit.theme.AppTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import java.lang.ref.WeakReference
 
@@ -85,8 +77,6 @@ class AndroidApp : Application(), CurrentActivityProvider {
 @OptIn(ExperimentalPermissionsApi::class)
 class AppActivity : ComponentActivity() {
 
-    private val torrserverService: TorrserverManager = inject()
-    private val appSettings: AppSettings = inject()
     private lateinit var rootComponent: DefaultRootComponent
 
 
@@ -94,17 +84,12 @@ class AppActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        lifecycleScope.launch {
-            torrserverService.start().last()
-            setLocalization(appSettings.language)
-        }
-
         rootComponent = DefaultRootComponent(
             initialConfiguration = initialConfiguration(intent) ?: ChildConfig.TorrentList,
             componentContext = defaultComponentContext(),
-            featureTorrentListApi = inject(),
-            featureSettingsApi = inject(),
         )
+
+        rootComponent.startServer()
 
         setContent {
             val permissions = remember {
@@ -116,9 +101,7 @@ class AppActivity : ComponentActivity() {
             }
             val notificationPermission = rememberMultiplePermissionsState(permissions)
 
-            AppTheme {
-                RootUi(component = rootComponent)
-            }
+            RootUi(component = rootComponent)
 
             LaunchedEffect(Unit) {
                 notificationPermission.launchMultiplePermissionRequest()

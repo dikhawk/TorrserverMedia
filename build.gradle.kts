@@ -7,4 +7,5 @@ plugins {
     alias(libs.plugins.kotlinx.serialization).apply(false)
     alias(libs.plugins.compose.hotreload).apply(false)
     alias(libs.plugins.stabilityAnalyzer).apply(false)
+    alias(libs.plugins.kotlin.jvm).apply(false)
 }

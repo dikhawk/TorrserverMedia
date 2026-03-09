@@ -27,6 +27,7 @@ rootProject.name = "TorrServerMedia"
 include(
     ":shared",
     ":androidApp",
+    ":desktopApp",
     ":core:moduleinjector",
     ":core:torrserverapi:api",
     ":core:torrserverapi:impl",

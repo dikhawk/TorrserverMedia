@@ -13,6 +13,10 @@ interface RootComponent : BackHandlerOwner {
 
     fun onBackClicked()
 
+    fun startServer()
+
+    fun stopServer()
+
     sealed interface Child {
         class TorrentList(val composable: @Composable () -> Unit) : Child
         class Details(val composable: @Composable () -> Unit) : Child
