@@ -42,7 +42,7 @@ jobs:
 
       - name: Create Zip Archive
         run: |
-          cd "composeApp/build/compose/binaries/main/app/"
+          cd "desktopApp/build/compose/binaries/main/app/"
           powershell Compress-Archive -Path com.dik.torrservermedia.desktopApp -DestinationPath TorrServerMedia_windows_x86_64.zip
 
       - name: Get Release Upload URL
@@ -63,6 +63,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           upload_url: ${{ steps.get_upload_url.outputs.upload_url }}
-          asset_path: composeApp/build/compose/binaries/main/app/TorrServerMedia_windows_x86_64.zip
+          asset_path: desktopApp/build/compose/binaries/main/app/TorrServerMedia_windows_x86_64.zip
           asset_name: TorrServerMedia_windows_x86_64.zip
           asset_content_type: application/octet-stream
