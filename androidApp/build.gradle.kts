@@ -10,6 +10,10 @@ android {
     namespace = "com.dik.torrservermedia"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
+
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
@@ -25,6 +29,9 @@ android {
             val properties = gradleLocalProperties(rootDir, providers)
 
             storeFile = file(properties.getProperty("KEYSTORE_FILE") as String)
+
+            if (storeFile?.exists() != true) throw NullPointerException("File store is not found, check config")
+
             storePassword = properties.getProperty("KEYSTORE_PASSWORD") as String
             keyAlias = properties.getProperty("KEY_ALIAS") as String
             keyPassword = properties.getProperty("KEY_PASSWORD") as String
@@ -57,10 +64,5 @@ dependencies {
     implementation(libs.android.lifecycle.runtime)
 
     implementation(projects.core.common)
-    implementation(projects.features.torrentlist.api)
-    implementation(projects.core.torrserverapi.api)
-    implementation(projects.features.settings.api)
-    implementation(projects.core.appsettings.api)
-    implementation(projects.core.uikit)
     implementation(projects.shared)
 }
