@@ -27,14 +27,17 @@ android {
     signingConfigs {
         create("release") {
             val properties = gradleLocalProperties(rootDir, providers)
+            val keyStoreFile = properties.getProperty("KEYSTORE_FILE") as String
 
-            storeFile = file(properties.getProperty("KEYSTORE_FILE") as String)
+            storeFile = file(keyStoreFile)
 
-            if (storeFile?.exists() != true) throw NullPointerException("File store is not found, check config")
-
-            storePassword = properties.getProperty("KEYSTORE_PASSWORD") as String
-            keyAlias = properties.getProperty("KEY_ALIAS") as String
-            keyPassword = properties.getProperty("KEY_PASSWORD") as String
+            if (storeFile?.exists() == true) {
+                storePassword = properties.getProperty("KEYSTORE_PASSWORD") as String
+                keyAlias = properties.getProperty("KEY_ALIAS") as String
+                keyPassword = properties.getProperty("KEY_PASSWORD") as String
+            } else {
+                logger.error("File store: $keyStoreFile is not found, check config")
+            }
         }
     }
     buildTypes {
