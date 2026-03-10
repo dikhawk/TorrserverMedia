@@ -1,5 +1,6 @@
 package com.dik.torrservermedia.di
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -19,7 +20,7 @@ object KoinModules {
     fun init(config: KoinAppDeclaration? = null) {
         if (koin != null) return
 
-        runBlocking {
+        runBlocking(Dispatchers.Default) {
             mutex.withLock {
                 if (koin == null) {
                     startKoin { }

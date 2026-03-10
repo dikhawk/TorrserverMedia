@@ -5,6 +5,7 @@ import com.dik.themoviedb.MoviesTheMovieDbApi
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
 import com.dik.themoviedb.TvSeasonsTheMovieDbApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -16,7 +17,7 @@ abstract class TheMovieDbComponent: TheMovieDbApi {
 
         fun get(appDispatchers: AppDispatchers): TheMovieDbComponent {
             if (component == null) {
-                runBlocking {
+                runBlocking(Dispatchers.Default) {
                     mutex.withLock {
                         if (component == null) {
                             component = object : TheMovieDbComponent() {

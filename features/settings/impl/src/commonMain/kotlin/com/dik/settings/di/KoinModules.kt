@@ -6,6 +6,7 @@ import com.dik.common.i18n.LocalizationResource
 import com.dik.torrserverapi.server.TorrserverManager
 import com.dik.torrserverapi.server.api.ServerSettingsApi
 import com.dik.torrserverapi.server.api.TorrserverApiClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -25,7 +26,7 @@ object KoinModules {
     fun init(dependencies: SettingsDependencies) {
         if (koin != null) return
 
-        runBlocking {
+        runBlocking(Dispatchers.Default) {
             mutex.withLock {
                 if (koin == null) {
                     koin = koinApplication { settingsListModules(dependencies) }.koin

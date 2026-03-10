@@ -3,6 +3,7 @@ package com.dik.appsettings.impl.di
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.appsettings.impl.AppSettingsImpl
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
@@ -23,7 +24,7 @@ object KoinModules {
     fun init(dependencies: AppSettingsDependencies) {
         if (koin != null) return
 
-        runBlocking {
+        runBlocking(Dispatchers.Default) {
             mutex.withLock {
                 if (koin == null) {
                     koin = koinApplication { appsettingsModules(dependencies) }.koin

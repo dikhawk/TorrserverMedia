@@ -2,6 +2,7 @@ package com.dik.appsettings.impl.di
 
 import com.dik.appsettings.api.di.AppSettingsApi
 import com.dik.appsettings.api.model.AppSettings
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -14,7 +15,7 @@ abstract class AppSettingsComponent: AppSettingsApi {
 
         fun get(dependencise: AppSettingsDependencies): AppSettingsComponent {
             if (component == null) {
-                runBlocking {
+                runBlocking(Dispatchers.Default) {
                     mutex.withLock {
                         if (component == null) {
                             component = object : AppSettingsComponent() {

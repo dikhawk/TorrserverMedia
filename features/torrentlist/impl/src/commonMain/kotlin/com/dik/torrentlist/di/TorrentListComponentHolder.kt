@@ -2,6 +2,7 @@ package com.dik.torrentlist.di
 
 import com.dik.moduleinjector.ComponentHolder
 import com.dik.torrentlist.TorrentListFeatureApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -13,7 +14,7 @@ object TorrentListComponentHolder : ComponentHolder<TorrentListFeatureApi, Torre
 
     override fun init(dependencies: TorrentListDependencies) {
         if (componentHolder == null) {
-            runBlocking {
+            runBlocking(Dispatchers.Default) {
                 mutex.withLock {
                     if (componentHolder == null) {
                         componentHolder = TorrentListComponent.initAndGet(dependencies)

@@ -1,6 +1,7 @@
 package com.dik.themoviedb.di
 
 import com.dik.common.AppDispatchers
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -21,7 +22,7 @@ internal object KoinModules {
     fun init(appDispatchers: AppDispatchers) {
         if (koin != null) return
 
-        runBlocking {
+        runBlocking(Dispatchers.Default) {
             mutex.withLock {
                 if (koin == null) {
                     koin = koinApplication { tmdbModules(appDispatchers) }.koin
