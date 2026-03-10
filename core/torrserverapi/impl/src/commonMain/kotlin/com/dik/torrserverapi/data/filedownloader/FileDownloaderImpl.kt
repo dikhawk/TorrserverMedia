@@ -46,7 +46,7 @@ internal class FileDownloaderImpl(
         }
         send(DownloadFileRusult.Done)
     }.catch { e ->
-        emit(DownloadFileRusult.Erorr(TorrserverError.Unknown(e.toString())))
+        emit(DownloadFileRusult.Error(TorrserverError.Unknown(e.toString())))
     }
 
     private fun HttpRequestBuilder.downloadHeader() {
