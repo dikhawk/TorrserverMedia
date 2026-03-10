@@ -1,6 +1,5 @@
 package com.dik.torrserverapi.data
 
-import com.dik.common.AppDispatchers
 import com.dik.common.Result
 import com.dik.common.utils.successResult
 import com.dik.torrserverapi.TorrserverError
@@ -11,10 +10,10 @@ import com.dik.torrserverapi.data.mappers.mapToViewedList
 import com.dik.torrserverapi.data.model.Body
 import com.dik.torrserverapi.data.response.TorrentResponse
 import com.dik.torrserverapi.data.response.ViewedReponse
+import com.dik.torrserverapi.domain.filemanager.FileManager
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.model.Viewed
 import com.dik.torrserverapi.server.api.TorrentApi
-import com.dik.torrserverapi.utils.fileToByteArray
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.timeout
@@ -40,7 +39,7 @@ import kotlinx.serialization.json.Json
 
 class TorrentApiImpl(
     private val client: HttpClient,
-    private val dispatchers: AppDispatchers
+    private val fileManager: FileManager,
 ) : TorrentApi {
 
     private val manualRefresh = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
@@ -95,7 +94,7 @@ class TorrentApiImpl(
 
     override suspend fun addTorrent(filePath: String): Result<Torrent, TorrserverError> {
         return runCatchingKtor {
-            val byteArray = fileToByteArray(filePath, dispatchers.ioDispatcher())
+            val byteArray = fileManager.fileToByteArray(filePath)
 
             val request = client.post("/torrent/upload") {
                 setBody(

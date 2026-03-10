@@ -25,4 +25,12 @@ internal class FileManagerImpl(
         withContext(dispatchers.ioDispatcher()) {
             fileSystem.delete(path.toPath())
         }
+
+    override suspend fun fileToByteArray(fileToPath: String): ByteArray {
+        return withContext(dispatchers.ioDispatcher()) {
+            val path = fileToPath.toPath()
+
+            FileSystem.SYSTEM.read(path) { readByteArray() }
+        }
+    }
 }
