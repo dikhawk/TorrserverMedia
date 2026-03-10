@@ -11,7 +11,6 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.android.kmp.library)
     alias(libs.plugins.kotlinx.serialization)
-    alias(libs.plugins.compose.hotreload)
 }
 
 composeCompiler {
