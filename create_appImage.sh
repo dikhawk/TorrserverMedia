@@ -17,7 +17,7 @@ if [ -d "${PATH_BUILD}${DIR_APP}" ]; then
 fi
 
 mkdir -p "${PATH_BUILD}${DIR_APP}${DIR_USR}"
-cp -R "${HERE}/composeApp/build/compose/binaries/main/app/com.dik.torrservermedia.desktopApp/." "${PATH_BUILD}${DIR_APP}${DIR_USR}"
+cp -R "${HERE}/desktopApp/build/compose/binaries/main/app/com.dik.torrservermedia.desktopApp/." "${PATH_BUILD}${DIR_APP}${DIR_USR}"
 cp "${HERE}/ic_app.svg" "${PATH_BUILD}${DIR_APP}torrservermedia-256x256.svg"
 
 cat <<EOF > "${PATH_BUILD}${DIR_APP}AppRun"
