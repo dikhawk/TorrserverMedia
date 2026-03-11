@@ -74,7 +74,11 @@ internal class DefaultMainComponent(
                     when (result) {
                         is TorrserverStatus.Install.Error -> updateError()
 
-                        is TorrserverStatus.Install.Progress -> updateProgress(result.progress)
+                        is TorrserverStatus.Install.Progress -> updateProgress(
+                            result.progress,
+                            result.currentBytes,
+                            result.totalBytes
+                        )
 
                         is TorrserverStatus.Install.Installed -> updateSuccess()
                         else -> {
@@ -97,7 +101,7 @@ internal class DefaultMainComponent(
         }
     }
 
-    private suspend fun updateProgress(progress: Double) {
+    private suspend fun updateProgress(progress: Double, currentBytes: Long, totalBytes: Long) {
         _uiState.update {
             it.copy(
                 availableNewVersionText = localization
@@ -229,17 +233,12 @@ internal class DefaultMainComponent(
             appSettings.defaultPlayer = _uiState.value.player
             appSettings.language = _uiState.value.language
 
-            val result = serverSettingsApi.saveSettings(getServerSettings())
-
-            when (result) {
-                is Result.Success -> {
-                    _uiState.update {
-                        it.copy(snackbar = localization.getString(Res.string.main_settings_snackbar_save))
-                    }
+            serverSettingsApi.saveSettings(getServerSettings()).onSuccess {
+                _uiState.update {
+                    it.copy(snackbar = localization.getString(Res.string.main_settings_snackbar_save))
                 }
-
-                is Result.Error -> _uiState.update { it.copy(snackbar = result.error.toString()) }
-
+            }.onError { error ->
+                _uiState.update { it.copy(snackbar = error.toString()) }
             }
 
             hideProgressBar()
@@ -346,12 +345,15 @@ internal class DefaultMainComponent(
                         )
                     }
                 }
+
                 is TorrserverStatus.CheckLatestVersion.VersionIsActual -> {
 
                 }
+
                 is TorrserverStatus.CheckLatestVersion.Checking -> {
 
                 }
+
                 else -> println("Status: $status")
             }
         }
