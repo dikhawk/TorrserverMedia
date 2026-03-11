@@ -72,7 +72,6 @@ internal actual fun TorrentListUi(
     modifier: Modifier
 ) {
     val uiState by component.uiState.collectAsState()
-//    val observeTorrents by component.observeTorrentsList().collectAsState(emptyList())
 
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         DragAndDropFile(
