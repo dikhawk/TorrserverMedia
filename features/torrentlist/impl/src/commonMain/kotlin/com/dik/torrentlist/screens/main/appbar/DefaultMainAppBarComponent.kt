@@ -11,8 +11,11 @@ import com.dik.torrserverapi.server.TorrserverManager
 import com.dik.torrserverapi.server.TorrserverStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import torrservermedia.features.torrentlist.impl.generated.resources.Res
@@ -29,15 +32,24 @@ internal class DefaultMainAppBarComponent(
     private val openSettingsScreen: () -> Unit,
 ) : MainAppBarComponent, ComponentContext by context {
 
-    private val _uiState = MutableStateFlow(MainAppBarState())
-    override val uiState: StateFlow<MainAppBarState> = _uiState.asStateFlow()
+    private val observeTorrserverStatus = torrserverManager.observeTorrserverStatus()
+        .distinctUntilChanged()
 
-    init {
-        observeServerStatus()
-    }
+    private val _uiState = MutableStateFlow(MainAppBarState())
+    override val uiState: StateFlow<MainAppBarState> = combine(
+        observeTorrserverStatus,
+        _uiState
+    ) { status, state ->
+        val isStarted = status == TorrserverStatus.General.Started
+        state.copy(isServerStarted = isStarted)
+    }.stateIn(
+        scope = componentScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = _uiState.value
+    )
 
     override fun openFilePickTorrent() {
-        if (!_uiState.value.isServerStarted) {
+        if (!uiState.value.isServerStarted) {
             componentScope.launch {
                 _uiState.update {
                     it.copy(error = localization.getString(Res.string.main_app_bar_error_server_not_started))
@@ -59,7 +71,7 @@ internal class DefaultMainAppBarComponent(
     }
 
     override fun openAddLinkDialog() {
-        if (!_uiState.value.isServerStarted) {
+        if (!uiState.value.isServerStarted) {
             componentScope.launch {
                 _uiState.update {
                     it.copy(error = localization.getString(Res.string.main_app_bar_error_server_not_started))
@@ -74,7 +86,7 @@ internal class DefaultMainAppBarComponent(
 
     override fun addLink() {
         componentScope.launch {
-            if (_uiState.value.link.isEmpty()) return@launch
+            if (uiState.value.link.isEmpty()) return@launch
 
             addMagnetLinkUseCase.invoke(_uiState.value.link)
                 .onError { error ->
@@ -103,7 +115,7 @@ internal class DefaultMainAppBarComponent(
     }
 
     override fun openSettingsScreen() {
-        if (!_uiState.value.isServerStarted) {
+        if (!uiState.value.isServerStarted) {
             componentScope.launch {
                 _uiState.update {
                     it.copy(error = localization.getString(Res.string.main_app_bar_error_server_not_started))
@@ -114,13 +126,5 @@ internal class DefaultMainAppBarComponent(
         }
 
         openSettingsScreen.invoke()
-    }
-
-    private fun observeServerStatus() {
-        componentScope.launch {
-            torrserverManager.observeTorrserverStatus().collect { status ->
-                _uiState.update { it.copy(isServerStarted = status == TorrserverStatus.General.Started) }
-            }
-        }
     }
 }
