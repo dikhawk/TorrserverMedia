@@ -44,16 +44,17 @@ internal class DefaultTorrentListComponent(
         .onStart { _uiState.update { it.copy(isShowProgress = true) } }
         .distinctUntilChanged()
         .map { result ->
-            if (result is Result.Success) {
-                onTorrentsIsEmpty(result.data.isEmpty())
-                _uiState.value.copy(
-                    torrents = result.data.toTorrentUiStateList(),
+            result.onSuccess { data ->
+                onTorrentsIsEmpty(data.isEmpty())
+                return@map uiState.value.copy(
+                    torrents = data.toTorrentUiStateList(),
                     isShowProgress = false
                 )
-            } else {
-                val error = result as Result.Error
-                _uiState.value.copy(error = error.error.toString(), isShowProgress = false)
+            }.onError { error ->
+                return@map uiState.value.copy(error = error.toString(), isShowProgress = false)
             }
+
+            throw IllegalStateException("Invalid result: $result")
         }
 
     private val _uiState: MutableStateFlow<TorrentListState> = MutableStateFlow(TorrentListState())
