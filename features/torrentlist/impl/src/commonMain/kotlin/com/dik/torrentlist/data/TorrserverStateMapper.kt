@@ -3,7 +3,7 @@ package com.dik.torrentlist.data
 import com.dik.torrentlist.domain.ServerStatus
 import com.dik.torrserverapi.server.TorrserverStatus
 
-internal fun TorrserverStatus.toServerStatusState(): ServerStatus = when (this) {
+internal fun TorrserverStatus.toServerStatus(): ServerStatus = when (this) {
 
     TorrserverStatus.General.Running -> ServerStatus.General.Running
     TorrserverStatus.General.Started -> ServerStatus.General.Started
