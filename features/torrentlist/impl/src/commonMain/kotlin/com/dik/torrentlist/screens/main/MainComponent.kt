@@ -3,10 +3,10 @@ package com.dik.torrentlist.screens.main
 import androidx.compose.runtime.Stable
 import com.dik.torrentlist.screens.components.bufferization.BufferizationComponent
 import com.dik.torrentlist.screens.details.DetailsComponent
+import com.dik.torrentlist.domain.ServerStatus
 import com.dik.torrentlist.screens.main.appbar.MainAppBarComponent
 import com.dik.torrentlist.screens.main.list.TorrentListComponent
 import com.dik.torrentlist.screens.main.torrserverbar.TorrserverBarComponent
-import com.dik.torrserverapi.server.TorrserverStatus
 import kotlinx.coroutines.flow.StateFlow
 
 internal interface MainComponent {
@@ -26,7 +26,7 @@ internal interface MainComponent {
 
 @Stable
 internal data class MainComponentState(
-    val serverStatus: TorrserverStatus = TorrserverStatus.Unknown("Init state"),
+    val serverStatus: ServerStatus = ServerStatus.Unknown("Init state"),
     val isShowDetails: Boolean = false,
     val isShowBufferization: Boolean = false,
     val error: String? = null

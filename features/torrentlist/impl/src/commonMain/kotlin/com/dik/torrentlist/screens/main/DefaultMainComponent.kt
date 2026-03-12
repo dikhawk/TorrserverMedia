@@ -14,6 +14,7 @@ import com.dik.common.utils.successResult
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
 import com.dik.themoviedb.TvSeasonsTheMovieDbApi
+import com.dik.torrentlist.data.toServerStatusState
 import com.dik.torrentlist.di.inject
 import com.dik.torrentlist.screens.components.bufferization.BufferizationComponent
 import com.dik.torrentlist.screens.components.bufferization.DefaultBufferizationComponent
@@ -39,8 +40,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -63,14 +67,24 @@ internal class DefaultMainComponent(
     private val navigateToDetails: (torrentHash: String, poster: String) -> Unit
 ) : MainComponent, ComponentContext by context {
 
-    private val _uiState = MutableStateFlow(MainComponentState())
-    override val uiState: StateFlow<MainComponentState> = _uiState.asStateFlow()
-
     private val componentScope = CoroutineScope(dispatchers.defaultDispatcher() + SupervisorJob())
+    private val observeServerStatus = torrserverManager.observeTorrserverStatus()
+        .distinctUntilChanged()
+    private val _uiState = MutableStateFlow(MainComponentState())
+
+    override val uiState: StateFlow<MainComponentState> = combine(
+        _uiState,
+        observeServerStatus
+    ){ state, status ->
+        state.copy(serverStatus = status.toServerStatusState())
+    }.stateIn(
+        scope = componentScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = _uiState.value
+    )
 
     init {
         lifecycle.doOnDestroy { componentScope.cancel() }
-        observeServerStatus()
     }
 
     override val mainAppBarComponent: MainAppBarComponent = DefaultMainAppBarComponent(
@@ -160,14 +174,6 @@ internal class DefaultMainComponent(
                 }
             }
         )
-
-    private fun observeServerStatus() {
-        componentScope.launch {
-            torrserverManager.observeTorrserverStatus().collect { status ->
-                _uiState.update { it.copy(serverStatus = status) }
-            }
-        }
-    }
 
     fun addTorrentAndShowDetails(pathToTorrent: String) {
         componentScope.launch(dispatchers.mainDispatcher()) {

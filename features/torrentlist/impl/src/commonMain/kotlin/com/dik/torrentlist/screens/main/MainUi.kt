@@ -18,12 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.dik.common.utils.platformName
+import com.dik.torrentlist.domain.ServerStatus
 import com.dik.torrentlist.screens.components.bufferization.BufferizationUi
 import com.dik.torrentlist.screens.details.DetailsPaneUi
 import com.dik.torrentlist.screens.main.appbar.MainAppBarUi
 import com.dik.torrentlist.screens.main.list.TorrentListUi
 import com.dik.torrentlist.screens.main.torrserverbar.TorrserverBarUi
-import com.dik.torrserverapi.server.TorrserverStatus
 import com.dik.uikit.utils.currentWindowSizeWidth
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -40,25 +40,24 @@ internal fun MainAdaptiveUi(
         BoxWithConstraints(modifier.padding(paddings).fillMaxSize()) {
             val isMobile = maxWidth < 600.dp
 
-            when {
-                uiState.serverStatus != TorrserverStatus.General.Started -> {
+            when(uiState.serverStatus) {
+                ServerStatus.General.Started -> {
+                    if (isMobile) {
+                        TorrentListUi(
+                            modifier = Modifier.padding(4.dp),
+                            component = component.torrentListComponent,
+                            isMultiPane = false
+                        )
+                    } else {
+                        MainTwoPaneUi(component = component)
+                    }
+                }
+                else -> {
                     TorrserverBarUi(
                         component = component.torrserverBarComponent,
-                        torrserverStatus = uiState.serverStatus,
+                        serverStatus = uiState.serverStatus,
                         modifier = Modifier.align(Alignment.Center)
                     )
-                }
-
-                isMobile -> {
-                    TorrentListUi(
-                        modifier = Modifier.padding(4.dp),
-                        component = component.torrentListComponent,
-                        isMultiPane = false
-                    )
-                }
-
-                else -> {
-                    MainTwoPaneUi(component = component)
                 }
             }
         }
