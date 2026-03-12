@@ -6,7 +6,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.dik.torrserverapi.server.TorrserverStatus
+import com.dik.torrentlist.domain.ServerStatus
+import com.dik.torrentlist.screens.main.appbar.utils.asString
 import com.dik.uikit.widgets.AppButton
 import com.dik.uikit.widgets.AppCircleProgressIndicator
 import com.dik.uikit.widgets.AppLinearProgressIndicator
@@ -22,30 +23,29 @@ import torrservermedia.features.torrentlist.impl.generated.resources.main_torrse
 @Composable
 internal fun TorrserverBarUi(
     component: TorrserverBarComponent,
-    torrserverStatus: TorrserverStatus,
+    serverStatus: ServerStatus,
     modifier: Modifier = Modifier
 ) {
     val uiState by component.uiState.collectAsState()
     Column(modifier = modifier) {
-        when (torrserverStatus) {
-            TorrserverStatus.General.Running -> {
+        when (serverStatus) {
+            ServerStatus.General.Running -> {
                 RunningServer()
             }
 
-            TorrserverStatus.General.Stopped -> {
+            ServerStatus.General.Stopped -> {
                 RestartTorrserver(onClickRestart = { component.onClickStartServer() })
             }
 
-            TorrserverStatus.General.NotInstalled -> {
+            ServerStatus.General.NotInstalled -> {
                 InstallServer(
-                    isShowProgress = uiState.isShowProgress,
-                    progressValue = uiState.progressValue,
+                    installingState = uiState.installingState,
                     onClickInstall = { component.onClickInstallServer() }
                 )
             }
 
             else -> {
-                AppNormalBoldText(torrserverStatus.toString())
+                AppNormalBoldText(serverStatus.toString())
             }
         }
     }
@@ -63,27 +63,29 @@ private fun RunningServer(modifier: Modifier = Modifier) {
 @Composable
 private fun InstallServer(
     modifier: Modifier = Modifier,
-    message: String? = null,
-    progressValue: Float = 0f,
-    isShowProgress: Boolean = false,
+    installingState: InstallingState,
     onClickInstall: () -> Unit
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        if (isShowProgress) {
-            AppNormaBoldlItalicText(text = "$progressValue %")
-            AppLinearProgressIndicator(progress = { progressValue / 100f })
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
+        AppNormalBoldText(text = installingState.asString())
+
+        when(installingState) {
+            is InstallingState.Installing -> {
+                AppNormalVerticalSpacer()
+                AppNormaBoldlItalicText(text = "${installingState.percent} %")
+                AppNormaBoldlItalicText(text = "${installingState.currentBytes}/${installingState.totalBytes}")
+                AppLinearProgressIndicator(progress = { installingState.progress })
+            }
+            InstallingState.NotInstalled -> {
+                AppNormalVerticalSpacer()
+                AppButton(
+                    modifier = modifier,
+                    text = stringResource(Res.string.main_torrserver_bar_button_install_server),
+                    onClick = onClickInstall
+                )
+            }
+            else -> { }
         }
-
-        if (message != null) AppNormalBoldText(text = message)
-
-        AppNormalVerticalSpacer()
-
-        AppButton(
-            modifier = modifier,
-            enabled = !isShowProgress,
-            text = stringResource(Res.string.main_torrserver_bar_button_install_server),
-            onClick = onClickInstall
-        )
     }
 }
 

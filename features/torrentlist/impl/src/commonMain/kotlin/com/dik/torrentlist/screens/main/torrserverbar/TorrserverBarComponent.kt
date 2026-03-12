@@ -16,9 +16,21 @@ internal interface TorrserverBarComponent {
 @Stable
 internal data class TorrserverBarState(
     val serverStatusText: String = "Not initialized",
-    val isShowProgress: Boolean = false,
-    val progressValue: Float = 0.0f,
+    val installingState: InstallingState = InstallingState.NotInstalled,
     val error: String? = null,
-    val isServerStarted: Boolean = true,
-    val isServerInstalled: Boolean = true,
 )
+
+internal sealed interface InstallingState {
+    data object NotInstalled : InstallingState
+    data object Preparing : InstallingState
+    data class Installing(
+        val progress: Float,
+        val percent: String,
+        val currentBytes: String,
+        val totalBytes: String
+    ) : InstallingState
+
+    data object Installed : InstallingState
+    data class Error(val msg: String) : InstallingState
+    data class Unknown(val msg: String) : InstallingState
+}

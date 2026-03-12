@@ -2,6 +2,7 @@ package com.dik.torrentlist.screens.main.torrserverbar
 
 import com.arkivanov.decompose.ComponentContext
 import com.dik.common.AppDispatchers
+import com.dik.common.converter.toReadableSize
 import com.dik.common.i18n.LocalizationResource
 import com.dik.torrserverapi.server.TorrserverManager
 import com.dik.torrserverapi.server.TorrserverStatus
@@ -12,8 +13,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import torrservermedia.features.torrentlist.impl.generated.resources.Res
-import torrservermedia.features.torrentlist.impl.generated.resources.main_torrserver_bar_msg_installing_torrserver
 
 internal class DefaultTorrserverBarComponent(
     context: ComponentContext,
@@ -28,11 +27,12 @@ internal class DefaultTorrserverBarComponent(
 
 
     override fun onClickInstallServer() {
-        _uiState.update { it.copy(isShowProgress = true) }
+        _uiState.update { it.copy(installingState = InstallingState.Preparing) }
         componentScope.launch(dispatchers.defaultDispatcher()) {
             torrserverManager.installOrUpdate().collect { result ->
                 when (result) {
-                    is TorrserverStatus.Install.Progress -> showProgress(result.progress.toFloat())
+                    is TorrserverStatus.Install.Progress ->
+                        showInstallingProgress(result.progress, result.currentBytes, result.totalBytes)
                     is TorrserverStatus.Install.Error -> showError(result.msg)
                     is TorrserverStatus.Install.Installed -> serverInstalled()
                     else -> println("Server status: $result")
@@ -41,22 +41,29 @@ internal class DefaultTorrserverBarComponent(
         }
     }
 
-    private suspend fun showProgress(progress: Float) {
+    private fun showInstallingProgress(
+        progress: Double,
+        currentBytes: Long,
+        totalBytes: Long,
+    ) {
         _uiState.update {
             it.copy(
-                isShowProgress = true,
-                progressValue = progress,
-                serverStatusText = localization.getString(Res.string.main_torrserver_bar_msg_installing_torrserver),
+                installingState = InstallingState.Installing(
+                    progress = progress.toFloat() / 100f,
+                    percent = progress.toString(),
+                    currentBytes.toReadableSize(),
+                    totalBytes.toReadableSize()
+                )
             )
         }
     }
 
     private fun showError(error: String) {
-        _uiState.update { it.copy(isShowProgress = false, error = error) }
+        _uiState.update { it.copy(installingState = InstallingState.Error(error)) }
     }
 
     private suspend fun serverInstalled() {
-        _uiState.update { it.copy(isShowProgress = false, isServerInstalled = true) }
+        _uiState.update { it.copy(installingState = InstallingState.Installed) }
         torrserverManager.start().last()
     }
 
