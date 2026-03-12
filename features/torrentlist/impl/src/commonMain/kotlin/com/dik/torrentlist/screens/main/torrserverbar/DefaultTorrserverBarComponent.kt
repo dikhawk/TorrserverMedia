@@ -25,7 +25,6 @@ internal class DefaultTorrserverBarComponent(
     private val _uiState = MutableStateFlow(TorrserverBarState())
     override val uiState: StateFlow<TorrserverBarState> = _uiState.asStateFlow()
 
-
     override fun onClickInstallServer() {
         _uiState.update { it.copy(installingState = InstallingState.Preparing) }
         componentScope.launch(dispatchers.defaultDispatcher()) {
