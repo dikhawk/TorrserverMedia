@@ -13,11 +13,13 @@ import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
 import com.dik.themoviedb.TvSeasonsTheMovieDbApi
 import com.dik.themoviedb.model.Movie
+import com.dik.torrentlist.domain.ServerStatus
 import com.dik.torrentlist.screens.main.DefaultMainComponent
 import com.dik.torrentlist.screens.main.domain.AddMagnetLinkUseCase
 import com.dik.torrentlist.screens.main.domain.AddTorrentFileUseCase
 import com.dik.torrentlist.screens.main.domain.FindPosterUseCase
 import com.dik.torrentlist.utils.FileUtils
+import com.dik.torrserverapi.TorrserverError
 import com.dik.torrserverapi.model.Torrent
 import com.dik.torrserverapi.server.TorrserverManager
 import com.dik.torrserverapi.server.TorrserverStatus
@@ -28,7 +30,9 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -69,20 +73,33 @@ class DefaultMainComponentTest {
 
     @Test
     fun `On click item for not COMPACT screen then check isShowDetails is true`() = runTest {
-        coEvery { torrentApi.getTorrents() } returns Result.Success(listOf(mockk(relaxed = true)))
+        val torretnsResult: Result<List<Torrent>, TorrserverError> =
+            Result.Success(listOf(mockk(relaxed = true)))
+        coEvery { torrentApi.getTorrents() } returns torretnsResult
+        coEvery { torrentApi.observeTorrents() } returns flowOf(torretnsResult)
         coEvery { torrentApi.getTorrent(any()) } returns Result.Success(mockk(relaxed = true))
+        every { torrserverManager.observeTorrserverStatus() } returns flowOf(TorrserverStatus.General.Started)
 
-        val defaultMainComponent = geDefaultMainComponent()
-        defaultMainComponent.torrentListComponent.onClickItem(mockk(relaxed = true))
-        assertTrue(defaultMainComponent.uiState.value.isShowDetails)
+        val defaultMainComponent = getDefaultMainComponent()
+
+        defaultMainComponent.uiState.test {
+            skipItems(1)
+            defaultMainComponent.torrentListComponent.onClickItem(mockk(relaxed = true))
+            assertTrue(defaultMainComponent.uiState.value.isShowDetails)
+            skipItems(1)
+        }
     }
 
     @Test
     fun `On click item for COMPACT screen then check navigate to details screen`() = runTest {
-        coEvery { torrentApi.getTorrents() } returns Result.Success(listOf(mockk(relaxed = true)))
+        val torretnsResult: Result<List<Torrent>, TorrserverError> =
+            Result.Success(listOf(mockk(relaxed = true)))
+        coEvery { torrentApi.observeTorrents() } returns flowOf(torretnsResult)
+        coEvery { torrentApi.getTorrents() } returns torretnsResult
         coEvery { torrentApi.getTorrent(any()) } returns Result.Success(mockk(relaxed = true))
+        every { torrserverManager.observeTorrserverStatus() } returns flowOf(TorrserverStatus.General.Started)
 
-        val defaultMainComponent = geDefaultMainComponent()
+        val defaultMainComponent = getDefaultMainComponent()
         defaultMainComponent.torrentListComponent.onNavigateToDetails(mockk(relaxed = true))
 
         verify(exactly = 1) { navigateToDetails(any(), any()) }
@@ -90,21 +107,27 @@ class DefaultMainComponentTest {
 
     @Test
     fun `Change server status then check ui state serverStatus after change`() = runTest {
-        coEvery { torrentApi.getTorrents() } returns Result.Success(emptyList())
+        val torretnsResult: Result<List<Torrent>, TorrserverError> = Result.Success(emptyList())
+        val torrserverStatus = MutableStateFlow<TorrserverStatus>(TorrserverStatus.Unknown("Init state"))
+        coEvery { torrentApi.observeTorrents() } returns flowOf(torretnsResult)
+        coEvery { torrentApi.getTorrents() } returns torretnsResult
+        every { torrserverManager.observeTorrserverStatus() } returns torrserverStatus
 
-        val defaultMainComponent = geDefaultMainComponent()
+        val defaultMainComponent = getDefaultMainComponent()
 
         defaultMainComponent.uiState.test {
-            assertEquals(TorrserverStatus.Unknown("Init state"), awaitItem().serverStatus)
-            torrServerStatusFlow.emit(TorrserverStatus.General.Running)
-            assertEquals(TorrserverStatus.General.Running, awaitItem().serverStatus)
+            assertEquals(ServerStatus.Unknown("Init state"), awaitItem().serverStatus)
+            torrserverStatus.emit(TorrserverStatus.General.Running)
+            assertEquals(ServerStatus.General.Running, awaitItem().serverStatus)
             lifecycle.destroy()
         }
     }
 
     @Test
     fun `On click play file then check bufferization is visible`() = runTest {
-        coEvery { torrentApi.getTorrents() } returns Result.Success(emptyList())
+        val torretnsResult: Result<List<Torrent>, TorrserverError> = Result.Success(emptyList())
+        coEvery { torrentApi.observeTorrents() } returns flowOf(torretnsResult)
+        coEvery { torrentApi.getTorrents() } returns torretnsResult
         coEvery { torrentApi.getTorrent(any()) } returns Result.Success(mockk(relaxed = true))
         coEvery {
             searchingTmdb.multiSearching(query = any(), language = AppLanguage.RUSSIAN.iso)
@@ -112,7 +135,8 @@ class DefaultMainComponentTest {
         coEvery { torrentApi.preloadTorrent(any(), any()) } coAnswers {
             Result.Success(Unit)
         }
-        val defaultMainComponent = geDefaultMainComponent()
+        every { torrserverManager.observeTorrserverStatus() } returns flowOf(TorrserverStatus.General.Started)
+        val defaultMainComponent = getDefaultMainComponent()
 
         defaultMainComponent.uiState.test {
             assertFalse(awaitItem().isShowBufferization)
@@ -125,22 +149,27 @@ class DefaultMainComponentTest {
 
     @Test
     fun `Add torrent and show details then check isShowDetails is true`() = runTest {
-        coEvery { torrentApi.getTorrents() } returns Result.Success(emptyList())
-        coEvery { addTorrentFileUseCase.invoke(any()) } answers {
+        val torretnsResult: Result<List<Torrent>, TorrserverError> = Result.Success(emptyList())
+        val torrserverStatus = MutableStateFlow<TorrserverStatus>(TorrserverStatus.General.Started)
+
+        every { torrserverManager.observeTorrserverStatus() } returns torrserverStatus
+        every { torrentApi.observeTorrents() } returns flowOf(torretnsResult)
+        coEvery { torrentApi.getTorrents() } returns torretnsResult
+        coEvery { addTorrentFileUseCase.invoke(any()) } coAnswers {
             Result.Success(mockk<Torrent>(relaxed = true))
         }
-        coEvery { torrentApi.getTorrent(any()) } returns Result.Success(mockk(relaxed = true))
+        coEvery { torrentApi.getTorrent(any()) } coAnswers { Result.Success(mockk(relaxed = true)) }
 
-        val defaultMainComponent = geDefaultMainComponent()
-        torrServerStatusFlow.emit(TorrserverStatus.General.Started)
-        defaultMainComponent.addTorrentAndShowDetails("path_to_torrent_file")
+        val defaultMainComponent = getDefaultMainComponent()
 
         defaultMainComponent.uiState.test {
+            assertTrue(awaitItem().serverStatus is ServerStatus.General.Started)
+            defaultMainComponent.addTorrentAndShowDetails("path_to_torrent_file")
             assertTrue(awaitItem().isShowDetails)
         }
     }
 
-    private fun geDefaultMainComponent() = DefaultMainComponent(
+    private fun getDefaultMainComponent() = DefaultMainComponent(
         context = DefaultComponentContext(lifecycle = lifecycle),
         torrentApi = torrentApi,
         dispatchers = dispatchers,
