@@ -14,8 +14,9 @@ import com.dik.common.utils.successResult
 import com.dik.themoviedb.SearchTheMovieDbApi
 import com.dik.themoviedb.TvEpisodesTheMovieDbApi
 import com.dik.themoviedb.TvSeasonsTheMovieDbApi
-import com.dik.torrentlist.data.toServerStatusState
+import com.dik.torrentlist.data.toServerStatus
 import com.dik.torrentlist.di.inject
+import com.dik.torrentlist.domain.ServerStatus
 import com.dik.torrentlist.screens.components.bufferization.BufferizationComponent
 import com.dik.torrentlist.screens.components.bufferization.DefaultBufferizationComponent
 import com.dik.torrentlist.screens.details.DefaultDetailsComponent
@@ -76,7 +77,7 @@ internal class DefaultMainComponent(
         _uiState,
         observeServerStatus
     ){ state, status ->
-        state.copy(serverStatus = status.toServerStatusState())
+        state.copy(serverStatus = status.toServerStatus())
     }.stateIn(
         scope = componentScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -180,7 +181,7 @@ internal class DefaultMainComponent(
             suspend {
                 addTorrentFileUseCase.invoke(pathToTorrent)
             }.repeatIf(maxTries = 15) {
-                _uiState.value.serverStatus != TorrserverStatus.General.Started
+                uiState.value.serverStatus != ServerStatus.General.Started
             }?.onSuccess { torrent ->
                 showDetails(torrent.toTorrentUiState())
             }?.onError { error ->
