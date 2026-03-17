@@ -4,8 +4,10 @@ import com.dik.common.AppDispatchers
 import com.dik.common.Result
 import com.dik.common.cmd.CommandExecutor
 import com.dik.torrserverapi.TorrserverError
+import com.dik.torrserverapi.domain.SystemProcessProvider
 import com.dik.torrserverapi.model.TorrserverServiceManager
 import io.ktor.utils.io.CancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.io.File
 
@@ -13,7 +15,8 @@ internal class TorrserverRunnerAndroid(
     private val config: ServerConfig,
     private val dispatcher: AppDispatchers,
     private val commandExecutor: CommandExecutor,
-    private val serviceManager: TorrserverServiceManager
+    private val serviceManager: TorrserverServiceManager,
+    private val systemProcessProvider: SystemProcessProvider,
 ) : TorrserverRunner {
 
     override suspend fun run(): Result<Unit, TorrserverError> =
@@ -36,10 +39,17 @@ internal class TorrserverRunnerAndroid(
 
                 val torrServer = File(config.pathToServerFile)
                 val makeExecutableCommand = "chmod +x '${torrServer.absolutePath}'"
-                val startServerCommand = "cd '${torrServer.parent}' && ./${torrServer.name} -k"
+                val startServerCommand = "cd '${torrServer.parent}' && ./${torrServer.name} -k > /dev/null 2>&1 &"
 
                 commandExecutor.run("$makeExecutableCommand && $startServerCommand")
-                return@withContext Result.Success(Unit)
+
+                delay(500)
+
+                if (systemProcessProvider.isProcessRunning(ServerConfig.FILE_NAME_SERVER)) {
+                    return@withContext Result.Success(Unit)
+                } else {
+                    return@withContext Result.Error(TorrserverError.Server.NotStarted)
+                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
