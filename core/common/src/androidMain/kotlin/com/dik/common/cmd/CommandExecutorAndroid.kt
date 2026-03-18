@@ -4,19 +4,14 @@ import com.topjohnwu.superuser.Shell
 
 internal class CommandExecutorAndroid : CommandExecutor {
 
-    private val shellJob: Shell.Job by lazy {
-        Shell.Builder.create()
-            .setFlags(Shell.FLAG_NON_ROOT_SHELL)
-            .build()
-            .newJob()
-    }
-
     override fun run(command: String) {
-        shellJob.add(command).enqueue()
+        Shell.cmd(command).exec()
     }
 
     override fun runAndWaitResult(command: String): String {
-        TODO("Not yet implemented")
+        val result = Shell.cmd(command).exec()
+
+        return result.out.joinToString(" ")
     }
 
     override fun stopRunedProcesses() {
