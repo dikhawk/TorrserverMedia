@@ -140,7 +140,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
                 header = stringResource(Res.string.main_settings_cache_size_header),
                 hint = "${uiState.cacheSize} " +
                         stringResource(Res.string.main_settings_cache_size_hint),
-                value = uiState.cacheSize.toString(),
+                value = uiState.cacheSize,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeCacheSize(it) }
             )
@@ -149,7 +149,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
                 header = stringResource(Res.string.main_settings_reader_read_a_head_header),
                 hint = "${uiState.readerReadAHead} " +
                         stringResource(Res.string.main_settings_reader_read_a_head_hint),
-                value = uiState.readerReadAHead.toString(),
+                value = uiState.readerReadAHead,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeReaderReadAHead(it) }
             )
@@ -158,7 +158,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
                 header = stringResource(Res.string.main_settings_preload_cache_header),
                 hint = "${uiState.preloadCache} " +
                         stringResource(Res.string.main_settings_preload_cache_hint),
-                value = uiState.preloadCache.toString(),
+                value = uiState.preloadCache,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangePreloadCache(it) }
             )
@@ -202,7 +202,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
                 header = stringResource(Res.string.main_settings_timeout_connection_header),
                 hint = "${uiState.timeoutConnection} " +
                         stringResource(Res.string.main_settings_timeout_connection_hint),
-                value = uiState.timeoutConnection.toString(),
+                value = uiState.timeoutConnection,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeTimeoutConnection(it) }
             )
@@ -211,7 +211,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
                 header = stringResource(Res.string.main_settings_torrent_connections_header),
                 hint = "${uiState.torrentConnections}, " +
                         stringResource(Res.string.main_settings_torrent_connections_hint),
-                value = uiState.torrentConnections.toString(),
+                value = uiState.torrentConnections,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeTorrentConnections(it) }
             )
@@ -227,7 +227,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
                 header = stringResource(Res.string.main_settings_limit_speed_download_header),
                 hint = "${uiState.limitSpeedDownload} " +
                         stringResource(Res.string.main_settings_limit_speed_download_hint),
-                value = uiState.limitSpeedDownload.toString(),
+                value = uiState.limitSpeedDownload,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeLimitSpeedDownload(it) }
             )
@@ -243,7 +243,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
                 header = stringResource(Res.string.main_settings_limit_speed_distribution_header),
                 hint = "${uiState.limitSpeedDistribution} " +
                         stringResource(Res.string.main_settings_limit_speed_distribution_hint),
-                value = uiState.limitSpeedDistribution.toString(),
+                value = uiState.limitSpeedDistribution,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeLimitSpeedDistribution(it) }
             )
@@ -252,7 +252,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
                 header = stringResource(Res.string.main_settings_port_incoming_connection_header),
                 hint = "${uiState.incomingConnection} " +
                         stringResource(Res.string.main_settings_port_incoming_connection_hint),
-                value = uiState.incomingConnection.toString(),
+                value = uiState.incomingConnection,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeIncomingConnection(it) }
             )
