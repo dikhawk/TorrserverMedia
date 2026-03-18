@@ -2,6 +2,8 @@ package com.dik.torrserverapi.di
 
 import com.dik.common.Platform
 import com.dik.common.utils.platformName
+import com.dik.torrserverapi.data.SystemProcessProviderLinux
+import com.dik.torrserverapi.data.SystemProcessProviderWindows
 import com.dik.torrserverapi.server.ServerConfig
 import com.dik.torrserverapi.server.ServerConfigLinux
 import com.dik.torrserverapi.server.ServerConfigMac
@@ -22,8 +24,15 @@ internal actual fun platformModule() = module {
     }
     factory<TorrserverRunner> {
         when (platformName()) {
-            Platform.LINUX -> TorrserverRunnerLinux(get(), get(), get())
-            Platform.WINDOWS -> TorrserverRunnerWindows(get(), get(), get())
+            Platform.LINUX -> TorrserverRunnerLinux(get(), get(), get(), get())
+            Platform.WINDOWS -> TorrserverRunnerWindows(get(), get(), get(), get())
+            else -> throw UnsupportedOperationException("Platform not supported ${platformName()}")
+        }
+    }
+    factory {
+        when (platformName()) {
+            Platform.LINUX -> SystemProcessProviderLinux(get())
+            Platform.WINDOWS -> SystemProcessProviderWindows(get())
             else -> throw UnsupportedOperationException("Platform not supported ${platformName()}")
         }
     }

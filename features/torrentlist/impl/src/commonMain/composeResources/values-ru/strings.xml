@@ -43,4 +43,8 @@
     <string name="main_error_msg_poster_not_found">Постер не найден</string>
     <string name="main_error_msg_title_is_empty">Пустой заголовок</string>
     <string name="main_torrserver_bar_msg_server_preparing">Подготовка к установке</string>
+    <string name="main_torrserver_bar_button_reinstall">Переустановить TorrServer</string>
+    <string name="main_torrserver_bar_or">или</string>
+    <string name="main_torrserver_bar_msg_server_reinstall">Переустановка</string>
+    <string name="main_torrserver_bar_error">Ошибка: </string>
 </resources>

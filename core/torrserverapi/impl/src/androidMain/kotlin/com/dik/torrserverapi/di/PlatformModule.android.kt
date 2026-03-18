@@ -1,5 +1,7 @@
 package com.dik.torrserverapi.di
 
+import com.dik.torrserverapi.SystemProcessProviderAndroid
+import com.dik.torrserverapi.domain.SystemProcessProvider
 import com.dik.torrserverapi.model.TorrserverServiceManager
 import com.dik.torrserverapi.server.ServerConfig
 import com.dik.torrserverapi.server.ServerConfigAndroid
@@ -14,4 +16,5 @@ internal actual fun platformModule() = module {
     factoryOf(::TorrserverServiceManagerImpl).bind<TorrserverServiceManager>()
     factoryOf(::TorrserverRunnerAndroid).bind<TorrserverRunner>()
     factoryOf(::ServerConfigAndroid).bind<ServerConfig>()
+    factoryOf(::SystemProcessProviderAndroid).bind<SystemProcessProvider>()
 }
