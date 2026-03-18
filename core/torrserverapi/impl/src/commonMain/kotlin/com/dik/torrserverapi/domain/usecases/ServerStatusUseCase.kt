@@ -19,20 +19,20 @@ internal class ServerStatusUseCase(
 ) {
 
     operator fun invoke(): Flow<TorrserverStatus> = flow {
-        emit(TorrserverStatus.General.Stopped)
+        var isInstalled = fileManager.exists(config.pathToServerFile)
 
-        var isInstalled = false
-
+        //Repeat if server not installed
         while (!isInstalled) {
             isInstalled = fileManager.exists(config.pathToServerFile)
             emit(TorrserverStatus.General.NotInstalled)
             delay(300)
         }
 
-        var isServerStarted = false
+        var isServerStarted = systemProcessProvider.isProcessRunning(config.torrServerFileName)
         var repeatServerStarted = 0
         val maxRepeatServerStarted = 5
 
+        //Repeat if server not started
         while (!isServerStarted) {
             isServerStarted = systemProcessProvider.isProcessRunning(config.torrServerFileName)
             if (repeatServerStarted <= maxRepeatServerStarted) {
