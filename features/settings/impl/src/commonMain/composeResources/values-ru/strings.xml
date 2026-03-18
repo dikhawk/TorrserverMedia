@@ -41,10 +41,12 @@
     <string name="main_settings_dialog_button_ok">Ок</string>
     <string name="main_settings_dialog_default_settings_title">Установить настройки сервера по умолчанию?</string>
     <string name="main_settings_snackbar_default_settings">Настройки сервера по умолчанию применены</string>
-    <string name="main_settings_available_new_version">Доступна новая версия. Обновить?</string>
+    <string name="main_settings_available_new_version">Доступна новая версия</string>
     <string name="main_settings_available_new_version_update_success">Сервер обновлен</string>
     <string name="main_settings_available_new_version_update_error">Сервер не удалось обновить</string>
     <string name="main_settings_available_new_version_update_loading">Загрузка обновления: %s %$</string>
     <string name="main_settings_language_header">Язык</string>
     <string name="main_settings_snackbar_not_available_now">Эта функция недоступна сейчас</string>
+    <string name="main_settings_btn_update_torrserver">Обновить</string>
+    <string name="main_settings_update_preparing">Подготовка к обновлению</string>
 </resources>

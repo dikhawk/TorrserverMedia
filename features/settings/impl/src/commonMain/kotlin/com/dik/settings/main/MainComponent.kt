@@ -36,17 +36,15 @@ internal interface MainComponent {
     fun onChangePreloadCache(value: String)
     fun onChangeDefaultPlayer(value: Player)
     fun onChangeLanguage(value: AppLanguage)
-    fun loadSettings()
     fun showProgressBar()
     fun hideProgressBar()
 }
 
 @Stable
 internal data class MainState(
+    val isLoadedData: Boolean = false,
     val isShowProgressBar: Boolean = false,
-    val isAvailableNewVersion: Boolean = false,
-    val availableNewVersionText: String = "",
-    val isShowAvailableNewVersionProgress: Boolean = false,
+    val serverVersionState: ServerVersionState = ServerVersionState.Unknown,
     val operationSystem: String = "",
     val language: AppLanguage = AppLanguage.ENGLISH,
     val languages: List<AppLanguage> = AppLanguage.entries,
@@ -76,4 +74,20 @@ internal data class MainState(
 
 internal sealed interface MainAction {
     data object DefaultSettingsDialog : MainAction
+}
+
+internal sealed interface ServerVersionState {
+    data class AvailableNewVersion(val msg: String) : ServerVersionState
+    data object VersionIsActual : ServerVersionState
+    data object PreparingUpdate : ServerVersionState
+    data object CheckingNewVersion : ServerVersionState
+
+    data class ProgressUpdating(
+        val progress: Float,
+        val currentBytes: String,
+        val totalBytes: String
+    ) : ServerVersionState
+    data object UpdateSuccess : ServerVersionState
+    data class Error(val message: String) : ServerVersionState
+    data object Unknown : ServerVersionState
 }

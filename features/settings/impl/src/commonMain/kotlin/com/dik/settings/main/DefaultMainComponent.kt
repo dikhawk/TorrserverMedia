@@ -26,17 +26,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import torrservermedia.features.settings.impl.generated.resources.Res
-import torrservermedia.features.settings.impl.generated.resources.main_settings_available_new_version
-import torrservermedia.features.settings.impl.generated.resources.main_settings_available_new_version_update_error
-import torrservermedia.features.settings.impl.generated.resources.main_settings_available_new_version_update_loading
-import torrservermedia.features.settings.impl.generated.resources.main_settings_available_new_version_update_success
 import torrservermedia.features.settings.impl.generated.resources.main_settings_snackbar_default_settings
 import torrservermedia.features.settings.impl.generated.resources.main_settings_snackbar_not_available_now
 import torrservermedia.features.settings.impl.generated.resources.main_settings_snackbar_save
@@ -55,7 +54,16 @@ internal class DefaultMainComponent(
     private val componentScope = CoroutineScope(dispatchers.mainDispatcher() + SupervisorJob())
 
     private val _uiState = MutableStateFlow(MainState())
-    override val uiState: StateFlow<MainState> = _uiState.asStateFlow()
+    override val uiState: StateFlow<MainState> = _uiState.asStateFlow().onStart {
+        if (!_uiState.value.isLoadedData) {
+            loadSettings()
+        }
+        checkUpdates()
+    }.stateIn(
+        scope = componentScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = _uiState.value
+    )
 
     init {
         lifecycle.doOnDestroy { componentScope.cancel() }
@@ -66,58 +74,17 @@ internal class DefaultMainComponent(
     }
 
     override fun onClickUpdateTorrserver() {
-        _uiState.update { it.copy(isShowAvailableNewVersionProgress = true) }
+        _uiState.update { it.copy(serverVersionState = ServerVersionState.PreparingUpdate) }
         componentScope.launch {
             torrserverManager.installOrUpdate()
                 .distinctUntilChanged()
                 .collect { result ->
-                    when (result) {
-                        is TorrserverStatus.Install.Error -> updateError()
+                    _uiState.update { it.copy(serverVersionState = result.toServerVersionState()) }
 
-                        is TorrserverStatus.Install.Progress -> updateProgress(
-                            result.progress,
-                            result.currentBytes,
-                            result.totalBytes
-                        )
-
-                        is TorrserverStatus.Install.Installed -> updateSuccess()
-                        else -> {
-                            println("Install server: $result")
-                        }
+                    if (result is TorrserverStatus.Install.Installed) {
+                        restartTorrserver()
                     }
                 }
-        }
-    }
-
-    private suspend fun updateSuccess() {
-        restartTorrserver()
-        _uiState.update {
-            it.copy(
-                availableNewVersionText = localization
-                    .getString(Res.string.main_settings_available_new_version_update_success),
-                isAvailableNewVersion = false,
-                isShowAvailableNewVersionProgress = false
-            )
-        }
-    }
-
-    private suspend fun updateProgress(progress: Double, currentBytes: Long, totalBytes: Long) {
-        _uiState.update {
-            it.copy(
-                availableNewVersionText = localization
-                    .getString(Res.string.main_settings_available_new_version_update_loading)
-                    .format(progress.toString())
-            )
-        }
-    }
-
-    private suspend fun updateError() {
-        _uiState.update {
-            it.copy(
-                availableNewVersionText = localization
-                    .getString(Res.string.main_settings_available_new_version_update_error),
-                isShowAvailableNewVersionProgress = false
-            )
         }
     }
 
@@ -311,7 +278,7 @@ internal class DefaultMainComponent(
         }
     }
 
-    override fun loadSettings() {
+    private fun loadSettings() {
         showProgressBar()
 
         componentScope.launch {
@@ -320,8 +287,6 @@ internal class DefaultMainComponent(
             }.onError { error ->
                 showError(error.toString())
             }
-
-            checkUpdates()
             hideProgressBar()
         }
     }
@@ -336,10 +301,12 @@ internal class DefaultMainComponent(
 
     private suspend fun checkUpdates() {
         torrserverManager.checkNewVersion().collect { status ->
-            when (status) {
+            _uiState.update { it.copy(serverVersionState = status.toServerVersionState()) }
+/*            when (status) {
                 is TorrserverStatus.CheckLatestVersion.AvailableNewVersion -> {
                     _uiState.update {
                         it.copy(
+                            serverVersionState = ServerVersionState.AvailableNewVersion(status.msg),
                             availableNewVersionText = localization.getString(Res.string.main_settings_available_new_version),
                             isAvailableNewVersion = true
                         )
@@ -355,7 +322,7 @@ internal class DefaultMainComponent(
                 }
 
                 else -> println("Status: $status")
-            }
+            }*/
         }
     }
 
@@ -365,6 +332,7 @@ internal class DefaultMainComponent(
 
         _uiState.update {
             it.copy(
+                isLoadedData = true,
                 operationSystem = "${platform.osname} $cpu",
                 player = appSettings.defaultPlayer,
                 language = appSettings.language,

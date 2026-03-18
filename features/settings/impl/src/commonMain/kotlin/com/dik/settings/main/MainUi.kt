@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,23 +21,31 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dik.settings.widgets.ConfirmDialog
 import com.dik.settings.widgets.DropDownListItem
 import com.dik.settings.widgets.SwitchItem
 import com.dik.settings.widgets.TextFieldItem
+import com.dik.uikit.theme.AppTheme
+import com.dik.uikit.widgets.AppCircleProgressIndicator
 import com.dik.uikit.widgets.AppIconButtonArrowBack
+import com.dik.uikit.widgets.AppLinearProgressIndicator
 import com.dik.uikit.widgets.AppNormalText
+import com.dik.uikit.widgets.AppTextButton
 import com.dik.uikit.widgets.AppTopBar
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import torrservermedia.features.settings.impl.generated.resources.Res
 import torrservermedia.features.settings.impl.generated.resources.ic_save_24
 import torrservermedia.features.settings.impl.generated.resources.main_app_bar_title
+import torrservermedia.features.settings.impl.generated.resources.main_settings_available_new_version
+import torrservermedia.features.settings.impl.generated.resources.main_settings_btn_update_torrserver
 import torrservermedia.features.settings.impl.generated.resources.main_settings_cache_size_header
 import torrservermedia.features.settings.impl.generated.resources.main_settings_cache_size_hint
 import torrservermedia.features.settings.impl.generated.resources.main_settings_default_player_header
@@ -73,11 +82,12 @@ import torrservermedia.features.settings.impl.generated.resources.main_settings_
 import torrservermedia.features.settings.impl.generated.resources.main_settings_timeout_connection_hint
 import torrservermedia.features.settings.impl.generated.resources.main_settings_torrent_connections_header
 import torrservermedia.features.settings.impl.generated.resources.main_settings_torrent_connections_hint
+import torrservermedia.features.settings.impl.generated.resources.main_settings_update_preparing
 import torrservermedia.features.settings.impl.generated.resources.main_settings_upnp_header
 
 @Composable
 internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
-    val uiState = component.uiState.collectAsState()
+    val uiState by component.uiState.collectAsState()
     val scrollstate = rememberScrollState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -89,7 +99,7 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
                 navigationIcon = { AppIconButtonArrowBack { component.onClickBack() } },
                 title = stringResource(Res.string.main_app_bar_title),
                 actions = {
-                    if (uiState.value.isShowProgressBar) {
+                    if (uiState.isShowProgressBar) {
                         CircularProgressIndicator(modifier = modifier.height(24.dp).width(24.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                     } else {
@@ -108,59 +118,49 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth().padding(paddings).padding(8.dp)
                 .verticalScroll(scrollstate)
         ) {
-            if (uiState.value.isAvailableNewVersion) {
-                Column(
-                    modifier = modifier.fillMaxWidth()
-                        .then(if (!uiState.value.isShowAvailableNewVersionProgress)
-                            modifier.clickable { component.onClickUpdateTorrserver() } else modifier)
-                        .padding(8.dp),
-                ) {
-                    Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
-                        AppNormalText(text = uiState.value.availableNewVersionText)
-                        Spacer(modifier = Modifier.weight(1f))
-                        if (uiState.value.isShowAvailableNewVersionProgress)
-                            CircularProgressIndicator()
-                    }
-                }
-            }
+            ServerVersion(
+                modifier = Modifier.padding(8.dp),
+                state = uiState.serverVersionState,
+                onClickUpdate = { component.onClickUpdateTorrserver() }
+            )
 
             DropDownListItem(
                 header = stringResource(Res.string.main_settings_language_header),
-                selectedItem = uiState.value.language,
-                items = uiState.value.languages,
+                selectedItem = uiState.language,
+                items = uiState.languages,
                 title = { it.title },
                 onClickItem = { component.onChangeLanguage(it) })
 
             DropDownListItem(
                 header = stringResource(Res.string.main_settings_default_player_header),
-                selectedItem = uiState.value.player,
-                items = uiState.value.playersList,
+                selectedItem = uiState.player,
+                items = uiState.playersList,
                 title = { it.title },
                 onClickItem = { component.onChangeDefaultPlayer(it) })
 
             TextFieldItem(
                 header = stringResource(Res.string.main_settings_cache_size_header),
-                hint = "${uiState.value.cacheSize} " +
+                hint = "${uiState.cacheSize} " +
                         stringResource(Res.string.main_settings_cache_size_hint),
-                value = uiState.value.cacheSize.toString(),
+                value = uiState.cacheSize.toString(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeCacheSize(it) }
             )
 
             TextFieldItem(
                 header = stringResource(Res.string.main_settings_reader_read_a_head_header),
-                hint = "${uiState.value.readerReadAHead} " +
+                hint = "${uiState.readerReadAHead} " +
                         stringResource(Res.string.main_settings_reader_read_a_head_hint),
-                value = uiState.value.readerReadAHead.toString(),
+                value = uiState.readerReadAHead.toString(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeReaderReadAHead(it) }
             )
 
             TextFieldItem(
                 header = stringResource(Res.string.main_settings_preload_cache_header),
-                hint = "${uiState.value.preloadCache} " +
+                hint = "${uiState.preloadCache} " +
                         stringResource(Res.string.main_settings_preload_cache_hint),
-                value = uiState.value.preloadCache.toString(),
+                value = uiState.preloadCache.toString(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangePreloadCache(it) }
             )
@@ -168,52 +168,52 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
             SwitchItem(
                 header = stringResource(Res.string.main_settings_ipv6_header),
                 hint = stringResource(Res.string.main_settings_ipv6_hint),
-                checked = uiState.value.ipv6,
+                checked = uiState.ipv6,
                 onCheckedChange = { component.onChangeIpv6(it) }
             )
 
             SwitchItem(
                 header = stringResource(Res.string.main_settings_tcp_header),
                 hint = stringResource(Res.string.main_settings_tcp_hint),
-                checked = uiState.value.tcp,
+                checked = uiState.tcp,
                 onCheckedChange = { component.onChangeTcp(it) }
             )
 
             SwitchItem(
                 header = stringResource(Res.string.main_settings_mtp_header),
                 hint = stringResource(Res.string.main_settings_mtp_hint),
-                checked = uiState.value.mtp,
+                checked = uiState.mtp,
                 onCheckedChange = { component.onChangeMtp(it) }
             )
 
             SwitchItem(
                 header = stringResource(Res.string.main_settings_pex_header),
                 hint = stringResource(Res.string.main_settings_pex_hint),
-                checked = uiState.value.pex,
+                checked = uiState.pex,
                 onCheckedChange = { component.onChangePex(it) }
             )
 
             SwitchItem(
                 header = stringResource(Res.string.main_settings_encryption_header),
                 hint = stringResource(Res.string.main_settings_encryption_hint),
-                checked = uiState.value.encryptionHeader,
+                checked = uiState.encryptionHeader,
                 onCheckedChange = { component.onChangeEncryptionHeader(it) }
             )
 
             TextFieldItem(
                 header = stringResource(Res.string.main_settings_timeout_connection_header),
-                hint = "${uiState.value.timeoutConnection} " +
+                hint = "${uiState.timeoutConnection} " +
                         stringResource(Res.string.main_settings_timeout_connection_hint),
-                value = uiState.value.timeoutConnection.toString(),
+                value = uiState.timeoutConnection.toString(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeTimeoutConnection(it) }
             )
 
             TextFieldItem(
                 header = stringResource(Res.string.main_settings_torrent_connections_header),
-                hint = "${uiState.value.torrentConnections}, " +
+                hint = "${uiState.torrentConnections}, " +
                         stringResource(Res.string.main_settings_torrent_connections_hint),
-                value = uiState.value.torrentConnections.toString(),
+                value = uiState.torrentConnections.toString(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeTorrentConnections(it) }
             )
@@ -221,15 +221,15 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
             SwitchItem(
                 header = stringResource(Res.string.main_settings_dht_header),
                 hint = stringResource(Res.string.main_settings_dht_hint),
-                checked = uiState.value.dht,
+                checked = uiState.dht,
                 onCheckedChange = { component.onChangeDht(it) }
             )
 
             TextFieldItem(
                 header = stringResource(Res.string.main_settings_limit_speed_download_header),
-                hint = "${uiState.value.limitSpeedDownload} " +
+                hint = "${uiState.limitSpeedDownload} " +
                         stringResource(Res.string.main_settings_limit_speed_download_hint),
-                value = uiState.value.limitSpeedDownload.toString(),
+                value = uiState.limitSpeedDownload.toString(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeLimitSpeedDownload(it) }
             )
@@ -237,44 +237,44 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
             SwitchItem(
                 header = stringResource(Res.string.main_settings_distribution_header),
                 hint = stringResource(Res.string.main_settings_distribution_hint),
-                checked = uiState.value.distribution,
+                checked = uiState.distribution,
                 onCheckedChange = { component.onChangeDistribution(it) }
             )
 
             TextFieldItem(
                 header = stringResource(Res.string.main_settings_limit_speed_distribution_header),
-                hint = "${uiState.value.limitSpeedDistribution} " +
+                hint = "${uiState.limitSpeedDistribution} " +
                         stringResource(Res.string.main_settings_limit_speed_distribution_hint),
-                value = uiState.value.limitSpeedDistribution.toString(),
+                value = uiState.limitSpeedDistribution.toString(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeLimitSpeedDistribution(it) }
             )
 
             TextFieldItem(
                 header = stringResource(Res.string.main_settings_port_incoming_connection_header),
-                hint = "${uiState.value.incomingConnection} " +
+                hint = "${uiState.incomingConnection} " +
                         stringResource(Res.string.main_settings_port_incoming_connection_hint),
-                value = uiState.value.incomingConnection.toString(),
+                value = uiState.incomingConnection.toString(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { component.onChangeIncomingConnection(it) }
             )
 
             SwitchItem(
                 header = stringResource(Res.string.main_settings_upnp_header),
-                checked = uiState.value.upnp,
+                checked = uiState.upnp,
                 onCheckedChange = { component.onChangeUpnp(it) }
             )
 
             SwitchItem(
                 header = stringResource(Res.string.main_settings_dlna_header),
-                checked = uiState.value.dlna,
+                checked = uiState.dlna,
                 onCheckedChange = { component.onChangeDlna(it) }
             )
 
             TextFieldItem(
                 header = stringResource(Res.string.main_settings_dlna_name_header),
-                hint = uiState.value.dlnaName,
-                value = uiState.value.dlnaName,
+                hint = uiState.dlnaName,
+                value = uiState.dlnaName,
                 onValueChange = { component.onChangeDlnaName(it) }
             )
 
@@ -286,12 +286,12 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
             }
 
             Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-                AppNormalText(uiState.value.operationSystem)
+                AppNormalText(uiState.operationSystem)
             }
         }
     }
 
-    if (uiState.value.action == MainAction.DefaultSettingsDialog) {
+    if (uiState.action == MainAction.DefaultSettingsDialog) {
         ConfirmDialog(
             message = stringResource(Res.string.main_settings_dialog_default_settings_title),
             onDismissRequest = { component.dismissAction() },
@@ -303,16 +303,64 @@ internal fun MainUi(component: MainComponent, modifier: Modifier = Modifier) {
         )
     }
 
-    LaunchedEffect(Unit) {
-        component.loadSettings()
-    }
-
-    LaunchedEffect(uiState.value.snackbar) {
-        val message = uiState.value.snackbar
+    LaunchedEffect(uiState.snackbar) {
+        val message = uiState.snackbar
 
         if (!message.isNullOrEmpty()) {
             snackbarHostState.showSnackbar(message = message)
             component.dismissSnackbar()
         }
+    }
+}
+
+@Composable
+private fun ServerVersion(
+    state: ServerVersionState,
+    onClickUpdate: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    when (state) {
+        is ServerVersionState.AvailableNewVersion -> {
+            Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+                AppNormalText(text = stringResource(Res.string.main_settings_available_new_version) + " ${state.msg}")
+                Spacer(modifier = Modifier.width(8.dp))
+                AppTextButton(
+                    text = stringResource(Res.string.main_settings_btn_update_torrserver),
+                    onClick = onClickUpdate
+                )
+            }
+        }
+
+        is ServerVersionState.ProgressUpdating -> {
+            Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                AppLinearProgressIndicator(
+                    modifier = Modifier.weight(1f),
+                    progress = { state.progress }
+                )
+                Spacer(modifier.padding(8.dp))
+                AppNormalText("${state.currentBytes}/${state.totalBytes}")
+            }
+        }
+
+        is ServerVersionState.PreparingUpdate -> {
+            Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                AppCircleProgressIndicator(modifier = Modifier.size(16.dp))
+                Spacer(modifier.padding(8.dp))
+                AppNormalText(stringResource(Res.string.main_settings_update_preparing))
+            }
+        }
+
+        else -> {  }
+    }
+}
+
+@Preview
+@Composable
+private fun ServerVersionPreview() {
+    AppTheme {
+        ServerVersion(
+            state = ServerVersionState.ProgressUpdating(0.8f, "13 Mb", "70 Mb"),
+            onClickUpdate = {}
+        )
     }
 }

@@ -29,6 +29,8 @@ internal class CheckNewVersionUseCase(
             } else {
                 emit(TorrserverStatus.CheckLatestVersion.VersionIsActual)
             }
+        } else {
+            emit(TorrserverStatus.CheckLatestVersion.Error("Unexpected error"))
         }
     }
 }

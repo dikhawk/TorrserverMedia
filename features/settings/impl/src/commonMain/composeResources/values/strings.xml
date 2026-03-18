@@ -41,10 +41,12 @@
     <string name="main_settings_dialog_button_ok">OK</string>
     <string name="main_settings_dialog_default_settings_title">Apply default server settings?</string>
     <string name="main_settings_snackbar_default_settings">Default server settings applied</string>
-    <string name="main_settings_available_new_version">A new version is available. Update?</string>
+    <string name="main_settings_available_new_version">A new version is available</string>
     <string name="main_settings_available_new_version_update_success">Server updated</string>
     <string name="main_settings_available_new_version_update_error">Failed to update the server</string>
     <string name="main_settings_available_new_version_update_loading">Downloading update: %s %%</string>
     <string name="main_settings_language_header">Language</string>
     <string name="main_settings_snackbar_not_available_now">Not available now</string>
+    <string name="main_settings_btn_update_torrserver">Update</string>
+    <string name="main_settings_update_preparing">Preparing to update</string>
 </resources>
