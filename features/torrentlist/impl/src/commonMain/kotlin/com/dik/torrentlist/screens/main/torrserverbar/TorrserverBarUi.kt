@@ -50,7 +50,7 @@ internal fun TorrserverBarUi(
                     AppSmallText(text = stringResource(Res.string.main_torrserver_bar_or))
                     InstallServer(
                         textButton = stringResource(Res.string.main_torrserver_bar_button_reinstall),
-                        installingState = uiState.installingState,
+                        installingState = uiState.reinstallingState,
                         onClickInstall = { component.onClickInstallServer() }
                     )
                 }
