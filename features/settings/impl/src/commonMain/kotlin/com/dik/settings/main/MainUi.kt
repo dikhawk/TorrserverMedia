@@ -26,13 +26,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dik.settings.widgets.ConfirmDialog
 import com.dik.settings.widgets.DropDownListItem
 import com.dik.settings.widgets.SwitchItem
 import com.dik.settings.widgets.TextFieldItem
-import com.dik.uikit.theme.AppTheme
 import com.dik.uikit.widgets.AppCircleProgressIndicator
 import com.dik.uikit.widgets.AppIconButtonArrowBack
 import com.dik.uikit.widgets.AppLinearProgressIndicator
@@ -351,16 +349,5 @@ private fun ServerVersion(
         }
 
         else -> {  }
-    }
-}
-
-@Preview
-@Composable
-private fun ServerVersionPreview() {
-    AppTheme {
-        ServerVersion(
-            state = ServerVersionState.ProgressUpdating(0.8f, "13 Mb", "70 Mb"),
-            onClickUpdate = {}
-        )
     }
 }

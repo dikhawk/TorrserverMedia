@@ -11,16 +11,6 @@ internal class RestartServerUseCase(
     private val stopServerUseCase: StopServerUseCase,
 ) {
 
-/*    @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(): Flow<TorrserverStatus> = stopServerUseCase()
-        .flatMapConcat { status ->
-            if (status == TorrserverStatus.General.Stopped) {
-                startServerUseCase()
-            } else {
-                emptyFlow()
-            }
-        }*/
-
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(): Flow<TorrserverStatus> =
         flowOf(stopServerUseCase(), startServerUseCase()).flattenConcat()
