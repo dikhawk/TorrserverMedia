@@ -105,7 +105,6 @@ internal class DefaultMainComponent(
             torrserverManager = torrserverManager,
             dispatchers = dispatchers,
             componentScope = componentScope,
-            localization = localization,
         )
 
     override val torrentListComponent: TorrentListComponent = DefaultTorrentListComponent(
