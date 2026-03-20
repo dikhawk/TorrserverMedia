@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -49,7 +50,6 @@ internal fun DetailsPaneUi(
     val uiState by component.uiState.collectAsState()
     val scrollState = rememberScrollState()
     var imageHeight by remember { mutableIntStateOf(0) }
-    var torrentInfoHeight by remember { mutableIntStateOf(0) }
 
     Card(modifier = modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -102,16 +102,17 @@ internal fun DetailsPaneUi(
 
             if (imageHeight <= scrollState.value) {
                 TorrentInfo(
-                    modifier = Modifier.background(AppTheme.colors.surfaceDim).padding(8.dp)
-                        .onGloballyPositioned { coordinates ->
-                            torrentInfoHeight = coordinates.size.height
-                        },
+                    modifier = Modifier.background(AppTheme.colors.surfaceDim).padding(8.dp),
                     torrentName = uiState.torrentName,
                     torrentSize = uiState.size,
                     component = component.torrentStatisticsComponent
                 )
             }
         }
+    }
+
+    LaunchedEffect(uiState.torrentName) {
+        scrollState.scrollTo(0)
     }
 }
 
