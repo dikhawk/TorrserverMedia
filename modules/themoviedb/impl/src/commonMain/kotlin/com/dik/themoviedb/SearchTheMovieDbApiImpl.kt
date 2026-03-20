@@ -15,6 +15,7 @@ import com.dik.themoviedb.response.PageResponse
 import com.dik.themoviedb.response.PersonResponse
 import com.dik.themoviedb.response.PolymorphContentResponse
 import com.dik.themoviedb.response.TvShowResponse
+import com.dik.themoviedb.utils.runCatchingKtor
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -32,7 +33,7 @@ internal class SearchTheMovieDbApiImpl(
         language: String,
         page: Int
     ): Result<List<Content>, TheMovieDbError> {
-        try {
+        return runCatchingKtor {
             val response = httpClient.get("search/multi") {
                 parameter("query", query)
                 parameter("include_adult", includeAdult)
@@ -51,8 +52,6 @@ internal class SearchTheMovieDbApiImpl(
             val content = result.results.mapToListContent()
 
             return Result.Success(content)
-        } catch (e: Exception) {
-            return Result.Error(TheMovieDbError.Unknown(e.toString()))
         }
     }
 
@@ -62,7 +61,7 @@ internal class SearchTheMovieDbApiImpl(
         language: String,
         page: Int
     ): Result<List<Person>, TheMovieDbError> {
-        try {
+        return runCatchingKtor {
             val response = httpClient.get("search/person") {
                 parameter("query", query)
                 parameter("include_adult", includeAdult)
@@ -81,8 +80,6 @@ internal class SearchTheMovieDbApiImpl(
             val content = result.results.mapToPersonList()
 
             return Result.Success(content)
-        } catch (e: Exception) {
-            return Result.Error(TheMovieDbError.Unknown(e.toString()))
         }
     }
 
@@ -94,7 +91,7 @@ internal class SearchTheMovieDbApiImpl(
         page: Int,
         year: Int?
     ): Result<List<TvShow>, TheMovieDbError> {
-        try {
+        return runCatchingKtor {
             val response = httpClient.get("search/tv") {
                 parameter("query", query)
                 parameter("first_air_date_year", firstAirDateYear)
@@ -115,8 +112,6 @@ internal class SearchTheMovieDbApiImpl(
             val content = result.results.mapToTvShowList()
 
             return Result.Success(content)
-        } catch (e: Exception) {
-            return Result.Error(TheMovieDbError.Unknown(e.toString()))
         }
     }
 
@@ -129,7 +124,7 @@ internal class SearchTheMovieDbApiImpl(
         region: String?,
         year: Int?
     ): Result<List<Movie>, TheMovieDbError> {
-        try {
+        return runCatchingKtor {
             val response = httpClient.get("search/movie") {
                 parameter("query", query)
                 parameter("include_adult", includeAdult)
@@ -151,8 +146,6 @@ internal class SearchTheMovieDbApiImpl(
             val content = result.results.mapToMovieList()
 
             return Result.Success(content)
-        } catch (e: Exception) {
-            return Result.Error(TheMovieDbError.Unknown(e.toString()))
         }
     }
 }

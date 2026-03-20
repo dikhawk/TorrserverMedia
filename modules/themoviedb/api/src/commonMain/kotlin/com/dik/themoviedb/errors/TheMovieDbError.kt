@@ -4,6 +4,10 @@ import com.dik.common.errors.Error
 
 sealed interface TheMovieDbError: Error {
 
+    sealed interface Server: TheMovieDbError {
+        data object NoServerConnection: Server
+    }
+
     sealed interface HttpError: TheMovieDbError {
         data object ResponseReturnNull: HttpError
         data class ResponseReturnError(val message: String): HttpError

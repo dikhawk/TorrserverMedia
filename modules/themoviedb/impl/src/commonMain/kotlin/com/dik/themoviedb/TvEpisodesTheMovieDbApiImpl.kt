@@ -5,6 +5,7 @@ import com.dik.themoviedb.errors.TheMovieDbError
 import com.dik.themoviedb.mapper.mapToTvEpisode
 import com.dik.themoviedb.model.TvEpisode
 import com.dik.themoviedb.response.TvEpisodeResponse
+import com.dik.themoviedb.utils.runCatchingKtor
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -21,7 +22,7 @@ internal class TvEpisodesTheMovieDbApiImpl(
         episodeNumber: Int,
         language: String
     ): Result<TvEpisode, TheMovieDbError> {
-        try {
+        return runCatchingKtor {
             val response =
                 httpClient.get("tv/$seriesId/season/$seasonNumber/episode/$episodeNumber") {
                     parameter("language", language)
@@ -34,8 +35,6 @@ internal class TvEpisodesTheMovieDbApiImpl(
             val result = response.body<TvEpisodeResponse>()
 
             return Result.Success(result.mapToTvEpisode())
-        } catch (e: Exception) {
-            return Result.Error(TheMovieDbError.Unknown(e.toString()))
         }
     }
 }
