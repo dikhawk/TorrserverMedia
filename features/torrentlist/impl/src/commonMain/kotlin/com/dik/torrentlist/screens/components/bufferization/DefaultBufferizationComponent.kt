@@ -3,7 +3,6 @@ package com.dik.torrentlist.screens.components.bufferization
 import com.arkivanov.decompose.ComponentContext
 import com.dik.appsettings.api.model.AppSettings
 import com.dik.common.AppDispatchers
-import com.dik.common.Result
 import com.dik.common.converter.bytesToBits
 import com.dik.common.converter.toReadableSize
 import com.dik.common.i18n.LocalizationResource
@@ -63,15 +62,12 @@ internal class DefaultBufferizationComponent(
             showTorrentInfo(contentFile)
             loadOverviewForFile(contentFile)
 
-            val result = torrentApi.preloadTorrent(torrent.hash, contentFile.id)
-            when (result) {
-                is Result.Success -> {
-                    torrentStatistics?.cancel()
-                    runAfterBufferization()
-                    onClickDismiss()
-                }
-
-                is Result.Error -> onClickDismiss()
+            torrentApi.preloadTorrent(torrent.hash, contentFile.id).onSuccess {
+                torrentStatistics?.cancel()
+                runAfterBufferization()
+                onClickDismiss()
+            }.onError {
+                onClickDismiss()
             }
         }
 
@@ -98,7 +94,7 @@ internal class DefaultBufferizationComponent(
                         this.cancel()
                     }
 
-                delay(2000)
+                delay(500)
             }
         }
     }
@@ -175,22 +171,22 @@ internal class DefaultBufferizationComponent(
         episodeNumber: Int
     ) {
         val language = appSettings.language.iso
-        val episode = tvEpisodesTheMovieDbApi.details(
+
+        tvEpisodesTheMovieDbApi.details(
             seriesId = content.id,
             seasonNumber = seasonNumber,
             episodeNumber = episodeNumber,
             language = language,
-        ).successResult()
+        ).onSuccess { episode ->
+            val overview = episode.overview.ifEmpty { content.overview }
 
-        val overview = if (!episode?.overview.isNullOrEmpty()) episode?.overview else
-            content.overview
-
-        _uiState.update {
-            it.copy(
-                overview = overview ?: "",
-                title = content.originalName,
-                titleSecond = prepareTitleSecond(seasonNumber, episodeNumber)
-            )
+            _uiState.update {
+                it.copy(
+                    overview = overview ?: "",
+                    title = content.originalName,
+                    titleSecond = prepareTitleSecond(seasonNumber, episodeNumber)
+                )
+            }
         }
     }
 

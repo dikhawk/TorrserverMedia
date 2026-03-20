@@ -170,12 +170,12 @@ internal fun TvSeasonResponse.mapToTvSeason(): TvSeason {
         id = this.id,
         name = this.name,
         airDate = this.airDate,
-        episodeCount = this.episodeCount,
-        overview = this.overview,
+        episodeCount = this.episodeCount ?: 0,
+        overview = this.overview ?: "",
         poster300 = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_W300_URL + this.posterPath,
         poster500 = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_W500_URL + this.posterPath,
         posterOriginal = if (this.posterPath.isNullOrEmpty()) "" else MOVIEDB_PIC_ORIGINAL_URL + this.posterPath,
-        seasonNumber = this.seasonNumber,
+        seasonNumber = this.seasonNumber?: 0,
         voteAverage = this.voteAverage,
         episodes = this.episodes?.mapToListTvEpisode() ?: emptyList()
     )

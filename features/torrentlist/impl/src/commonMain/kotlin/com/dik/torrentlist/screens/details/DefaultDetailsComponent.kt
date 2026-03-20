@@ -211,14 +211,15 @@ internal class DefaultDetailsComponent(
         val season = if (seasonNumber > 0) seasonNumber.toString() else ""
 
         componentScope.launch {
-            val tvSeason = tvSeasonTmdb.details(tvShow.id, seasonNumber).successResult()
-            _uiState.update {
-                it.copy(
-                    title = "${tvShow.name} (${tvShow.originalName})",
-                    seasonNumber = localization.getString(Res.string.main_details_season)
-                        .format(season),
-                    overview = tvSeason?.overview ?: (tvShow.overview ?: "")
-                )
+            tvSeasonTmdb.details(tvShow.id, seasonNumber).onSuccess { tvSeason ->
+                _uiState.update {
+                    it.copy(
+                        title = "${tvShow.name} (${tvShow.originalName})",
+                        seasonNumber = localization.getString(Res.string.main_details_season)
+                            .format(season),
+                        overview = tvSeason.overview
+                    )
+                }
             }
         }
     }
