@@ -19,10 +19,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -40,26 +38,21 @@ internal class DefaultTorrentListComponent(
 ) : ComponentContext by context, TorrentListComponent {
 
 
-    private val observeTorrents = torrentApi.observeTorrents()
-        .onStart { _uiState.update { it.copy(isShowProgress = true) } }
-        .distinctUntilChanged()
-        .map { result ->
-            result.onSuccess { data ->
-                onTorrentsIsEmpty(data.isEmpty())
-                return@map uiState.value.copy(
-                    torrents = data.toTorrentUiStateList(),
-                    isShowProgress = false
-                )
-            }.onError { error ->
-                return@map uiState.value.copy(error = error.toString(), isShowProgress = false)
-            }
-
-            throw IllegalStateException("Invalid result: $result")
+    private val observeTorrents = torrentApi.observeTorrents().map { result ->
+        result.onSuccess { data ->
+            return@map data
+        }.onError {
+            return@map emptyList()
         }
 
+        throw IllegalStateException("Invalid result: $result")
+    }
     private val _uiState: MutableStateFlow<TorrentListState> = MutableStateFlow(TorrentListState())
+
     override val uiState: StateFlow<TorrentListState> =
-        merge(_uiState, observeTorrents).stateIn(
+        combine(_uiState, observeTorrents) { state, torrents ->
+            state.copy(torrents = torrents.toTorrentUiStateList(), isShowProgress = false)
+        }.stateIn(
             scope = componentScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = TorrentListState(isShowProgress = true)
