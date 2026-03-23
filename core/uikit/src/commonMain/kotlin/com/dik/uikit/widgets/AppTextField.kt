@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +31,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.dik.uikit.theme.AppTheme
@@ -54,10 +56,11 @@ fun AppTextField(
     maxLines: Int = Int.MAX_VALUE,
     minHeight: Dp = Dp.Unspecified,
     ignoreSpaceIfItFirst: Boolean = true,
+    isShowProgress: Boolean = false,
     onValueChange: (String) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    val bringIntoViewRequester = remember() {
+    val bringIntoViewRequester = remember {
         BringIntoViewRequester()
     }
     var textFieldIsFocused by remember {
@@ -110,17 +113,26 @@ fun AppTextField(
 //                        .testTag(C.Tag.text_field),
                 )
 
-                if (!error(value).isNullOrEmpty()) {
-                    Icon(
-                        imageVector = vectorResource(Res.drawable.ic_error_24),
-                        tint = MaterialTheme.colorScheme.error,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .size(24.dp)
-                            .align(Alignment.CenterEnd)
-                            .clickable { showError = !showError }
-                    )
+                Row(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .align(Alignment.CenterEnd)
+                ) {
+                    if (!error(value).isNullOrEmpty()) {
+                        Icon(
+                            imageVector = vectorResource(Res.drawable.ic_error_24),
+                            tint = MaterialTheme.colorScheme.error,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable { showError = !showError }
+                        )
+                    }
+                    if (isShowProgress) {
+                        AppCircleProgressIndicator(
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
             }
             Spacer(
@@ -148,5 +160,17 @@ fun AppTextField(
                     .padding(top = 16.dp, bottom = 16.dp)
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun AppTextFieldPreview() {
+    AppTheme {
+        AppTextField(
+            value = "Amazing text",
+            isShowProgress = true,
+            onValueChange = {}
+        )
     }
 }
