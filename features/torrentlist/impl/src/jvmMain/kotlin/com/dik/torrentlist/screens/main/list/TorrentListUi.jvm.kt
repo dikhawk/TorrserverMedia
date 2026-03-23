@@ -81,10 +81,11 @@ internal actual fun TorrentListUi(
             when {
                 uiState.isShowProgress ->
                     AppCircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+
                 uiState.torrents.isEmpty() && !uiState.isShowProgress -> EmptyListStub()
                 else -> Torrents(
                     listProvider = { uiState.torrents },
-                    onClickDeleteItem = { component.onClickDeleteItem(it)},
+                    onClickDeleteItem = { component.onClickDeleteItem(it) },
                     onClickItem = { torrent ->
                         if (isMultiPane) {
                             component.onClickItem(torrent)
@@ -178,7 +179,7 @@ private fun DragAndDropFile(
 
 @Composable
 private fun Torrents(
-    listProvider: () ->  List<TorrentUiState>,
+    listProvider: () -> List<TorrentUiState>,
     onClickDeleteItem: (TorrentUiState) -> Unit,
     onClickItem: (TorrentUiState) -> Unit,
     modifier: Modifier = Modifier
