@@ -128,7 +128,7 @@ internal class DefaultDetailsComponent(
         clearUiState()
         componentScope.launch {
             torrentApi.getTorrent(hash).onSuccess { torrent ->
-                findAndAddThumbnail(torrent)
+                launch { findAndAddThumbnail(torrent) }
 
                 selectedTorrent = torrent.toTorrentUiState()
                 contentFilesComponent.showFiles(torrent.files.toContetFileList())
@@ -217,7 +217,7 @@ internal class DefaultDetailsComponent(
                         title = "${tvShow.name} (${tvShow.originalName})",
                         seasonNumber = localization.getString(Res.string.main_details_season)
                             .format(season),
-                        overview = tvSeason.overview
+                        overview = tvSeason.overview.ifEmpty { tvShow.overview ?: "" }
                     )
                 }
             }
