@@ -74,7 +74,8 @@ internal class DefaultMainAppBarComponent(
         if (!uiState.value.isServerStarted) {
             componentScope.launch {
                 _uiState.update {
-                    it.copy(error = localization.getString(Res.string.main_app_bar_error_server_not_started))
+                    it.copy(error = localization
+                        .getString(Res.string.main_app_bar_error_server_not_started))
                 }
             }
 
@@ -88,10 +89,12 @@ internal class DefaultMainAppBarComponent(
         componentScope.launch {
             if (uiState.value.link.isEmpty()) return@launch
 
+            _uiState.update { it.copy(isAddLinkProgressBar = true) }
             addMagnetLinkUseCase.invoke(_uiState.value.link)
                 .onError { error ->
-                    _uiState.update { it.copy(errorLink = error.toString()) }
+                    _uiState.update { it.copy(errorLink = error.toString(), isAddLinkProgressBar = false) }
                 }.onSuccess {
+                    _uiState.update { it.copy(isAddLinkProgressBar = false) }
                     dismissDialog()
                 }
         }

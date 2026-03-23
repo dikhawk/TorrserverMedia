@@ -24,6 +24,7 @@ internal data class MainAppBarState(
     val link: String = "",
     val errorLink: String? = null,
     val isServerStarted: Boolean = false,
+    val isAddLinkProgressBar: Boolean = false,
     val error: String? = null
 )
 
