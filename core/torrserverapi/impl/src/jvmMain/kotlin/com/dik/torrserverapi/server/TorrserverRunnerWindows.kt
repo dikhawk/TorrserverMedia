@@ -35,7 +35,7 @@ internal class TorrserverRunnerWindows(
                 }
 
                 val startServerCommand =
-                    "cd \"${serverFile.parent}\" && start /MIN .\\${serverFile.name} -k"
+                    "cd \"${serverFile.parent}\" && start /B .\\${serverFile.name} -k >null 2>&1"
 
                 commandExecutor.run(startServerCommand)
 
