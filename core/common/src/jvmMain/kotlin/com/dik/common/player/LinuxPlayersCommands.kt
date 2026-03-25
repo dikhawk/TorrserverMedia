@@ -9,10 +9,10 @@ class LinuxPlayersCommands : PlayersCommands {
     private val commandExecutor: CommandExecutor = CommandExecutor.instance()
 
     override suspend fun playFileInDefaultPlayer(fileName: String, fileUrl: String) {
-        val defaultProgrammName = getDefaultProgrammName(fileName)
+        val defaultProgramName = getDefaultProgramName(fileName)
 
-        if (defaultProgrammName != null) {
-            playFile(fileUrl, defaultProgrammName)
+        if (defaultProgramName != null) {
+            playFile(fileUrl, defaultProgramName)
             return
         }
 
@@ -23,8 +23,8 @@ class LinuxPlayersCommands : PlayersCommands {
         val players = getPlayersForLinux()
 
         players.forEach { player ->
-            val programmName = getProgrammName(player)
-            if (programmName != null) {
+            val programName = getProgramName(player)
+            if (programName != null) {
                 playFile(fileName = fileName, fileUrl = fileUrl, player = player)
                 return
             }
@@ -39,42 +39,42 @@ class LinuxPlayersCommands : PlayersCommands {
             return
         }
 
-        val programmName = getProgrammName(player)
+        val programName = getProgramName(player)
 
-        if (programmName == null) {
+        if (programName == null) {
             playFileInDefaultPlayer(fileName, fileUrl)
             return
         }
 
-        playFile(fileUrl, programmName)
+        playFile(fileUrl, programName)
     }
 
-    private suspend fun playFile(fileUrl: String, programmName: String) {
-        val command = "$programmName \'$fileUrl\'"
+    private fun playFile(fileUrl: String, programName: String) {
+        val command = "$programName \"$fileUrl\""
         commandExecutor.run(command)
     }
 
     private fun getPlayersForLinux(): List<Player> =
         Player.values().filter { it.platforms.contains(Platform.LINUX) }
 
-    private suspend fun getProgrammName(player: Player): String? {
+    private fun getProgramName(player: Player): String? {
         val programName = player.programName.find { it.platform == Platform.LINUX }
 
         if (programName == null) return null
 
-        return which(programName.name) ?: flatpackAplicationId(programName.name)
+        return which(programName.name) ?: flatpackApplicationId(programName.name)
     }
 
-    private suspend fun which(playerName: String): String? {
+    private fun which(playerName: String): String? {
         val output = commandExecutor.runAndWaitResult("which $playerName")
 
-        return if (output.isNullOrEmpty()) null else playerName
+        return if (output.isEmpty()) null else playerName
     }
 
-    private suspend fun flatpackAplicationId(playerName: String): String? {
+    private fun flatpackApplicationId(playerName: String): String? {
         val output = commandExecutor.runAndWaitResult("flatpak list")
 
-        if (output.isNullOrEmpty()) return null
+        if (output.isEmpty()) return null
 
         return output.lineSequence()
             .map { it.split("\t") }
@@ -83,23 +83,27 @@ class LinuxPlayersCommands : PlayersCommands {
             ?.trim()
     }
 
-    private suspend fun getDefaultProgrammName(fileName: String): String? {
-        val command = "xdg-mime query default \$(mimetype -b $fileName)"
-        var programmName = prepareProgrammName(commandExecutor.runAndWaitResult(command))
+    private fun getDefaultProgramName(fileName: String): String? {
+        val command = "xdg-mime query default \$(mimetype -b \"${fileName.escapeDoubleQuotes()}\")"
+        var programName = prepareProgramName(commandExecutor.runAndWaitResult(command))
 
-        if (programmName.isEmpty()) return null
+        if (programName.isEmpty()) return null
 
-        programmName = programmName
+        programName = programName
             .replace("org.kde.", "")
             .replace(".desktop", "")
 
-        return programmName.trim()
+        return programName.trim()
     }
 
-    private fun prepareProgrammName(rowProgrammName: String): String {
-        if (rowProgrammName.isEmpty()) return rowProgrammName
+    private fun String.escapeDoubleQuotes(): String {
+        return replace("\"", "\\\"")
+    }
 
-        return rowProgrammName
+    private fun prepareProgramName(rowProgramName: String): String {
+        if (rowProgramName.isEmpty()) return rowProgramName
+
+        return rowProgramName
             .replace("org.kde.", "")
             .replace(".desktop", "")
             .trim()
