@@ -1,3 +1,2 @@
--fixed wrong url poster
--fixed style for android
--add intent magnet for android
+-migration to Gradle 9
+-small fix in themoviedb api
