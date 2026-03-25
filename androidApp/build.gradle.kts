@@ -13,6 +13,7 @@ android {
 //    https://developer.android.com/studio/write/lint?utm_source=android-studio-app&utm_medium=app&hl=ru#snapshot
     lint {
         baseline = file("lint-baseline.xml")
+        disable += "ExpiredTargetSdkVersion"
     }
 
     defaultConfig {
